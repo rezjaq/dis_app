@@ -1,3 +1,4 @@
+import 'package:dis_app/common/widgets/textFormField.dart';
 import 'package:flutter/material.dart';
 import 'package:dis_app/utils/colors.dart';
 import 'package:dis_app/utils/sizes.dart';
@@ -10,6 +11,12 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _phoneController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +42,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
             right: DisSizes.md,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: DisSizes.md),
-              color: DisColors.white,
+              decoration: BoxDecoration(
+                color: DisColors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: DisColors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    spreadRadius: 5,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
               child: Form(
                 key: _formKey,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: DisSizes.md),
+                    padding: const EdgeInsets.symmetric(vertical: DisSizes.xl),
                     width: MediaQuery.of(context).size.width,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -55,7 +73,99 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         const SizedBox(height: DisSizes.md),
                         Column(
-
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            DisTextFormField(
+                              labelText: "Name",
+                              hintText: "Enter your name",
+                              controller: _nameController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Name is required";
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            DisTextFormField(
+                              labelText: "Email",
+                              hintText: "Enter your email",
+                              controller: _emailController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Email is required";
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            DisTextFormField(
+                                labelText: "Phone",
+                                hintText: "Enter your phone number",
+                                controller: _phoneController,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Phone number is required";
+                                  }
+                                  return null;
+                                }
+                            ),
+                            const SizedBox(height: 16),
+                            DisTextFormField(
+                              labelText: "Password",
+                              hintText: "Enter your password",
+                              obscureText: true,
+                              showPasswordToggle: true,
+                              controller: _passwordController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Password is required";
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            DisTextFormField(
+                              labelText: "Confirm Password",
+                              hintText: "Re-enter your password",
+                              obscureText: true,
+                              showPasswordToggle: true,
+                              controller: _confirmPasswordController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Confirm Password is required";
+                                }
+                                if (value != _passwordController.text) {
+                                  return "Passwords do not match";
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: DisSizes.xl),
+                        ElevatedButton(
+                            onPressed: () {},
+                            style: ButtonStyle(
+                              padding: MaterialStateProperty.all(const EdgeInsets.symmetric(horizontal: DisSizes.lg, vertical: 12)),
+                              backgroundColor: MaterialStateProperty.all(DisColors.primary),
+                              shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+                              minimumSize: MaterialStateProperty.all(Size(double.infinity, 0)),
+                            ),
+                            child: const Text("Sign Up", style: TextStyle(fontSize: DisSizes.fontSizeMd, color: DisColors.black, fontWeight: FontWeight.bold)),
+                        ),
+                        const SizedBox(height: DisSizes.md),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text("Already have an account? ", style: TextStyle(fontSize: DisSizes.fontSizeSm, color: DisColors.darkGrey)),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text("Sign In", style: TextStyle(fontSize: DisSizes.fontSizeSm, color: DisColors.primary)),
+                            ),
+                          ],
                         ),
                       ],
                     ),

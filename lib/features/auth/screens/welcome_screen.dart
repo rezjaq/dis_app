@@ -7,7 +7,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: DisColors.primary, // Background color as in the image
+      backgroundColor: DisColors.primary, // Background
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -35,7 +35,6 @@ class WelcomeScreen extends StatelessWidget {
             // Illustration and Welcome Text
             Column(
               children: [
-                // Placeholder for illustration
                 SvgPicture.asset(
                   'assets/image/welcome.svg',
                   height: 315,

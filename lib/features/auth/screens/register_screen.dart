@@ -96,8 +96,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       hintText: "Enter your email",
                     ),
                     const SizedBox(height: 16),
-                    // Phone Input with Country Code Selector
-                    // Phone Input with Country Code Display
                     const Text(
                       "Phone Number",
                       style: TextStyle(
@@ -108,7 +106,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        // Phone Number Input Field with Country Code
                         Expanded(
                           child: TextFormField(
                             controller: _phoneController,
@@ -127,7 +124,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 borderSide: BorderSide.none,
                               ),
                               prefixIcon: Container(
-                                width: 70, // Lebar untuk kode negara
+                                width: 70,
                                 alignment: Alignment.center,
                                 child: const Text(
                                   '+62',
@@ -138,7 +135,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                               ),
                               prefixIconConstraints: BoxConstraints(
-                                minWidth: 0, // Menghindari padding tambahan
+                                minWidth: 0,
                                 minHeight: 0,
                               ),
                             ),
@@ -152,7 +149,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 16),
                     // Password Input with Show Password Icon
                     _buildPasswordField(

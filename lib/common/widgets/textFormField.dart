@@ -35,35 +35,35 @@ class _DisTextFormFieldState extends State<DisTextFormField> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(widget.labelText, style: TextStyle(fontSize: DisSizes.fontSizeXs, fontWeight: FontWeight.w500, color: DisColors.textPrimary)),
-        SizedBox(height: 8),
-        TextFormField(
-          decoration: InputDecoration(
-            hintText: widget.hintText,
-            hintStyle: TextStyle(fontSize: DisSizes.fontSizeXs, color: DisColors.darkGrey, fontWeight: FontWeight.w400),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: DisColors.darkGrey),),
-            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: DisColors.primary),),
-            errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: DisColors.error),),
-            focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: DisColors.error),),
-            errorStyle: TextStyle(fontSize: DisSizes.fontSizeXs, color: DisColors.error),
-            suffixIcon: widget.showPasswordToggle ? IconButton(
-              icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: DisColors.darkGrey),
-              onPressed: () {
-                setState(() {
-                  _obscureText = !_obscureText;
-                });
-              },
-            ) : null,
-          ),
-          style: TextStyle(fontSize: DisSizes.fontSizeXs, fontWeight: FontWeight.w400),
-          obscureText: _obscureText,
-          validator: widget.validator,
-          controller: widget.controller,
+    return TextFormField(
+      controller: widget.controller,
+      decoration: InputDecoration(
+        labelText: widget.labelText,
+        labelStyle: const TextStyle(color: DisColors.textPrimary),
+        hintText: widget.hintText,
+        hintStyle: const TextStyle(color: DisColors.textPrimary),
+        filled: true,
+        fillColor: DisColors.softGrey,
+        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8.0), borderSide: BorderSide(color: DisColors.darkGrey)
         ),
-      ],
+        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: DisColors.primary),),
+        errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: DisColors.error),),
+        focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide(color: DisColors.error),),
+        errorStyle: TextStyle(fontSize: DisSizes.fontSizeXs, color: DisColors.error),
+        suffixIcon: widget.showPasswordToggle ? IconButton(
+          icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: DisColors.darkGrey),
+          onPressed: () {
+            setState(() {
+              _obscureText = !_obscureText;
+            });
+          },
+        ) : null,
+      ),
+      style: TextStyle(fontSize: DisSizes.fontSizeXs, fontWeight: FontWeight.w400),
+      obscureText: _obscureText,
+      validator: widget.validator,
     );
   }
 }

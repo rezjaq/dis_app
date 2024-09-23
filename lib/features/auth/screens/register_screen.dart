@@ -18,7 +18,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _confirmPasswordController = TextEditingController();
   final _phoneController = TextEditingController();
   bool _agreeToTerms = false;
-  String _selectedCountryCode = '+62';
 
   // Variables for password visibility
   bool _isPasswordVisible = false;
@@ -83,19 +82,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: DisSizes.md),
                     // Name Input
-                    _buildTextField(
-                      label: "Name",
-                      controller: _nameController,
-                      hintText: "Enter your name",
+                    DisTextFormField(
+                        labelText: "Name",
+                        hintText: "Enter your name",
+                        controller: _nameController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Name is required";
+                          }
+                          return null;
+                        }
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: DisSizes.md),
                     // Email Input
-                    _buildTextField(
-                      label: "Email",
-                      controller: _emailController,
-                      hintText: "Enter your email",
+                    DisTextFormField(
+                        labelText: "Email",
+                        hintText: "Enter your email",
+                        controller: _emailController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Email is required";
+                          }
+                          return null;
+                        }
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: DisSizes.md),
                     const Text(
                       "Phone Number",
                       style: TextStyle(
@@ -149,32 +160,38 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: DisSizes.md),
                     // Password Input with Show Password Icon
-                    _buildPasswordField(
-                      label: "Password",
-                      controller: _passwordController,
-                      hintText: "Enter your password",
-                      isVisible: _isPasswordVisible,
-                      onToggleVisibility: () {
-                        setState(() {
-                          _isPasswordVisible = !_isPasswordVisible;
-                        });
-                      },
+                    DisTextFormField(
+                        labelText: "Password",
+                        hintText: "Enter your password",
+                        controller: _passwordController,
+                        obscureText: !_isPasswordVisible,
+                        showPasswordToggle: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Password is required";
+                          }
+                          return null;
+                        }
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: DisSizes.md),
                     // Confirm Password Input with Show Password Icon
-                    _buildPasswordField(
-                      label: "Confirm Password",
-                      controller: _confirmPasswordController,
-                      hintText: "Re-enter your password",
-                      isVisible: _isConfirmPasswordVisible,
-                      onToggleVisibility: () {
-                        setState(() {
-                          _isConfirmPasswordVisible =
-                              !_isConfirmPasswordVisible;
-                        });
-                      },
+                    DisTextFormField(
+                        labelText: "Confirm Password",
+                        hintText: "Re-enter your password",
+                        controller: _confirmPasswordController,
+                        obscureText: !_isConfirmPasswordVisible,
+                        showPasswordToggle: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Confirm password is required";
+                          }
+                          if (value != _passwordController.text) {
+                            return "Password does not match";
+                          }
+                          return null;
+                        }
                     ),
                     const SizedBox(height: DisSizes.md),
                     // Terms & Conditions Checkbox
@@ -243,7 +260,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.of(context).pop();
+                            Navigator.pushReplacementNamed(context, '/login');
                           },
                           child: const Text(
                             "Sign In",
@@ -262,85 +279,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  // function buat standard text fields
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    required String hintText,
-  }) {
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(
-          color: Colors.orange,
-        ),
-        hintText: hintText,
-        hintStyle: const TextStyle(
-          color: Colors.orange,
-        ),
-        filled: true,
-        fillColor: Colors.grey.shade100,
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide.none,
-        ),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return "$label is required";
-        }
-        return null;
-      },
-    );
-  }
-
-  // function buat password fields with show/hide
-  Widget _buildPasswordField({
-    required String label,
-    required TextEditingController controller,
-    required String hintText,
-    required bool isVisible,
-    required VoidCallback onToggleVisibility,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: !isVisible,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(
-          color: Colors.orange,
-        ),
-        hintText: hintText,
-        hintStyle: const TextStyle(
-          color: Colors.orange,
-        ),
-        filled: true,
-        fillColor: Colors.grey.shade100,
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide.none,
-        ),
-        suffixIcon: IconButton(
-          icon: Icon(
-            isVisible ? Icons.visibility : Icons.visibility_off,
-          ),
-          onPressed: onToggleVisibility,
-        ),
-      ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return "$label is required";
-        }
-        return null;
-      },
     );
   }
 }

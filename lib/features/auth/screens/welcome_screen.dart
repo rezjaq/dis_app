@@ -79,7 +79,9 @@ class WelcomeScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/login');
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
                             Colors.black, // Dark color for the "Login" button
@@ -90,7 +92,7 @@ class WelcomeScreen extends StatelessWidget {
                         padding: EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: Text(
-                        'Login',
+                        'Sign-in',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
@@ -101,7 +103,9 @@ class WelcomeScreen extends StatelessWidget {
                   SizedBox(width: 16),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/register');
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors
                             .white, // Light color for the "Sign-up" button

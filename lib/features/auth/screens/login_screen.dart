@@ -87,43 +87,34 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 24),
                     // Email or Phone Number Field
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
+                    DisTextFormField(
                         labelText: "Email or Phone Number",
-                        prefixIcon: const Icon(Icons.person),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
+                        hintText: "Enter your email or phone number",
+                        controller: _emailController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please enter your email or phone number";
+                          }
+                          return null;
+                        }
+
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: DisSizes.md),
                     // Password Field
-                    TextFormField(
+                    DisTextFormField(
+                      labelText: "Password",
+                      hintText: "Enter your password",
+                      obscureText: !_isPasswordVisible,
+                      showPasswordToggle: true,
                       controller: _passwordController,
-                      obscureText: !_isPasswordVisible, // Toggle visibility
-                      decoration: InputDecoration(
-                        labelText: "Password",
-                        prefixIcon: const Icon(Icons.lock),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _isPasswordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _isPasswordVisible =
-                                  !_isPasswordVisible; // Toggle state
-                            });
-                          },
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Please enter your password";
+                        }
+                        return null;
+                      },
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: DisSizes.md),
                     // Remember Me and Forgot Password Row
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -148,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: DisSizes.md),
                     // Login Button
                     ElevatedButton(
                       onPressed: () {},
@@ -170,14 +161,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: DisSizes.md),
                     // Sign Up link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text("Don't have an account? "),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.pushReplacementNamed(context, '/register');
+                          },
                           child: const Text("Sign Up",
                               style: TextStyle(color: Colors.amberAccent)),
                         ),

@@ -6,6 +6,8 @@ class DisColors {
   static const Color primary = Color(0xFFF7D786);
 
   static const Color textPrimary = Color(0XFFFCA326);
+  static const Color textSecondary = Color(0xFFE5E5E5);
+  static const Color textWhite = Colors.white;
 
   // Error and Validation Colors
   static const Color error = Color(0xFFD32F2F);

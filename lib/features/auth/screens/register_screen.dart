@@ -1,7 +1,7 @@
 import 'package:dis_app/common/widgets/textFormField.dart';
 import 'package:flutter/material.dart';
-import 'package:dis_app/utils/colors.dart';
-import 'package:dis_app/utils/sizes.dart';
+import 'package:dis_app/utils/constants/colors.dart';
+import 'package:dis_app/utils/constants/sizes.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);

@@ -1,5 +1,5 @@
-import 'package:dis_app/utils/colors.dart';
-import 'package:dis_app/utils/sizes.dart';
+import 'package:dis_app/utils/constants/colors.dart';
+import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 
 class DisTextFormField extends StatefulWidget {

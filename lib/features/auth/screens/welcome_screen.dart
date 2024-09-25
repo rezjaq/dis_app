@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:dis_app/utils/colors.dart';
-import 'package:dis_app/utils/sizes.dart';
+import 'package:dis_app/utils/constants/colors.dart';
+import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class WelcomeScreen extends StatelessWidget {

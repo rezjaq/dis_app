@@ -91,8 +91,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             return "Name is required";
                           }
                           return null;
-                        }
-                    ),
+                        }),
                     const SizedBox(height: DisSizes.md),
                     // Email Input
                     DisTextFormField(
@@ -104,8 +103,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             return "Email is required";
                           }
                           return null;
-                        }
-                    ),
+                        }),
                     const SizedBox(height: DisSizes.md),
                     const Text(
                       "Phone Number",
@@ -173,8 +171,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             return "Password is required";
                           }
                           return null;
-                        }
-                    ),
+                        }),
                     const SizedBox(height: DisSizes.md),
                     // Confirm Password Input with Show Password Icon
                     DisTextFormField(
@@ -191,8 +188,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             return "Password does not match";
                           }
                           return null;
-                        }
-                    ),
+                        }),
                     const SizedBox(height: DisSizes.md),
                     // Terms & Conditions Checkbox
                     Row(
@@ -242,7 +238,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         style: TextStyle(
                           fontSize: DisSizes.fontSizeMd,
                           fontWeight: FontWeight.bold,
-                          color: DisColors.white,
+                          color: DisColors.black,
                         ),
                       ),
                     ),

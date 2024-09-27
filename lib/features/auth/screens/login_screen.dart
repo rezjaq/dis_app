@@ -96,9 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             return "Please enter your email or phone number";
                           }
                           return null;
-                        }
-
-                    ),
+                        }),
                     const SizedBox(height: DisSizes.md),
                     // Password Field
                     DisTextFormField(
@@ -125,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               value: _rememberMe,
                               onChanged: (value) {
                                 setState(() {
-                                  _rememberMe = value ?? false; // Update state
+                                  _rememberMe = value ?? false;
                                 });
                               },
                             ),
@@ -142,7 +140,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: DisSizes.md),
                     // Login Button
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(
+                            context, '/change-profile');
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: DisColors.primary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -169,7 +170,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         const Text("Don't have an account? "),
                         TextButton(
                           onPressed: () {
-                            Navigator.pushReplacementNamed(context, '/register');
+                            Navigator.pushReplacementNamed(
+                                context, '/register');
                           },
                           child: const Text("Sign Up",
                               style: TextStyle(color: Colors.amberAccent)),

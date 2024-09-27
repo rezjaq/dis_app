@@ -12,6 +12,4 @@ class DisSizes {
   static const double fontSizeXl = 24.0;
 
   static const double appBarHeight = 56.0;
-
-  
 }

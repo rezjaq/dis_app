@@ -1,6 +1,8 @@
 import 'package:dis_app/features/auth/screens/register_screen.dart';
 import 'package:dis_app/features/auth/screens/login_screen.dart';
 import 'package:dis_app/features/auth/screens/welcome_screen.dart';
+import 'package:dis_app/features/auth/screens/change_profile.dart';
+import 'package:dis_app/features/auth/screens/changePass_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -24,6 +26,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => WelcomeScreen(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
+        '/change-profile': (context) => EditProfileScreen(),
+        '/change-password': (context) => ChangePasswordScreen(),
       },
     );
   }

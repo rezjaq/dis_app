@@ -37,17 +37,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: DisColors.white,
         elevation: 0.5,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: DisColors.black),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         title: const Text(
           'Edit Profile',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(color: DisColors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -71,11 +71,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             AssetImage('assets/profile_picture.jpg'),
                       ),
                       CircleAvatar(
-                        backgroundColor: Colors.amber[200],
+                        backgroundColor: DisColors.primary,
                         radius: 18,
                         child: const Icon(
                           Icons.edit,
-                          color: Colors.black,
+                          color: DisColors.black,
                           size: 18,
                         ),
                       ),
@@ -112,7 +112,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               context, '/change-password');
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber[200],
+                          backgroundColor: DisColors.primary,
                           padding: const EdgeInsets.symmetric(
                               horizontal: 16, vertical: 16),
                           shape: RoundedRectangleBorder(
@@ -121,7 +121,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                         child: const Text(
                           'Change Password',
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(color: DisColors.black),
                         ),
                       ),
                     ],
@@ -134,10 +134,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       onPressed: () {
                         _showLogoutConfirmationDialog(context);
                       },
-                      icon: const Icon(Icons.logout, color: Colors.red),
+                      icon: const Icon(Icons.logout, color: DisColors.error),
                       label: const Text(
                         'Log Out',
-                        style: TextStyle(color: Colors.red),
+                        style: TextStyle(color: DisColors.error),
                       ),
                     ),
                   ),
@@ -159,14 +159,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.all(16),
-                      backgroundColor: Colors.amber[200],
+                      backgroundColor: DisColors.primary,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     child: const Text(
                       'Save Profile',
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(color: DisColors.black),
                     ),
                   ),
                 ),
@@ -222,21 +222,80 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Logout?'),
-          content: const Text('Are you sure you want to logout?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
+          title: const Center(
+            child: Text(
+              'Logout?',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            TextButton(
-              onPressed: () {
-                // Action for logout
-                Navigator.of(context).pop();
-              },
-              child: const Text('Ok'),
+          ),
+          content: const Text(
+            'Are you sure want to logout?',
+            textAlign: TextAlign.center,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          contentPadding: const EdgeInsets.symmetric(vertical: 20),
+          actionsPadding:
+              const EdgeInsets.only(bottom: 0), // Adjust bottom padding
+          actions: [
+            Column(
+              children: [
+                // Horizontal Divider (Yellow Line)
+                Container(
+                  width: double.infinity,
+                  height: 1,
+                  color: const Color(0xFFFFCC00), // Yellow divider color
+                ),
+                Row(
+                  children: [
+                    // Cancel Button with Border
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          border: Border(
+                            right: BorderSide(
+                              color: const Color(
+                                  0xFFFFCC00), // Yellow line between buttons
+                              width: 1.0,
+                            ),
+                          ),
+                        ),
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text(
+                            'Cancel',
+                            style: TextStyle(
+                              color: Colors.black, // Text color
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // Ok Button with Border
+                    Expanded(
+                      child: Container(
+                        child: TextButton(
+                          onPressed: () {
+                            // Action for logout
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text(
+                            'Ok',
+                            style: TextStyle(
+                              color: Colors.black, // Text color
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         );

@@ -1,3 +1,4 @@
+import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -87,7 +88,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.all(16),
-                  backgroundColor: Colors.amber[200],
+                  backgroundColor: DisColors.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),

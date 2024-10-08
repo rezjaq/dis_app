@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 class DisColors {
   DisColors._();
 
-  static const Color primary = Color(0xFFF7D786);
+  static const Color primary = Color(0xFFFCC000);
 
-  static const Color textPrimary = Color(0XFFFCA326);
+  static const Color textPrimary = Color(0XFFF57C00);
   static const Color textSecondary = Color(0xFFE5E5E5);
   static const Color textWhite = Colors.white;
 

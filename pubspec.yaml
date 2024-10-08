@@ -65,6 +65,8 @@ flutter:
   assets:
     - assets/image/login.svg
     - assets/image/welcome.svg
+    - assets/image/forget-password.svg
+    - assets/image/otp-verif.svg
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

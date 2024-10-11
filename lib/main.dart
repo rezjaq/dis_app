@@ -1,3 +1,4 @@
+import 'package:camera/camera.dart';
 import 'package:dis_app/features/auth/screens/forgetPass_screen.dart';
 import 'package:dis_app/features/auth/screens/otp_screen.dart';
 import 'package:dis_app/features/auth/screens/register_screen.dart';
@@ -5,12 +6,18 @@ import 'package:dis_app/features/auth/screens/login_screen.dart';
 import 'package:dis_app/features/auth/screens/welcome_screen.dart';
 import 'package:dis_app/features/auth/screens/change_profile.dart';
 import 'package:dis_app/features/auth/screens/changePass_screen.dart';
+import 'package:dis_app/features/home_screen.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-void main() {
-  runApp(const MyApp());
+
+late List<CameraDescription> _cameras;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  _cameras = await availableCameras();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -34,6 +41,7 @@ class MyApp extends StatelessWidget {
         '/change-password': (context) => ChangePasswordScreen(),
         '/forget-screen': (context) => ForgetPasswordScreen(),
         '/otp-screen': (context) => OtpVerificationScreen(),
+        '/home': (context) => BaseScreen(cameras: _cameras,),
       },
     );
   }

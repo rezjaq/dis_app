@@ -1,8 +1,15 @@
+import 'package:dis_app/features/auth/screens/otp_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:page_transition/page_transition.dart';
 
-class ForgetPasswordScreen extends StatelessWidget {
+class ForgetPasswordScreen extends StatefulWidget {
+  @override
+  _ForgetPasswordScreenState createState() => _ForgetPasswordScreenState();
+}
+
+class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +34,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: DisColors.black,
                 ),
               ),
               SizedBox(height: 10),
@@ -35,7 +42,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                 'Please enter the phone number we will send the OTP to this phone number.',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey,
+                  color: DisColors.darkerGrey,
                 ),
               ),
               SizedBox(height: 30),
@@ -53,11 +60,19 @@ class ForgetPasswordScreen extends StatelessWidget {
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/otp-screen');
+                  onPressed: () async {
+                    // Navigate to OTP screen without loading animation
+                    Navigator.push(
+                      context,
+                      PageTransition(
+                        type: PageTransitionType.scale,
+                        alignment: Alignment.center,
+                        child: OtpVerificationScreen(),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFFCC00),
+                    backgroundColor: DisColors.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

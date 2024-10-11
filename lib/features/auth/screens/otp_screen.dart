@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class OtpVerificationScreen extends StatefulWidget {
@@ -13,10 +15,58 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   TextEditingController otpController3 = TextEditingController();
   TextEditingController otpController4 = TextEditingController();
 
+  FocusNode focusNode1 = FocusNode();
+  FocusNode focusNode2 = FocusNode();
+  FocusNode focusNode3 = FocusNode();
+  FocusNode focusNode4 = FocusNode();
+
+  late Timer _timer;
+  int _remainingTime = 60;
+
+  @override
+  void initState() {
+    super.initState();
+    startTimer();
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    otpController1.dispose();
+    otpController2.dispose();
+    otpController3.dispose();
+    otpController4.dispose();
+    focusNode1.dispose();
+    focusNode2.dispose();
+    focusNode3.dispose();
+    focusNode4.dispose();
+    super.dispose();
+  }
+
+  void startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_remainingTime > 0) {
+        setState(() {
+          _remainingTime--;
+        });
+      } else {
+        _timer.cancel();
+      }
+    });
+  }
+
+  String formatTime(int seconds) {
+    int minutes = seconds ~/ 60;
+    int remainingSeconds = seconds % 60;
+    String formattedSeconds =
+        remainingSeconds < 10 ? '0$remainingSeconds' : '$remainingSeconds';
+    return '$minutes:$formattedSeconds Sec';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: DisColors.white,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -46,26 +96,29 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey[600],
+                  color: DisColors.darkerGrey,
                 ),
               ),
               SizedBox(height: 20),
               // Input OTP
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  otpInputField(otpController1),
-                  otpInputField(otpController2),
-                  otpInputField(otpController3),
-                  otpInputField(otpController4),
+                  otpInputField(otpController1, focusNode1, focusNode2),
+                  SizedBox(width: 20),
+                  otpInputField(otpController2, focusNode2, focusNode3),
+                  SizedBox(width: 20),
+                  otpInputField(otpController3, focusNode3, focusNode4),
+                  SizedBox(width: 20),
+                  otpInputField(otpController4, focusNode4, null),
                 ],
               ),
               SizedBox(height: 20),
               Text(
-                '00:55 Sec',
+                formatTime(_remainingTime),
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey[600],
+                  color: DisColors.darkerGrey,
                 ),
               ),
               SizedBox(height: 10),
@@ -80,7 +133,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                     TextSpan(
                       text: 'Re-send',
                       style: TextStyle(
-                        color: Colors.blue,
+                        color: DisColors.info,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -88,20 +141,22 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                 ),
               ),
               SizedBox(height: 20),
-              // Tombol submit
+              // Submit button
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFFFCC00),
+                  backgroundColor: DisColors.primary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                   minimumSize: Size(double.infinity, 50),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  // Handle submit
+                },
                 child: Text(
                   'Submit',
                   style: TextStyle(
-                    color: Colors.black,
+                    color: DisColors.black,
                     fontSize: 18,
                   ),
                 ),
@@ -114,14 +169,17 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     );
   }
 
-  // Widget untuk kolom input OTP
-  Widget otpInputField(TextEditingController controller) {
+  Widget otpInputField(TextEditingController controller, FocusNode currentFocus,
+      FocusNode? nextFocus) {
     return SizedBox(
-      width: 50,
+      width: 65,
       child: TextField(
         controller: controller,
-        keyboardType: TextInputType.number,
+        focusNode: currentFocus,
+        keyboardType: TextInputType.number, // Ensure only number keyboard
+        textInputAction: TextInputAction.next, // Move to next field
         textAlign: TextAlign.center,
+        autofocus: true, // Automatically focus on first input
         inputFormatters: [
           LengthLimitingTextInputFormatter(1),
           FilteringTextInputFormatter.digitsOnly,
@@ -131,12 +189,19 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         ),
         decoration: InputDecoration(
           filled: true,
-          fillColor: Colors.grey[200],
+          fillColor: DisColors.grey,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
             borderSide: BorderSide.none,
           ),
         ),
+        onChanged: (value) {
+          if (value.length == 1 && nextFocus != null) {
+            FocusScope.of(context).requestFocus(nextFocus);
+          } else if (value.isEmpty) {
+            FocusScope.of(context).previousFocus();
+          }
+        },
       ),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:dis_app/common/widgets/textFormField.dart';
+import 'package:dis_app/common/widgets/thinkerCheck.dart';
 import 'package:flutter/material.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
@@ -119,14 +120,33 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         Row(
                           children: [
-                            Checkbox(
-                              value: _rememberMe,
-                              onChanged: (value) {
+                            GestureDetector(
+                              onTap: () {
                                 setState(() {
-                                  _rememberMe = value ?? false;
+                                  _rememberMe = !_rememberMe;
                                 });
                               },
+                              child: Container(
+                                height: 24,
+                                width: 24,
+                                decoration: BoxDecoration(
+                                  color: _rememberMe
+                                      ? DisColors.primary
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                    color: DisColors.primary,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: _rememberMe
+                                    ? CustomPaint(
+                                        painter: ThickCheckPainter(),
+                                      )
+                                    : null,
+                              ),
                             ),
+                            const SizedBox(width: 8),
                             const Text("Remember Me"),
                           ],
                         ),
@@ -159,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: DisColors.black,
                           ),
                         ),
                       ),
@@ -176,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 context, '/register');
                           },
                           child: const Text("Sign Up",
-                              style: TextStyle(color: Colors.amberAccent)),
+                              style: TextStyle(color: DisColors.primary)),
                         ),
                       ],
                     ),

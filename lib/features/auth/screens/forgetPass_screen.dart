@@ -27,7 +27,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: DisColors.black,
                 ),
               ),
               SizedBox(height: 10),
@@ -35,7 +35,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                 'Please enter the phone number we will send the OTP to this phone number.',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey,
+                  color: DisColors.darkerGrey,
                 ),
               ),
               SizedBox(height: 30),
@@ -57,7 +57,7 @@ class ForgetPasswordScreen extends StatelessWidget {
                     Navigator.pushNamed(context, '/otp-screen');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFFCC00),
+                    backgroundColor: DisColors.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),

@@ -8,7 +8,7 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  bool isLoginSelected = true; // Track the selected button
+  bool isLoginSelected = true;
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +23,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               padding: const EdgeInsets.only(top: 32.0),
               child: Column(
                 children: [
-                  Icon(Icons.ac_unit,
-                      size: 40, color: Colors.brown), // Placeholder for logo
+                  Icon(Icons.ac_unit, size: 40, color: Colors.brown),
                   SizedBox(height: 8),
                   Text(
                     'Logo',
@@ -83,15 +82,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               child: Container(
                 height: 50, // Button height
                 decoration: BoxDecoration(
-                  color: Colors
-                      .grey[300], // Background color for the switch container
-                  borderRadius: BorderRadius.circular(30), // Rounded container
+                  color: DisColors.white,
+                  borderRadius: BorderRadius.circular(30),
                 ),
                 child: Stack(
                   children: [
                     // Animated background for the selected button
                     AnimatedPositioned(
-                      duration: Duration(milliseconds: 300),
+                      duration: Duration(milliseconds: 100),
                       curve: Curves.easeInOut,
                       left: isLoginSelected
                           ? 0
@@ -100,10 +98,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           ? MediaQuery.of(context).size.width * 0.5 - 40
                           : 0,
                       child: AnimatedContainer(
-                        duration: Duration(milliseconds: 300),
+                        duration: Duration(milliseconds: 100),
                         curve: Curves.easeInOut,
                         decoration: BoxDecoration(
-                          color: Colors.black, // Active background color
+                          color: DisColors.black,
                           borderRadius: BorderRadius.circular(30),
                         ),
                         height: 50,
@@ -120,7 +118,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               setState(() {
                                 isLoginSelected = true;
                               });
-                              // Menunggu animasi selesai sebelum pindah halaman
                               Future.delayed(Duration(milliseconds: 300), () {
                                 Navigator.pushReplacementNamed(
                                     context, '/login');
@@ -132,8 +129,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 'Login',
                                 style: TextStyle(
                                   color: isLoginSelected
-                                      ? Colors.white
-                                      : Colors.black,
+                                      ? DisColors.white
+                                      : DisColors.black,
                                   fontSize: 18,
                                 ),
                               ),
@@ -159,8 +156,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 'Sign-up',
                                 style: TextStyle(
                                   color: isLoginSelected
-                                      ? Colors.black
-                                      : Colors.white,
+                                      ? DisColors.black
+                                      : DisColors.white,
                                   fontSize: 18,
                                 ),
                               ),

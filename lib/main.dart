@@ -32,9 +32,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
       ),
-      home: SplashScreen(),
       routes: {
-        '/welcome': (context) => WelcomeScreen(),
+        '/': (context) => WelcomeScreen(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
         '/change-profile': (context) => EditProfileScreen(),

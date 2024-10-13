@@ -208,7 +208,7 @@ Widget _menuButton(IconData icon, String text, Color color) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.center,
     children: [
-      IconButton(onPressed: () {}, icon: Icon(icon, color: color)),
+      IconButton(onPressed: () {}, icon: Icon(icon, color: color, size: 32)),
       const SizedBox(height: 4),
       if (text == '') const SizedBox(height: 0) else Text(text, style: const TextStyle(color: Colors.white, fontSize: 12)),
     ],

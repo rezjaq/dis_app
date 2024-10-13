@@ -3,8 +3,21 @@ import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
-class FindMeScreen extends StatelessWidget {
+class FindMeScreen extends StatefulWidget {
   const FindMeScreen({Key? key}) : super(key: key);
+
+  @override
+  _FindMeScreenState createState() => _FindMeScreenState();
+}
+
+class _FindMeScreenState extends State<FindMeScreen> {
+  int _selectedIndex = 0;
+
+  void _onButtonPressed(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +30,16 @@ class FindMeScreen extends StatelessWidget {
       Colors.purpleAccent, Colors.redAccent, Colors.tealAccent, Colors.yellowAccent, Colors.blueAccent,
       Colors.greenAccent, Colors.indigoAccent, Colors.cyanAccent, Colors.amberAccent, Colors.brown[300]!,
       Colors.grey, Colors.blueGrey, Colors.black,
+    ];
+
+    final List<Color> favoriteColors = [
+      Colors.indigo, Colors.teal, Colors.amber, Colors.deepOrange, Colors.deepPurple,
+      Colors.lightBlue, Colors.lightGreen, Colors.limeAccent, Colors.orangeAccent, Colors.pinkAccent,
+    ];
+
+    final List<Color> collectionColors = [
+      Colors.purpleAccent, Colors.redAccent, Colors.tealAccent, Colors.yellowAccent, Colors.blueAccent,
+      Colors.greenAccent, Colors.indigoAccent, Colors.cyanAccent, Colors.amberAccent, Colors.brown[300]!,
     ];
 
     return Scaffold(
@@ -113,9 +136,9 @@ class FindMeScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        TextButton(onPressed: () {}, child: Text("All", style: TextStyle(color: DisColors.primary))),
-                        TextButton(onPressed: () {}, child: Text("Favorites", style: TextStyle(color: DisColors.black))),
-                        TextButton(onPressed: () {}, child: Text("Collections", style: TextStyle(color: DisColors.black))),
+                        TextButton(onPressed: () => _onButtonPressed(0), child: Text("All", style: TextStyle(color: _selectedIndex == 0 ? DisColors.primary : DisColors.black))),
+                        TextButton(onPressed: () => _onButtonPressed(1) , child: Text("Favorites", style: TextStyle(color: _selectedIndex == 1 ? DisColors.primary : DisColors.black))),
+                        TextButton(onPressed: () => _onButtonPressed(2), child: Text("Collections", style: TextStyle(color: _selectedIndex == 2 ? DisColors.primary : DisColors.black))),
                       ],
                     ),
                   ],
@@ -136,10 +159,15 @@ class FindMeScreen extends StatelessWidget {
                       mainAxisSpacing: 4.0,
                       mainAxisExtent: MediaQuery.of(context).size.height * 0.25,
                     ),
-                    itemCount: colors.length,
+                    itemCount: _selectedIndex == 0 ? colors.length : _selectedIndex == 1 ? favoriteColors.length : collectionColors.length,
                     itemBuilder: (context, index) {
-                      return Container(
-                        color: colors[index],
+                      return GestureDetector(
+                        onTap: () {
+                          print('Color: ${_selectedIndex == 0 ? colors[index] : _selectedIndex == 1 ? favoriteColors[index] : collectionColors[index]}');
+                        },
+                        child: Container(
+                          color: _selectedIndex == 0 ? colors[index] : _selectedIndex == 1 ? favoriteColors[index] : collectionColors[index],
+                        ),
                       );
                     },
                   ),

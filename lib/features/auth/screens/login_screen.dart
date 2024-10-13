@@ -164,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ElevatedButton(
                       onPressed: () {
                         Navigator.pushReplacementNamed(
-                            context, '/change-profile');
+                            context, '/home');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: DisColors.primary,

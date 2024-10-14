@@ -36,6 +36,7 @@ dependencies:
   logger: ^2.0.1
   url_launcher: ^6.1.12
   image_picker: ^1.1.2
+  image: ^3.0.1
   flutter_secure_storage: ^9.2.2
 
   # The following adds the Cupertino Icons font to your application.
@@ -48,6 +49,9 @@ dependencies:
   loading_animation_widget: ^1.3.0
   page_transition: ^2.1.0
   camera: ^0.11.0+2
+  path_provider: ^2.1.4
+  image_gallery_saver: ^2.0.3
+  path: ^1.9.0
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +74,7 @@ flutter:
     - assets/image/welcome.svg
     - assets/image/forget-password.svg
     - assets/image/otp-verif.svg
+    - assets/photo/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

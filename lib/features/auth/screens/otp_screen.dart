@@ -28,7 +28,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               Container(
                 height: 200,
                 child: SvgPicture.asset(
-                  'assets/image/otp-verif.svg',
+                  'assets/images/otp-verif.svg',
                   fit: BoxFit.contain,
                 ),
               ),

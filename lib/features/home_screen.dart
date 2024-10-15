@@ -180,11 +180,13 @@ class HomeScreen extends StatelessWidget {
                         bottom: 72,
                         child: Column(
                           children: [
-                            _menuButton(Icons.favorite_border_rounded, '359', DisColors.white),
+                            _menuButton(Icons.favorite_border_rounded, '359', DisColors.white, () {}),
                             const SizedBox(height: 8),
-                            _menuButton(Icons.chat_bubble_outline_rounded, '20', DisColors.white),
+                            _menuButton(Icons.chat_bubble_outline_rounded, '20', DisColors.white, () {}),
                             const SizedBox(height: 8),
-                            _menuButton(Icons.more_horiz_rounded, '', DisColors.white),
+                            _menuButton(Icons.more_horiz_rounded, '', DisColors.white, () {
+                              _showDialog(context);
+                            }),
                           ],
                         ),
                       ),
@@ -202,15 +204,70 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-Widget _menuButton(IconData icon, String text, Color color) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [
-      IconButton(onPressed: () {}, icon: Icon(icon, color: color, size: 32)),
-      const SizedBox(height: 4),
-      if (text == '') const SizedBox(height: 0) else Text(text, style: const TextStyle(color: Colors.white, fontSize: 12)),
-    ],
-  );
+  Future<void> _showDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return Align(
+          alignment: Alignment.topCenter,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 50.0),
+            child: AlertDialog(
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 32),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text("Options", style: TextStyle(color: DisColors.black, fontSize: DisSizes.fontSizeMd, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 20),
+                      Column(
+                        children: [
+                          ListTile(
+                            leading: Icon(Icons.share, color: DisColors.black),
+                            title: Text("Share Content", style: TextStyle(color: DisColors.black, fontSize: DisSizes.fontSizeSm)),
+                            onTap: () {},
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.report_gmailerrorred_rounded, color: DisColors.black),
+                            title: Text("Report Content", style: TextStyle(color: DisColors.black, fontSize: DisSizes.fontSizeSm)),
+                            onTap: () {},
+                          ),
+                          ListTile(
+                            leading: Icon(Icons.block_rounded, color: DisColors.black),
+                            title: Text("Block", style: TextStyle(color: DisColors.black, fontSize: DisSizes.fontSizeSm)),
+                            onTap: () {},
+                          ),
+                        ],
+                      ),
+                      Divider(color: DisColors.primary, thickness: 1.5),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Close', style: TextStyle(color: DisColors.primary)),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Column _menuButton(IconData icon, String text, Color color, void Function() onTap) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        IconButton(onPressed: onTap, icon: Icon(icon, color: color, size: 32)),
+        const SizedBox(height: 4),
+        if (text == '') const SizedBox(height: 0) else Text(text, style: const TextStyle(color: Colors.white, fontSize: 12)),
+      ],
+    );
+  }
 }

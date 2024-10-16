@@ -42,7 +42,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             Column(
               children: [
                 SvgPicture.asset(
-                  'assets/image/welcome.svg',
+                  'assets/images/welcome.svg',
                   height: 315,
                 ),
                 SizedBox(height: 32),

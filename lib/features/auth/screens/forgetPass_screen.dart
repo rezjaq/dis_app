@@ -28,7 +28,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   Spacer(flex: 2),
                   Center(
                     child: SvgPicture.asset(
-                      'assets/image/forget-password.svg',
+                      'assets/images/forget-password.svg',
                       fit: BoxFit.contain,
                       height: 200,
                     ),

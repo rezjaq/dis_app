@@ -34,18 +34,23 @@ class _CameraScreenState extends State<CameraScreen> {
   void startCamera(int camera) async {
     setState(() {
       isCameraChanging = true;
-      _opacity = 0.0;
+      _opacity = 0.0; // Set opacity to 0 for fading out
     });
+
     cameraController = CameraController(
       widget.cameras[camera],
       ResolutionPreset.high,
       enableAudio: false,
     );
+
     cameraValue = cameraController.initialize();
+
     await cameraValue;
     cameraController.setFlashMode(flashMode);
+
+    // Set opacity back to 1 after the camera is initialized
     setState(() {
-      _opacity = 1.0;
+      _opacity = 1.0; // Fade back in
       isCameraChanging = false;
     });
   }
@@ -94,15 +99,22 @@ class _CameraScreenState extends State<CameraScreen> {
   Future<void> savePicture(XFile imageFile) async {
     final directory = await getApplicationDocumentsDirectory();
     final String path = join(directory.path, '${DateTime.now()}.jpg');
+
     File originalImage = File(imageFile.path);
     img.Image? image = img.decodeImage(await originalImage.readAsBytes());
 
-    if (!isRearCamera && image != null) {
-      image = img.flipHorizontal(image);
-    }
+    if (image != null) {
+      // Cek apakah kamera depan, dan jika ya, balikkan gambar secara horizontal
+      if (!isRearCamera) {
+        image = img.flipHorizontal(image);
+      }
 
-    File savedImage = await File(path).writeAsBytes(img.encodeJpg(image!));
-    print('Image saved to: $path');
+      // Simpan gambar yang telah dibalik atau gambar aslinya
+      File savedImage = await File(path).writeAsBytes(img.encodeJpg(image));
+      print('Image saved to: $path');
+    } else {
+      print('Failed to decode image.');
+    }
   }
 
   @override
@@ -117,7 +129,7 @@ class _CameraScreenState extends State<CameraScreen> {
               if (snapshot.connectionState == ConnectionState.done) {
                 return AnimatedOpacity(
                   opacity: _opacity,
-                  duration: const Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 500),
                   child: SizedBox(
                     width: size.width,
                     height: size.height,
@@ -125,13 +137,13 @@ class _CameraScreenState extends State<CameraScreen> {
                       fit: BoxFit.cover,
                       child: SizedBox(
                         width: 100,
-                        child: isRearCamera
-                            ? CameraPreview(cameraController)
-                            : Transform(
+                        child: (!isRearCamera)
+                            ? Transform(
                                 alignment: Alignment.center,
                                 transform: Matrix4.rotationY(3.14159),
                                 child: CameraPreview(cameraController),
-                              ),
+                              )
+                            : CameraPreview(cameraController),
                       ),
                     ),
                   ),
@@ -193,7 +205,7 @@ class _CameraScreenState extends State<CameraScreen> {
                         child: CameraIcon(),
                       ),
                     ),
-                    // Flip camera animaiton
+                    // Flip camera animation
                     GestureDetector(
                       onTap: () {
                         setState(() {

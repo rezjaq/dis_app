@@ -19,10 +19,10 @@ class _BaseScreenState extends State<BaseScreen> {
   int _selectedIndex = 0;
 
   List<Widget> get _widgetOptions => <Widget>[
-    HomeScreen(),
-    FindMeScreen(),
-    AccountScreen(),
-  ];
+        HomeScreen(cameras: widget.cameras), // Pass cameras to HomeScreen
+        FindMeScreen(),
+        AccountScreen(),
+      ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -38,14 +38,14 @@ class _BaseScreenState extends State<BaseScreen> {
         children: _widgetOptions,
       ),
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(
-              color: _selectedIndex == 0 ? DisColors.white : DisColors.grey,
-              width: 1.0,
+          decoration: BoxDecoration(
+            border: Border(
+              top: BorderSide(
+                color: _selectedIndex == 0 ? DisColors.white : DisColors.grey,
+                width: 1.0,
+              ),
             ),
           ),
-        ),
           child: BottomNavigationBar(
             currentIndex: _selectedIndex,
             onTap: (index) {
@@ -53,7 +53,8 @@ class _BaseScreenState extends State<BaseScreen> {
                 _selectedIndex = index;
               });
             },
-            backgroundColor: _selectedIndex == 0 ? DisColors.black : DisColors.white,
+            backgroundColor:
+                _selectedIndex == 0 ? DisColors.black : DisColors.white,
             selectedLabelStyle: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: DisSizes.fontSizeXs,
@@ -86,14 +87,15 @@ class _BaseScreenState extends State<BaseScreen> {
                 label: 'Account',
               ),
             ],
-          )
-      ),
+          )),
     );
   }
 }
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final List<CameraDescription> cameras; // Accept cameras as a parameter
+
+  const HomeScreen({Key? key, required this.cameras}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -111,8 +113,8 @@ class HomeScreen extends StatelessWidget {
       body: Stack(
         children: [
           PageView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: colors.length,
+              scrollDirection: Axis.vertical,
+              itemCount: colors.length,
               itemBuilder: (context, index) {
                 return Container(
                   child: Stack(
@@ -145,31 +147,49 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(width: 12),
-                                Text("Steve Jobs", style: TextStyle(color: DisColors.white, fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.bold)),
+                                Text("Steve Jobs",
+                                    style: TextStyle(
+                                        color: DisColors.white,
+                                        fontSize: DisSizes.fontSizeSm,
+                                        fontWeight: FontWeight.bold)),
                                 const SizedBox(width: 12),
                                 GestureDetector(
                                   onTap: () {},
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      border: Border.all(color: DisColors.white, width: 1),
-                                      borderRadius: BorderRadius.circular(DisSizes.xs),
+                                      border: Border.all(
+                                          color: DisColors.white, width: 1),
+                                      borderRadius:
+                                          BorderRadius.circular(DisSizes.xs),
                                     ),
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: DisSizes.md, vertical: DisSizes.xs),
-                                      child: Text("Follow", style: TextStyle(color: DisColors.white, fontSize: DisSizes.fontSizeXs)),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: DisSizes.md,
+                                          vertical: DisSizes.xs),
+                                      child: Text("Follow",
+                                          style: TextStyle(
+                                              color: DisColors.white,
+                                              fontSize: DisSizes.fontSizeXs)),
                                     ),
                                   ),
                                 )
                               ],
                             ),
                             const SizedBox(height: 8),
-                            Text("Malang Run 2024 🎉", style: TextStyle(color: DisColors.white, fontSize: DisSizes.fontSizeSm)),
+                            Text("Malang Run 2024 🎉",
+                                style: TextStyle(
+                                    color: DisColors.white,
+                                    fontSize: DisSizes.fontSizeSm)),
                             const SizedBox(height: 8),
                             Row(
                               children: [
-                                Icon(Icons.location_on, color: DisColors.white, size: DisSizes.md),
+                                Icon(Icons.location_on,
+                                    color: DisColors.white, size: DisSizes.md),
                                 const SizedBox(width: 4),
-                                Text("Malang, Indonesia", style: TextStyle(color: DisColors.white, fontSize: DisSizes.fontSizeXs)),
+                                Text("Malang, Indonesia",
+                                    style: TextStyle(
+                                        color: DisColors.white,
+                                        fontSize: DisSizes.fontSizeXs)),
                               ],
                             ),
                           ],
@@ -180,23 +200,36 @@ class HomeScreen extends StatelessWidget {
                         bottom: 72,
                         child: Column(
                           children: [
-                            _menuButton(Icons.favorite_border_rounded, '359', DisColors.white),
+                            _menuButton(Icons.favorite_border_rounded, '359',
+                                DisColors.white),
                             const SizedBox(height: 8),
-                            _menuButton(Icons.chat_bubble_outline_rounded, '20', DisColors.white),
+                            _menuButton(Icons.chat_bubble_outline_rounded, '20',
+                                DisColors.white),
                             const SizedBox(height: 8),
-                            _menuButton(Icons.more_horiz_rounded, '', DisColors.white),
+                            _menuButton(
+                                Icons.more_horiz_rounded, '', DisColors.white),
                           ],
                         ),
                       ),
                     ],
                   ),
                 );
-              }
-          ),
+              }),
           Positioned(
             right: 0,
             top: MediaQuery.of(context).size.height * 0.05,
-            child: IconButton(onPressed: () {}, icon: const Icon(Icons.add_a_photo_outlined, color: DisColors.white)),
+            child: IconButton(
+                onPressed: () {
+                  // Navigate to CameraScreen with the cameras list
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CameraScreen(cameras: cameras),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.add_a_photo_outlined,
+                    color: DisColors.white)),
           ),
         ],
       ),
@@ -210,7 +243,10 @@ Widget _menuButton(IconData icon, String text, Color color) {
     children: [
       IconButton(onPressed: () {}, icon: Icon(icon, color: color, size: 32)),
       const SizedBox(height: 4),
-      if (text == '') const SizedBox(height: 0) else Text(text, style: const TextStyle(color: Colors.white, fontSize: 12)),
+      if (text == '')
+        const SizedBox(height: 0)
+      else
+        Text(text, style: const TextStyle(color: Colors.white, fontSize: 12)),
     ],
   );
 }

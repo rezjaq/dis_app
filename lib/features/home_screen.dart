@@ -2,9 +2,14 @@ import 'package:camera/camera.dart';
 import 'package:dis_app/features/auth/screens/account_screen.dart';
 import 'package:dis_app/features/camera_screen.dart';
 import 'package:dis_app/features/findme/screens/findme_screen.dart';
+import 'package:dis_app/features/photo/models/photo_model.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
+import 'dart:convert';
+import 'dart:io';
 
 class BaseScreen extends StatefulWidget {
   final List<CameraDescription> cameras;
@@ -18,11 +23,11 @@ class BaseScreen extends StatefulWidget {
 class _BaseScreenState extends State<BaseScreen> {
   int _selectedIndex = 0;
 
-  List<Widget> get _widgetOptions => [
-        HomeScreen(cameras: widget.cameras), // Pass cameras to HomeScreen
-        FindMeScreen(),
-        AccountScreen(),
-      ];
+  List<Widget> get _widgetOptions => <Widget>[
+    HomeScreen(cameras: widget.cameras,),
+    FindMeScreen(),
+    AccountScreen(),
+  ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -89,31 +94,150 @@ class _BaseScreenState extends State<BaseScreen> {
   }
 }
 
-class HomeScreen extends StatelessWidget {
-  final List<CameraDescription> cameras; // Accept cameras as a parameter
+class HomeScreen extends StatefulWidget {
+  final List<CameraDescription> cameras;
 
-  const HomeScreen({Key? key, required this.cameras}) : super(key: key);
+  HomeScreen({Key? key, required this.cameras}) : super(key: key);
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late Future<List<PostPhoto>> _posts = fetchPostPhotos();
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<List<PostPhoto>> fetchPostPhotos() async {
+    final dir = await getApplicationDocumentsDirectory();
+    final jsonFile = File(path.join(dir.path, 'dummies.json'));
+
+    if (await jsonFile.exists()) {
+      final jsonString = await jsonFile.readAsString();
+      final jsonData = jsonDecode(jsonString) as Map<String, dynamic>;
+      final posts = jsonData['post'] as List<dynamic>;
+      return posts.map((post) => PostPhoto.fromJson(post)).toList();
+    } else {
+      return [];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final List<Color> colors = [
-      Colors.red,
-      Colors.blue,
-      Colors.green,
-      Colors.yellow,
-      Colors.purple,
-      Colors.orange,
-    ];
-
     return Scaffold(
       backgroundColor: DisColors.black,
       body: Stack(
         children: [
-          PageView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: colors.length,
-            itemBuilder: (context, index) {
-              return _buildColorPage(context, colors[index]);
+          FutureBuilder<List<PostPhoto>>(
+            future: _posts,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(child: Text('No posts available'));
+              } else {
+                final post = snapshot.data!;
+                return PageView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: post.length,
+                  itemBuilder: (context, index) {
+                    final photo = post[index];
+                    final file = File(photo.url);
+                    if (!file.existsSync()) {
+                      return Center(
+                        child: Text(
+                          'Gambar tidak tersedia',
+                          style: TextStyle(color: DisColors.white),
+                        ),
+                      );
+                    }
+                    return Container(
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: MediaQuery.of(context).size.height * 0.125,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height * 0.74,
+                              child: Image.file(file, fit: BoxFit.cover),
+                            ),
+                          ),
+                          Positioned(
+                            left: DisSizes.md,
+                            bottom: DisSizes.md,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 48,
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        color: DisColors.white,
+                                        borderRadius: BorderRadius.circular(36),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text("Steve Jobs", style: TextStyle(color: DisColors.white, fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.bold)),
+                                    const SizedBox(width: 12),
+                                    GestureDetector(
+                                      onTap: () {},
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: DisColors.white, width: 1),
+                                          borderRadius: BorderRadius.circular(DisSizes.xs),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(horizontal: DisSizes.md, vertical: DisSizes.xs),
+                                          child: Text("Follow", style: TextStyle(color: DisColors.white, fontSize: DisSizes.fontSizeXs)),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(photo.description, style: TextStyle(color: DisColors.white, fontSize: DisSizes.fontSizeSm)),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Icon(Icons.location_on, color: DisColors.white, size: DisSizes.md),
+                                    const SizedBox(width: 4),
+                                    Text("Malang, Indonesia", style: TextStyle(color: DisColors.white, fontSize: DisSizes.fontSizeXs)),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          Positioned(
+                            right: DisSizes.md,
+                            bottom: 72,
+                            child: Column(
+                              children: [
+                                _menuButton(Icons.favorite_border_rounded, '359', DisColors.white, () {}),
+                                const SizedBox(height: 8),
+                                _menuButton(Icons.chat_bubble_outline_rounded, '20', DisColors.white, () {}),
+                                const SizedBox(height: 8),
+                                _menuButton(Icons.more_horiz_rounded, '', DisColors.white, () {
+                                  _showDialog(context);
+                                }),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              }
             },
           ),
           _buildCameraButton(context),
@@ -128,11 +252,18 @@ class HomeScreen extends StatelessWidget {
       child: Stack(
         children: [
           Positioned(
-            top: MediaQuery.of(context).size.height * 0.125,
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height * 0.74,
-              color: color,
+            right: 0,
+            top: MediaQuery.of(context).size.height * 0.05,
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CameraScreen(cameras: widget.cameras),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.add_a_photo_outlined, color: DisColors.white),
             ),
           ),
           _buildUserInfo(),

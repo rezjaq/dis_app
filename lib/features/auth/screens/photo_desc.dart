@@ -1,12 +1,25 @@
+import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
+import 'package:path/path.dart' as path;
 
-class InfoKontenScreen extends StatelessWidget {
+import '../../../utils/constants/colors.dart';
+import '../../photo/models/photo_model.dart';
+
+class PostFormPhotoScreen extends StatefulWidget {
   final XFile? imageFile;
+  const PostFormPhotoScreen({Key? key, required this.imageFile}) : super(key: key);
 
-  const InfoKontenScreen({Key? key, required this.imageFile}) : super(key: key);
+  @override
+  _PostFormPhotoScreenState createState() => _PostFormPhotoScreenState();
+}
+
+class _PostFormPhotoScreenState extends State<PostFormPhotoScreen> {
+  final TextEditingController _captionController = TextEditingController();
+  final Uuid uuid = Uuid();
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +35,14 @@ class InfoKontenScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Konten berhasil disimpan!')),
-              );
+            onPressed: () async {
+              if (widget.imageFile != null) {
+                await _savePost(widget.imageFile!, _captionController.text);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Konten berhasil disimpan!')),
+                );
+              }
+              Navigator.pushReplacementNamed(context, '/home');
             },
           ),
         ],
@@ -35,12 +52,12 @@ class InfoKontenScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (imageFile != null)
+            if (widget.imageFile != null)
               Center(
                 child: Image.file(
-                  File(imageFile!.path),
-                  width: 150, // Lebar gambar bisa disesuaikan
-                  height: 150, // Tinggi gambar bisa disesuaikan
+                  File(widget.imageFile!.path),
+                  width: 150,
+                  height: 150,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -51,29 +68,87 @@ class InfoKontenScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             TextField(
+              controller: _captionController,
               decoration: const InputDecoration(
-                hintText: 'Tambahkan caption disini (Maks. 300 karakter)',
+                hintText: 'Tambahkan caption disini (Maks. 500 karakter)',
                 border: OutlineInputBorder(),
               ),
-              maxLength: 300, // Maksimal 300 karakter
-              maxLines: 3, // Caption bisa diisi hingga 3 baris
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'FotoTree (Opsional)',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              decoration: const InputDecoration(
-                hintText: 'Ketik nama FotoTree',
-                border: OutlineInputBorder(),
-              ),
+              maxLength: 500,
+              maxLines: 5,
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> clearDummiesData() async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final imagesDir = Directory(path.join(dir.path, 'assets/images/dummies'));
+      final jsonFile = File(path.join(dir.path, 'dummies.json'));
+
+      // Delete all files in the images directory
+      if (await imagesDir.exists()) {
+        final files = imagesDir.listSync();
+        for (var file in files) {
+          if (file is File) {
+            await file.delete();
+          }
+        }
+        print('All images deleted from ${imagesDir.path}');
+      } else {
+        print('Images directory does not exist');
+      }
+
+      // Overwrite the JSON file with an empty structure
+      if (await jsonFile.exists()) {
+        final emptyJson = jsonEncode({"post": []});
+        await jsonFile.writeAsString(emptyJson);
+        print('All data cleared from dummies.json');
+      } else {
+        print('dummies.json does not exist');
+      }
+    } catch (e) {
+      print('Error clearing dummies data: $e');
+    }
+  }
+
+  Future<void> _savePost(XFile image, String desc) async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final saveDir = Directory(path.join(dir.path, 'assets/images/dummies'));
+      if (!await saveDir.exists()) {
+        await saveDir.create(recursive: true);
+      }
+
+      final fileName = path.basename(image.path);
+      final saveImage = await File(image.path).copy(path.join(saveDir.path, fileName));
+      print('Image saved to: ${saveImage.path}');
+
+      final postPhoto = PostPhoto(
+        id: uuid.v4(),
+        url: "${saveImage.path}",
+        name: fileName,
+        description: desc,
+      );
+
+      final jsonFile = File(path.join(dir.path, 'dummies.json'));
+      if (await jsonFile.exists()) {
+        final jsonString = await jsonFile.readAsString();
+        final jsonData = jsonDecode(jsonString) as Map<String, dynamic>;
+        jsonData['post'].add(postPhoto.toJson());
+        print(jsonData);
+        await jsonFile.writeAsString(jsonEncode(jsonData));
+      } else {
+        final jsonData = {
+          "post": [postPhoto.toJson()]
+        };
+        await jsonFile.writeAsString(jsonEncode(jsonData));
+      }
+    } catch (e) {
+      print('Error saving post: $e');
+    }
   }
 
   void _showConfirmationDialog(BuildContext context) {
@@ -82,21 +157,20 @@ class InfoKontenScreen extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Konfirmasi'),
-          content: const Text(
-              'Apakah Anda yakin ingin kembali? Foto tidak akan disimpan.'),
+          content: const Text('Apakah Anda yakin ingin kembali? Foto tidak akan disimpan.'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Tidak'),
+              child: const Text('Tidak', style: TextStyle(color: DisColors.black)),
             ),
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
                 Navigator.pop(context);
               },
-              child: const Text('Ya, Saya Yakin'),
+              child: const Text('Ya, Saya Yakin', style: TextStyle(color: DisColors.error)),
             ),
           ],
         );

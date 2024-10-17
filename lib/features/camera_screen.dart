@@ -220,7 +220,6 @@ class _CameraScreenState extends State<CameraScreen> {
                         child: const Icon(
                           Icons.cached,
                           color: DisColors.white,
-                          size: 30, // Adjust size as needed
                         ),
                       ),
                     ),
@@ -257,7 +256,6 @@ class _CameraScreenState extends State<CameraScreen> {
                     ),
                   ),
                 ),
-                // Tombol centang di sebelah kanan atas
                 SafeArea(
                   child: Align(
                     alignment: Alignment.topRight,
@@ -271,7 +269,7 @@ class _CameraScreenState extends State<CameraScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  InfoKontenScreen(imageFile: _imageFile),
+                                  PostFormPhotoScreen(imageFile: _imageFile),
                             ),
                           );
                         },

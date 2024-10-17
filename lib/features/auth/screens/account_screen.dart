@@ -41,7 +41,7 @@ class AccountScreen extends StatelessWidget {
                           backgroundColor: Colors.transparent,
                           child: ClipOval(
                             child: Image.asset(
-                              'assets/images/content.jpg',
+                              'assets/images/dummies/content.jpg',
                               fit: BoxFit.cover,
                               width: double.infinity,
                               height: double.infinity,
@@ -55,7 +55,7 @@ class AccountScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("John Doe", style: TextStyle(color: DisColors.black, fontSize: 20, fontWeight: FontWeight.w600)),
+                            Text("Aminah", style: TextStyle(color: DisColors.black, fontSize: 20, fontWeight: FontWeight.w600)),
                             const SizedBox(height: 16),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -63,7 +63,7 @@ class AccountScreen extends StatelessWidget {
                                 width: MediaQuery.of(context).size.width * 0.5,
                                 padding: const EdgeInsets.all(DisSizes.sm),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Column(

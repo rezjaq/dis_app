@@ -240,17 +240,6 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             },
           ),
-          _buildCameraButton(context),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildColorPage(BuildContext context, Color color) {
-    return Container(
-      color: color,
-      child: Stack(
-        children: [
           Positioned(
             right: 0,
             top: MediaQuery.of(context).size.height * 0.05,
@@ -266,133 +255,17 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: const Icon(Icons.add_a_photo_outlined, color: DisColors.white),
             ),
           ),
-          _buildUserInfo(),
-          _buildMenuButtons(),
         ],
       ),
     );
   }
 
-  Widget _buildUserInfo() {
-    return Positioned(
-      left: DisSizes.md,
-      bottom: DisSizes.md,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: DisColors.white,
-                  borderRadius: BorderRadius.circular(36),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                "Steve Jobs",
-                style: TextStyle(
-                  color: DisColors.white,
-                  fontSize: DisSizes.fontSizeSm,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(width: 12),
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(color: DisColors.white, width: 1),
-                    borderRadius: BorderRadius.circular(DisSizes.xs),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: DisSizes.md,
-                      vertical: DisSizes.xs,
-                    ),
-                    child: Text(
-                      "Follow",
-                      style: TextStyle(
-                        color: DisColors.white,
-                        fontSize: DisSizes.fontSizeXs,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "Malang Run 2024 🎉",
-            style: TextStyle(
-              color: DisColors.white,
-              fontSize: DisSizes.fontSizeSm,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Icon(Icons.location_on,
-                  color: DisColors.white, size: DisSizes.md),
-              const SizedBox(width: 4),
-              Text(
-                "Malang, Indonesia",
-                style: TextStyle(
-                  color: DisColors.white,
-                  fontSize: DisSizes.fontSizeXs,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildMenuButtons() {
-    return Positioned(
-      right: DisSizes.md,
-      bottom: 72,
-      child: Column(
-        children: [
-          _menuButton(Icons.favorite_border_rounded, '359', DisColors.white),
-          const SizedBox(height: 8),
-          _menuButton(Icons.chat_bubble_outline_rounded, '20', DisColors.white),
-          const SizedBox(height: 8),
-          _menuButton(Icons.more_horiz_rounded, '', DisColors.white),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCameraButton(BuildContext context) {
-    return Positioned(
-      right: 0,
-      top: MediaQuery.of(context).size.height * 0.05,
-      child: IconButton(
-        onPressed: () {
-          // Navigate to CameraScreen with the cameras list
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CameraScreen(cameras: cameras),
-            ),
-          );
-        },
-        icon: const Icon(Icons.add_a_photo_outlined, color: DisColors.white),
-      ),
-    );
-  }
-
-  Column _menuButton(IconData icon, String text, Color color) {
+  Column _menuButton(IconData icon, String text, Color color, void Function()? onTap) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         IconButton(
-          onPressed: () {},
+          onPressed: onTap,
           icon: Icon(icon, color: color, size: 32),
         ),
         const SizedBox(height: 4),

@@ -20,20 +20,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           children: [
             // Top Logo
             Padding(
-              padding: const EdgeInsets.only(top: 32.0),
+              padding: const EdgeInsets.only(top: 65.0),
               child: Column(
                 children: [
-                  Icon(Icons.ac_unit,
-                      size: 40, color: Colors.brown), // Placeholder for logo
-                  SizedBox(height: 8),
-                  Text(
-                    'Logo',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.brown,
+                  // Container for logo.svg with customizable width and height
+                  Container(
+                    width: 150, // You can change this
+                    height: 150, // You can change this
+                    child: SvgPicture.asset(
+                      'assets/images/logofindme.svg',
+                      fit: BoxFit.contain,
                     ),
                   ),
+                  SizedBox(height: 6),
                 ],
               ),
             ),
@@ -45,27 +44,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   'assets/images/welcome.svg',
                   height: 315,
                 ),
-                SizedBox(height: 32),
-                Text(
-                  'Welcome to',
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.brown[600],
-                  ),
-                ),
-                Text(
-                  'Emotion Detect',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                SizedBox(height: 8),
+                SizedBox(height: 6),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40.0),
                   child: Text(
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore',
+                    'Transform Your Moments into Masterpiece with FindMe',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 16,
@@ -81,7 +64,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 40.0, vertical: 32.0),
               child: Container(
-                height: 50, // Button height
+                height: 65, // Button height
                 decoration: BoxDecoration(
                   color: Colors
                       .grey[300], // Background color for the switch container
@@ -100,13 +83,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           ? MediaQuery.of(context).size.width * 0.5 - 40
                           : 0,
                       child: AnimatedContainer(
-                        duration: Duration(milliseconds: 300),
+                        duration: Duration(milliseconds: 50),
                         curve: Curves.easeInOut,
                         decoration: BoxDecoration(
                           color: Colors.black, // Active background color
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        height: 50,
+                        height: 65,
                         width: MediaQuery.of(context).size.width * 0.5 - 40,
                       ),
                     ),
@@ -121,7 +104,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                 isLoginSelected = true;
                               });
                               // Menunggu animasi selesai sebelum pindah halaman
-                              Future.delayed(Duration(milliseconds: 300), () {
+                              Future.delayed(Duration(milliseconds: 50), () {
                                 Navigator.pushReplacementNamed(
                                     context, '/login');
                               });
@@ -134,7 +117,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   color: isLoginSelected
                                       ? Colors.white
                                       : Colors.black,
-                                  fontSize: 18,
+                                  fontSize: 22,
                                 ),
                               ),
                             ),
@@ -161,7 +144,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                   color: isLoginSelected
                                       ? Colors.black
                                       : Colors.white,
-                                  fontSize: 18,
+                                  fontSize: 22,
                                 ),
                               ),
                             ),

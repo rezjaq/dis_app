@@ -54,20 +54,10 @@ class _BaseScreenState extends State<BaseScreen> {
         child: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
-          backgroundColor:
-              _selectedIndex == 0 ? DisColors.black : DisColors.white,
           selectedLabelStyle: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: DisSizes.fontSizeXs,
             color: DisColors.primary,
-          ),
-          unselectedLabelStyle: TextStyle(
-            fontWeight: FontWeight.normal,
-            fontSize: DisSizes.fontSizeXs,
-            color: _selectedIndex == 0 ? DisColors.white : DisColors.black,
-          ),
-          unselectedIconTheme: IconThemeData(
-            color: _selectedIndex == 0 ? DisColors.white : DisColors.black,
           ),
           fixedColor: DisColors.primary,
           type: BottomNavigationBarType.fixed,
@@ -88,6 +78,8 @@ class _BaseScreenState extends State<BaseScreen> {
               label: 'Account',
             ),
           ],
+          unselectedItemColor: _selectedIndex == 0 ? DisColors.white : DisColors.black,
+          backgroundColor: _selectedIndex == 0 ? DisColors.black : DisColors.white,
         ),
       ),
     );

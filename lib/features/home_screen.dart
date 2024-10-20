@@ -24,10 +24,12 @@ class _BaseScreenState extends State<BaseScreen> {
   int _selectedIndex = 0;
 
   List<Widget> get _widgetOptions => <Widget>[
-    HomeScreen(cameras: widget.cameras,),
-    FindMeScreen(),
-    AccountScreen(),
-  ];
+        HomeScreen(
+          cameras: widget.cameras,
+        ),
+        FindMeScreen(),
+        AccountScreen(),
+      ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -119,7 +121,17 @@ class _HomeScreenState extends State<HomeScreen> {
       final jsonString = await jsonFile.readAsString();
       final jsonData = jsonDecode(jsonString) as Map<String, dynamic>;
       final posts = jsonData['post'] as List<dynamic>;
-      return posts.map((post) => PostPhoto.fromJson(post)).toList();
+
+      // Filter the posts to only include those whose files exist
+      List<PostPhoto> existingPosts = [];
+      for (var post in posts) {
+        final photo = PostPhoto.fromJson(post);
+        final file = File(photo.url);
+        if (await file.exists()) {
+          existingPosts.add(photo);
+        }
+      }
+      return existingPosts;
     } else {
       return [];
     }
@@ -142,20 +154,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 return Center(child: Text('No posts available'));
               } else {
                 final post = snapshot.data!;
+
+                // Filter out posts with non-existing files
+                final validPosts = post.where((photo) {
+                  final file = File(photo.url);
+                  return file.existsSync();
+                }).toList();
+
+                // Check if there are valid posts to display
+                if (validPosts.isEmpty) {
+                  return Center(child: Text('No valid photos available'));
+                }
+
                 return PageView.builder(
                   scrollDirection: Axis.vertical,
-                  itemCount: post.length,
+                  itemCount: validPosts.length,
                   itemBuilder: (context, index) {
-                    final photo = post[index];
-                    final file = File(photo.url);
-                    if (!file.existsSync()) {
-                      return Center(
-                        child: Text(
-                          'Gambar tidak tersedia',
-                          style: TextStyle(color: DisColors.white),
-                        ),
-                      );
-                    }
+                    final photo = validPosts[index];
+                    final file =
+                        File(photo.url); // This should always exist now
                     return Container(
                       child: Stack(
                         children: [
@@ -187,31 +204,51 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                     ),
                                     const SizedBox(width: 12),
-                                    Text("Steve Jobs", style: TextStyle(color: DisColors.white, fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.bold)),
+                                    Text("Steve Jobs",
+                                        style: TextStyle(
+                                            color: DisColors.white,
+                                            fontSize: DisSizes.fontSizeSm,
+                                            fontWeight: FontWeight.bold)),
                                     const SizedBox(width: 12),
                                     GestureDetector(
                                       onTap: () {},
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          border: Border.all(color: DisColors.white, width: 1),
-                                          borderRadius: BorderRadius.circular(DisSizes.xs),
+                                          border: Border.all(
+                                              color: DisColors.white, width: 1),
+                                          borderRadius: BorderRadius.circular(
+                                              DisSizes.xs),
                                         ),
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: DisSizes.md, vertical: DisSizes.xs),
-                                          child: Text("Follow", style: TextStyle(color: DisColors.white, fontSize: DisSizes.fontSizeXs)),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: DisSizes.md,
+                                              vertical: DisSizes.xs),
+                                          child: Text("Follow",
+                                              style: TextStyle(
+                                                  color: DisColors.white,
+                                                  fontSize:
+                                                      DisSizes.fontSizeXs)),
                                         ),
                                       ),
                                     )
                                   ],
                                 ),
                                 const SizedBox(height: 8),
-                                Text(photo.description, style: TextStyle(color: DisColors.white, fontSize: DisSizes.fontSizeSm)),
+                                Text(photo.description,
+                                    style: TextStyle(
+                                        color: DisColors.white,
+                                        fontSize: DisSizes.fontSizeSm)),
                                 const SizedBox(height: 8),
                                 Row(
                                   children: [
-                                    Icon(Icons.location_on, color: DisColors.white, size: DisSizes.md),
+                                    Icon(Icons.location_on,
+                                        color: DisColors.white,
+                                        size: DisSizes.md),
                                     const SizedBox(width: 4),
-                                    Text("Malang, Indonesia", style: TextStyle(color: DisColors.white, fontSize: DisSizes.fontSizeXs)),
+                                    Text("Malang, Indonesia",
+                                        style: TextStyle(
+                                            color: DisColors.white,
+                                            fontSize: DisSizes.fontSizeXs)),
                                   ],
                                 ),
                               ],
@@ -222,11 +259,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             bottom: 72,
                             child: Column(
                               children: [
-                                _menuButton(Icons.favorite_border_rounded, '359', DisColors.white, () {}),
+                                _menuButton(Icons.favorite_border_rounded,
+                                    '359', DisColors.white, () {}),
                                 const SizedBox(height: 8),
-                                _menuButton(Icons.chat_bubble_outline_rounded, '20', DisColors.white, () {}),
+                                _menuButton(Icons.chat_bubble_outline_rounded,
+                                    '20', DisColors.white, () {}),
                                 const SizedBox(height: 8),
-                                _menuButton(Icons.more_horiz_rounded, '', DisColors.white, () {
+                                _menuButton(Icons.more_horiz_rounded, '',
+                                    DisColors.white, () {
                                   _showDialog(context);
                                 }),
                               ],
@@ -252,7 +292,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               },
-              icon: const Icon(Icons.add_a_photo_outlined, color: DisColors.white),
+              icon: const Icon(Icons.add_a_photo_outlined,
+                  color: DisColors.white),
             ),
           ),
         ],
@@ -260,7 +301,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Column _menuButton(IconData icon, String text, Color color, void Function()? onTap) {
+  Column _menuButton(
+      IconData icon, String text, Color color, void Function()? onTap) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [

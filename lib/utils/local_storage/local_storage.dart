@@ -1,8 +1,9 @@
-import 'package:get_storage/get_storage.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'local_storage_cubit.dart';
 
 class DisLocalStorage {
   static final DisLocalStorage _instance = DisLocalStorage._internal();
-  final GetStorage _storage = GetStorage();
+  final LocalStorageCubit _cubit = LocalStorageCubit();
 
   factory DisLocalStorage() {
     return _instance;
@@ -12,17 +13,20 @@ class DisLocalStorage {
 
   // Generic method to save data
   Future<void> saveData<T>(String key, T value) async {
-    await _storage.write(key, value);
+    await _cubit.saveData<T>(key, value);
   }
-  T? readData<T>(String key) {
-    return _storage.read<T>(key);
+
+  Future<T?> readData<T>(String key) async {
+    return _cubit.readData<T>(key);
   }
+
   // Generic method to remove data
   Future<void> removeData(String key) async {
-    await _storage.remove(key);
+    await _cubit.removeData(key);
   }
+
   // Clear all data in storage
   Future<void> clearAll() async {
-    await _storage.erase();
+    await _cubit.clearAll();
   }
 }

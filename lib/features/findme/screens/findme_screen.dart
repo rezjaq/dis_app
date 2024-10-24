@@ -45,136 +45,116 @@ class _FindMeScreenState extends State<FindMeScreen> {
     return Scaffold(
       backgroundColor: DisColors.white,
       body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned(
-              child: Container(
-                padding: const EdgeInsets.all(16.0),
-                color: DisColors.white,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Find Me',
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Find your photo here',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                              onTap: () {},
-                              child: Container(
-                                padding: const EdgeInsets.all(DisSizes.sm),
-                                decoration: BoxDecoration(
-                                  color: DisColors.white,
-                                  borderRadius: BorderRadius.circular(DisSizes.sm),
-                                  border: Border.all(
-                                    color: DisColors.primary,
-                                    width: 1,
+        child: LayoutBuilder(
+            builder: (context, contraints) {
+              double screenWidth = contraints.maxWidth;
+              double screenHeight = contraints.maxHeight;
+              return Stack(
+                children: [
+                  Positioned(
+                    child: Container(
+                      padding: const EdgeInsets.all(16.0),
+                      color: DisColors.white,
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Find Me',
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                child: Container(
-                                  width: MediaQuery.of(context).size.width * 0.25,
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.search,
-                                        color: DisColors.primary,
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        'Search...',
-                                        style: TextStyle(
-                                          color: DisColors.darkGrey,
-                                          fontSize: DisSizes.fontSizeSm,
-                                        ),
-                                      ),
-                                    ],
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Find your photo here',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
-                            ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: Icon(Icons.shopping_cart, color: DisColors.primary),
-                            ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: SvgPicture.asset(
-                                'assets/icons/robot_2.svg',
-                                color: DisColors.primary,
-                                width: 24,
-                                height: 24,
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(
+                                      Icons.search,
+                                      color: DisColors.primary,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(Icons.shopping_cart, color: DisColors.primary),
+                                  ),
+                                  IconButton(
+                                    onPressed: () {},
+                                    icon: SvgPicture.asset(
+                                      'assets/icons/robot_2.svg',
+                                      color: DisColors.primary,
+                                      width: 24,
+                                      height: 24,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              TextButton(onPressed: () => _onButtonPressed(0), child: Text("All", style: TextStyle(color: _selectedIndex == 0 ? DisColors.primary : DisColors.black))),
+                              TextButton(onPressed: () => _onButtonPressed(1) , child: Text("Favorites", style: TextStyle(color: _selectedIndex == 1 ? DisColors.primary : DisColors.black))),
+                              TextButton(onPressed: () => _onButtonPressed(2), child: Text("Collections", style: TextStyle(color: _selectedIndex == 2 ? DisColors.primary : DisColors.black))),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        TextButton(onPressed: () => _onButtonPressed(0), child: Text("All", style: TextStyle(color: _selectedIndex == 0 ? DisColors.primary : DisColors.black))),
-                        TextButton(onPressed: () => _onButtonPressed(1) , child: Text("Favorites", style: TextStyle(color: _selectedIndex == 1 ? DisColors.primary : DisColors.black))),
-                        TextButton(onPressed: () => _onButtonPressed(2), child: Text("Collections", style: TextStyle(color: _selectedIndex == 2 ? DisColors.primary : DisColors.black))),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              top: MediaQuery.of(context).size.height * 0.125,
-              child: Padding(
-                padding: const EdgeInsets.all(DisSizes.xs),
-                child: Container(
-                  width: MediaQuery.of(context).size.width - 2 * DisSizes.xs,
-                  height: MediaQuery.of(context).size.height,
-                  child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 4.0,
-                      mainAxisSpacing: 4.0,
-                      mainAxisExtent: MediaQuery.of(context).size.height * 0.25,
-                    ),
-                    itemCount: _selectedIndex == 0 ? colors.length : _selectedIndex == 1 ? favoriteColors.length : collectionColors.length,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          print('Color: ${_selectedIndex == 0 ? colors[index] : _selectedIndex == 1 ? favoriteColors[index] : collectionColors[index]}');
-                        },
-                        child: Container(
-                          color: _selectedIndex == 0 ? colors[index] : _selectedIndex == 1 ? favoriteColors[index] : collectionColors[index],
-                        ),
-                      );
-                    },
                   ),
-                ),
-              ),
-            ),
-          ],
+                  Positioned(
+                    top: screenHeight * 0.125,
+                    child: Padding(
+                      padding: const EdgeInsets.all(DisSizes.xs),
+                      child: Container(
+                        width: screenWidth - 2 * DisSizes.xs,
+                        height: screenHeight,
+                        child: GridView.builder(
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 4.0,
+                            mainAxisSpacing: 4.0,
+                            mainAxisExtent: screenHeight * 0.25,
+                          ),
+                          itemCount: _selectedIndex == 0 ? colors.length : _selectedIndex == 1 ? favoriteColors.length : collectionColors.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              onTap: () {
+                                print('Color: ${_selectedIndex == 0 ? colors[index] : _selectedIndex == 1 ? favoriteColors[index] : collectionColors[index]}');
+                              },
+                              child: Container(
+                                color: _selectedIndex == 0 ? colors[index] : _selectedIndex == 1 ? favoriteColors[index] : collectionColors[index],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
         ),
       ),
     );

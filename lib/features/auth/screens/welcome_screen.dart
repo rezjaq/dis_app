@@ -1,3 +1,4 @@
+import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:dis_app/utils/constants/colors.dart';
@@ -20,19 +21,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           children: [
             // Top Logo
             Padding(
-              padding: const EdgeInsets.only(top: 65.0),
+              padding: EdgeInsets.only(top: DisHelperFunctions.screenHeight(context) * 0.05),
               child: Column(
                 children: [
                   // Container for logo.svg with customizable width and height
                   Container(
-                    width: 150, // You can change this
-                    height: 150, // You can change this
+                    width: DisHelperFunctions.screenWidth(context) * 0.4, // Adjusted width
+                    height: DisHelperFunctions.screenWidth(context) * 0.4, // Adjusted height
                     child: SvgPicture.asset(
                       'assets/images/logofindme.svg',
                       fit: BoxFit.contain,
+                      color: DisColors.white,
                     ),
                   ),
-                  SizedBox(height: 6),
+                  SizedBox(height: DisHelperFunctions.screenHeight(context) * 0.01),
                 ],
               ),
             ),
@@ -42,16 +44,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               children: [
                 SvgPicture.asset(
                   'assets/images/welcome.svg',
-                  height: 315,
+                  height: DisHelperFunctions.screenHeight(context) * 0.4, // Adjusted height
                 ),
-                SizedBox(height: 6),
+                SizedBox(height: DisHelperFunctions.screenHeight(context) * 0.01),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                  padding: EdgeInsets.symmetric(horizontal: DisHelperFunctions.screenWidth(context) * 0.1),
                   child: Text(
                     'Transform Your Moments into Masterpiece with FindMe',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: DisHelperFunctions.screenWidth(context) * 0.04, // Adjusted font size
                       color: Colors.brown[400],
                     ),
                   ),
@@ -61,13 +63,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
             // Switch-like Buttons with Animation
             Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 40.0, vertical: 32.0),
+              padding: EdgeInsets.symmetric(
+                  horizontal: DisHelperFunctions.screenWidth(context) * 0.1, vertical: DisHelperFunctions.screenHeight(context) * 0.04),
               child: Container(
-                height: 65, // Button height
+                height: DisHelperFunctions.screenHeight(context) * 0.08, // Adjusted height
                 decoration: BoxDecoration(
-                  color: Colors
-                      .grey[300], // Background color for the switch container
+                  color: Colors.grey[300], // Background color for the switch container
                   borderRadius: BorderRadius.circular(30), // Rounded container
                 ),
                 child: Stack(
@@ -76,12 +77,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     AnimatedPositioned(
                       duration: Duration(milliseconds: 300),
                       curve: Curves.easeInOut,
-                      left: isLoginSelected
-                          ? 0
-                          : MediaQuery.of(context).size.width * 0.5 - 40,
-                      right: isLoginSelected
-                          ? MediaQuery.of(context).size.width * 0.5 - 40
-                          : 0,
+                      left: isLoginSelected ? 0 : DisHelperFunctions.screenWidth(context) * 0.5 - DisHelperFunctions.screenWidth(context) * 0.1,
+                      right: isLoginSelected ? DisHelperFunctions.screenWidth(context) * 0.5 - DisHelperFunctions.screenWidth(context) * 0.1 : 0,
                       child: AnimatedContainer(
                         duration: Duration(milliseconds: 50),
                         curve: Curves.easeInOut,
@@ -89,8 +86,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           color: Colors.black, // Active background color
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        height: 65,
-                        width: MediaQuery.of(context).size.width * 0.5 - 40,
+                        height: DisHelperFunctions.screenHeight(context) * 0.08,
+                        width: DisHelperFunctions.screenWidth(context) * 0.5 - DisHelperFunctions.screenWidth(context) * 0.1,
                       ),
                     ),
 
@@ -105,8 +102,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               });
                               // Menunggu animasi selesai sebelum pindah halaman
                               Future.delayed(Duration(milliseconds: 50), () {
-                                Navigator.pushReplacementNamed(
-                                    context, '/login');
+                                DisHelperFunctions.navigateToRoute(context, '/login');
                               });
                             },
                             child: Container(
@@ -114,10 +110,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               child: Text(
                                 'Login',
                                 style: TextStyle(
-                                  color: isLoginSelected
-                                      ? Colors.white
-                                      : Colors.black,
-                                  fontSize: 22,
+                                  color: isLoginSelected ? Colors.white : Colors.black,
+                                  fontSize: DisHelperFunctions.screenWidth(context) * 0.06, // Adjusted font size
                                 ),
                               ),
                             ),
@@ -132,8 +126,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               });
                               // Menunggu animasi selesai sebelum pindah halaman
                               Future.delayed(Duration(milliseconds: 300), () {
-                                Navigator.pushReplacementNamed(
-                                    context, '/register');
+                                DisHelperFunctions.navigateToRoute(context, '/register');
                               });
                             },
                             child: Container(
@@ -141,10 +134,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               child: Text(
                                 'Sign-up',
                                 style: TextStyle(
-                                  color: isLoginSelected
-                                      ? Colors.black
-                                      : Colors.white,
-                                  fontSize: 22,
+                                  color: isLoginSelected ? Colors.black : Colors.white,
+                                  fontSize: DisHelperFunctions.screenWidth(context) * 0.06, // Adjusted font size
                                 ),
                               ),
                             ),
@@ -157,7 +148,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ),
             ),
           ],
-        ),
+        )
       ),
     );
   }

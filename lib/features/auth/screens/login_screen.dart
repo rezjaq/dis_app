@@ -1,4 +1,5 @@
 import 'package:dis_app/common/widgets/textFormField.dart';
+import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
@@ -159,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: DisColors.black,
                           ),
                         ),
                       ),
@@ -172,11 +173,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         const Text("Don't have an account? "),
                         TextButton(
                           onPressed: () {
-                            Navigator.pushReplacementNamed(
-                                context, '/register');
+                            DisHelperFunctions.navigateToRoute(context, '/register');
                           },
                           child: const Text("Sign Up",
-                              style: TextStyle(color: Colors.amberAccent)),
+                              style: TextStyle(color: DisColors.primary)),
                         ),
                       ],
                     ),

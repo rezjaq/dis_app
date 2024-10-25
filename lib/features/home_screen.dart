@@ -143,7 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(child: Text('No posts available'));
+                return Center(child: Text('No posts available', style: TextStyle(color: DisColors.white)));
               } else {
                 final post = snapshot.data!;
 

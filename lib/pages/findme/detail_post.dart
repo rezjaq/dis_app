@@ -1,7 +1,7 @@
 import 'package:camera/camera.dart';
-import 'package:dis_app/features/auth/screens/account_screen.dart';
-import 'package:dis_app/features/camera_screen.dart';
-import 'package:dis_app/features/findme/screens/findme_screen.dart';
+import 'package:dis_app/pages/account/account_screen.dart';
+import 'package:dis_app/pages/camera_screen.dart';
+import 'package:dis_app/pages/findme/findme_screen.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';

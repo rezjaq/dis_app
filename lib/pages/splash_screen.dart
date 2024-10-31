@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:dis_app/utils/constants/colors.dart';
-import 'package:dis_app/features/auth/screens/welcome_screen.dart';
+import 'package:dis_app/pages/welcome_screen.dart';
 
 void main() => runApp(FindMeSplashScreen());
 

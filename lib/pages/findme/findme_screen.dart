@@ -1,3 +1,4 @@
+import 'package:dis_app/pages/findme/chart_screen.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
@@ -13,6 +14,7 @@ class FindMeScreen extends StatefulWidget {
 
 class _FindMeScreenState extends State<FindMeScreen> {
   int _selectedIndex = 0;
+  bool _isSearching = false; // Toggle search view
 
   void _onButtonPressed(int index) {
     setState(() {
@@ -22,25 +24,66 @@ class _FindMeScreenState extends State<FindMeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // List of 33 colors
     final List<Color> colors = [
-      Colors.red, Colors.green, Colors.blue, Colors.yellow, Colors.orange,
-      Colors.purple, Colors.pink, Colors.brown, Colors.cyan, Colors.lime,
-      Colors.indigo, Colors.teal, Colors.amber, Colors.deepOrange, Colors.deepPurple,
-      Colors.lightBlue, Colors.lightGreen, Colors.limeAccent, Colors.orangeAccent, Colors.pinkAccent,
-      Colors.purpleAccent, Colors.redAccent, Colors.tealAccent, Colors.yellowAccent, Colors.blueAccent,
-      Colors.greenAccent, Colors.indigoAccent, Colors.cyanAccent, Colors.amberAccent, Colors.brown[300]!,
-      Colors.grey, Colors.blueGrey, Colors.black,
+      Colors.red,
+      Colors.green,
+      Colors.blue,
+      Colors.yellow,
+      Colors.orange,
+      Colors.purple,
+      Colors.pink,
+      Colors.brown,
+      Colors.cyan,
+      Colors.lime,
+      Colors.indigo,
+      Colors.teal,
+      Colors.amber,
+      Colors.deepOrange,
+      Colors.deepPurple,
+      Colors.lightBlue,
+      Colors.lightGreen,
+      Colors.limeAccent,
+      Colors.orangeAccent,
+      Colors.pinkAccent,
+      Colors.purpleAccent,
+      Colors.redAccent,
+      Colors.tealAccent,
+      Colors.yellowAccent,
+      Colors.blueAccent,
+      Colors.greenAccent,
+      Colors.indigoAccent,
+      Colors.cyanAccent,
+      Colors.amberAccent,
+      Colors.brown[300]!,
+      Colors.grey,
+      Colors.blueGrey,
+      Colors.black,
     ];
 
     final List<Color> favoriteColors = [
-      Colors.indigo, Colors.teal, Colors.amber, Colors.deepOrange, Colors.deepPurple,
-      Colors.lightBlue, Colors.lightGreen, Colors.limeAccent, Colors.orangeAccent, Colors.pinkAccent,
+      Colors.indigo,
+      Colors.teal,
+      Colors.amber,
+      Colors.deepOrange,
+      Colors.deepPurple,
+      Colors.lightBlue,
+      Colors.lightGreen,
+      Colors.limeAccent,
+      Colors.orangeAccent,
+      Colors.pinkAccent,
     ];
 
     final List<Color> collectionColors = [
-      Colors.purpleAccent, Colors.redAccent, Colors.tealAccent, Colors.yellowAccent, Colors.blueAccent,
-      Colors.greenAccent, Colors.indigoAccent, Colors.cyanAccent, Colors.amberAccent, Colors.brown[300]!,
+      Colors.purpleAccent,
+      Colors.redAccent,
+      Colors.tealAccent,
+      Colors.yellowAccent,
+      Colors.blueAccent,
+      Colors.greenAccent,
+      Colors.indigoAccent,
+      Colors.cyanAccent,
+      Colors.amberAccent,
+      Colors.brown[300]!,
     ];
 
     return DefaultTabController(
@@ -48,20 +91,61 @@ class _FindMeScreenState extends State<FindMeScreen> {
       child: Scaffold(
         backgroundColor: DisColors.white,
         body: SafeArea(
-          child: Stack(
+          child: Column(
             children: [
-              Positioned(
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  color: DisColors.white,
-                  child: Column(
-                    children: [
-                      Row(
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                color: DisColors.white,
+                child: _isSearching
+                    ? Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.arrow_back,
+                                color: DisColors.primary),
+                            onPressed: () {
+                              setState(() {
+                                _isSearching = false;
+                              });
+                            },
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 40,
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: DisColors.primary, width: 1.5),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: TextField(
+                                      autofocus: true,
+                                      decoration: InputDecoration(
+                                        hintText: 'FotoTree atau Kreator',
+                                        border: InputBorder.none,
+                                      ),
+                                    ),
+                                  ),
+                                  Icon(Icons.search, color: DisColors.primary),
+                                ],
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.filter_list,
+                                color: DisColors.primary),
+                            onPressed: () {
+                              // Add filter action here
+                            },
+                          ),
+                        ],
+                      )
+                    : Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
@@ -82,19 +166,29 @@ class _FindMeScreenState extends State<FindMeScreen> {
                             ],
                           ),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               IconButton(
-                                onPressed: () {},
-                                icon: Icon(
-                                  Icons.search,
-                                  color: DisColors.primary,
-                                ),
+                                icon: Icon(Icons.search,
+                                    color: DisColors.primary),
+                                onPressed: () {
+                                  setState(() {
+                                    _isSearching = true;
+                                  });
+                                },
                               ),
                               IconButton(
-                                onPressed: () {},
-                                icon: Icon(Icons.shopping_cart, color: DisColors.primary),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ShoppingCartScreen()),
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.shopping_cart,
+                                  color: DisColors.primary,
+                                ),
                               ),
                               IconButton(
                                 onPressed: () {},
@@ -109,91 +203,85 @@ class _FindMeScreenState extends State<FindMeScreen> {
                           ),
                         ],
                       ),
-                      TabBar(
-                        labelColor: DisColors.primary,
-                        unselectedLabelColor: Colors.grey,
-                        indicatorColor: DisColors.primary,
-                        tabs: [
-                          Tab(text: 'All'),
-                          Tab(text: 'Favorite'),
-                          Tab(text: 'Collection'),
-                        ],
+              ),
+              if (!_isSearching) ...[
+                TabBar(
+                  labelColor: DisColors.primary,
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: DisColors.primary,
+                  tabs: [
+                    Tab(text: 'All'),
+                    Tab(text: 'Favorite'),
+                    Tab(text: 'Collection'),
+                  ],
+                ),
+                Expanded(
+                  child: TabBarView(
+                    children: [
+                      GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 4.0,
+                          mainAxisSpacing: 4.0,
+                          mainAxisExtent:
+                              DisHelperFunctions.screenHeight(context) * 0.25,
+                        ),
+                        itemCount: colors.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              print('Color: ${colors[index]}');
+                            },
+                            child: Container(
+                              color: colors[index],
+                            ),
+                          );
+                        },
+                      ),
+                      GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 4.0,
+                          mainAxisSpacing: 4.0,
+                          mainAxisExtent:
+                              DisHelperFunctions.screenHeight(context) * 0.25,
+                        ),
+                        itemCount: favoriteColors.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              print('Color: ${favoriteColors[index]}');
+                            },
+                            child: Container(
+                              color: favoriteColors[index],
+                            ),
+                          );
+                        },
+                      ),
+                      GridView.builder(
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 4.0,
+                          mainAxisSpacing: 4.0,
+                          mainAxisExtent:
+                              DisHelperFunctions.screenHeight(context) * 0.25,
+                        ),
+                        itemCount: collectionColors.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              print('Color: ${collectionColors[index]}');
+                            },
+                            child: Container(
+                              color: collectionColors[index],
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
                 ),
-              ),
-              Positioned(
-                top: DisHelperFunctions.screenHeight(context) * 0.125,
-                child: Padding(
-                  padding: const EdgeInsets.all(DisSizes.xs),
-                  child: Container(
-                    width: DisHelperFunctions.screenWidth(context) - 2 * DisSizes.xs,
-                    height: DisHelperFunctions.screenHeight(context),
-                    child: TabBarView(
-                      children: [
-                        GridView.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 4.0,
-                            mainAxisSpacing: 4.0,
-                            mainAxisExtent: DisHelperFunctions.screenHeight(context) * 0.25,
-                          ),
-                          itemCount: colors.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                print('Color: ${colors[index]}');
-                              },
-                              child: Container(
-                                color: colors[index],
-                              ),
-                            );
-                          },
-                        ),
-                        GridView.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 4.0,
-                            mainAxisSpacing: 4.0,
-                            mainAxisExtent: DisHelperFunctions.screenHeight(context) * 0.25,
-                          ),
-                          itemCount: favoriteColors.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                print('Color: ${favoriteColors[index]}');
-                              },
-                              child: Container(
-                                color: favoriteColors[index],
-                              ),
-                            );
-                          },
-                        ),
-                        GridView.builder(
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 3,
-                            crossAxisSpacing: 4.0,
-                            mainAxisSpacing: 4.0,
-                            mainAxisExtent: DisHelperFunctions.screenHeight(context) * 0.25,
-                          ),
-                          itemCount: collectionColors.length,
-                          itemBuilder: (context, index) {
-                            return GestureDetector(
-                              onTap: () {
-                                print('Color: ${collectionColors[index]}');
-                              },
-                              child: Container(
-                                color: collectionColors[index],
-                              ),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+              ],
             ],
           ),
         ),

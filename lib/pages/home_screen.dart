@@ -1,8 +1,9 @@
 import 'package:camera/camera.dart';
-import 'package:dis_app/features/auth/screens/account_screen.dart';
-import 'package:dis_app/features/camera_screen.dart';
-import 'package:dis_app/features/findme/screens/findme_screen.dart';
-import 'package:dis_app/features/photo/models/photo_model.dart';
+import 'package:dis_app/common/widgets/svgIcon.dart';
+import 'package:dis_app/pages/account/account_screen.dart';
+import 'package:dis_app/pages/camera_screen.dart';
+import 'package:dis_app/pages/findme/findme_screen.dart';
+import 'package:dis_app/models/photo_model.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
@@ -63,15 +64,15 @@ class _BaseScreenState extends State<BaseScreen> {
           ),
           fixedColor: DisColors.primary,
           type: BottomNavigationBarType.fixed,
-          items: const [
+          items: [
             BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
               activeIcon: Icon(Icons.home),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.camera_alt_outlined),
-              activeIcon: Icon(Icons.camera_alt),
+              icon: SvgIcon(assetName: 'assets/images/only-logo.svg', color: _selectedIndex == 0 ? DisColors.white : DisColors.black,),
+              activeIcon: SvgIcon(assetName: 'assets/images/only-logo.svg', color: DisColors.primary),
               label: 'FindMe',
             ),
             BottomNavigationBarItem(

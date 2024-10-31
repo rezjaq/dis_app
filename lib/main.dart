@@ -1,14 +1,14 @@
 import 'package:camera/camera.dart';
-import 'package:dis_app/features/auth/screens/forgetPass_screen.dart';
-import 'package:dis_app/features/auth/screens/otp_screen.dart';
-import 'package:dis_app/features/auth/screens/register_screen.dart';
-import 'package:dis_app/features/auth/screens/login_screen.dart';
-import 'package:dis_app/features/auth/screens/splash_screen.dart';
-import 'package:dis_app/features/auth/screens/welcome_screen.dart';
-import 'package:dis_app/features/auth/screens/change_profile.dart';
-import 'package:dis_app/features/auth/screens/changePass_screen.dart';
-import 'package:dis_app/features/home_screen.dart';
-import 'package:dis_app/features/camera_screen.dart';
+import 'package:dis_app/pages/auth/forgetPass_screen.dart';
+import 'package:dis_app/pages/auth/otp_screen.dart';
+import 'package:dis_app/pages/auth/register_screen.dart';
+import 'package:dis_app/pages/auth/login_screen.dart';
+import 'package:dis_app/pages/splash_screen.dart';
+import 'package:dis_app/pages/welcome_screen.dart';
+import 'package:dis_app/pages/account/change_profile.dart';
+import 'package:dis_app/pages/account/changePass_screen.dart';
+import 'package:dis_app/pages/home_screen.dart';
+import 'package:dis_app/pages/camera_screen.dart';
 import 'package:flutter/material.dart';
 
 late List<CameraDescription> _cameras;

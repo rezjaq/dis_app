@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:dis_app/models/photo_model.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -7,7 +8,6 @@ import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as path;
 
 import '../../../utils/constants/colors.dart';
-import '../../photo/models/photo_model.dart';
 
 class PostFormPhotoScreen extends StatefulWidget {
   final XFile? imageFile;

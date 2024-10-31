@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/constants/colors.dart';
-import 'package:dis_app/features/auth/screens/form_sell.dart';
-import 'package:dis_app/features/auth/screens/change_profile.dart';
+import 'package:dis_app/pages/account/form_sell.dart';
+import 'package:dis_app/pages/account/change_profile.dart';
 import 'dart:convert';
 import 'dart:io';
 

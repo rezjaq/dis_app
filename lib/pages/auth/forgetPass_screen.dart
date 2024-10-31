@@ -1,4 +1,4 @@
-import 'package:dis_app/features/auth/screens/otp_screen.dart';
+import 'package:dis_app/pages/auth/otp_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';

@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'dart:ui';
-import 'package:dis_app/features/auth/screens/photo_desc.dart';
+import 'package:dis_app/pages/account/photo_desc.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';

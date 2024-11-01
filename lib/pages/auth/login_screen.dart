@@ -31,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: ClipPath(
               clipper: TopWaveClipper(), // kurva
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.4,
+                height: DisHelperFunctions.screenHeight(context) * 0.5,
                 color: DisColors.primary,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       SvgPicture.asset(
                         'assets/images/login.svg',
-                        height: 250,
+                        height: DisHelperFunctions.screenHeight(context) * 0.4,
                       ),
                     ],
                   ),
@@ -49,9 +49,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           Positioned(
-            top: MediaQuery.of(context).size.height * 0.35,
-            left: 16,
-            right: 16,
+            top: DisHelperFunctions.screenHeight(context) * 0.3,
+            left: DisSizes.md,
+            right: DisSizes.md,
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(

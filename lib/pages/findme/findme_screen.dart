@@ -24,66 +24,10 @@ class _FindMeScreenState extends State<FindMeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Color> colors = [
-      Colors.red,
-      Colors.green,
-      Colors.blue,
-      Colors.yellow,
-      Colors.orange,
-      Colors.purple,
-      Colors.pink,
-      Colors.brown,
-      Colors.cyan,
-      Colors.lime,
-      Colors.indigo,
-      Colors.teal,
-      Colors.amber,
-      Colors.deepOrange,
-      Colors.deepPurple,
-      Colors.lightBlue,
-      Colors.lightGreen,
-      Colors.limeAccent,
-      Colors.orangeAccent,
-      Colors.pinkAccent,
-      Colors.purpleAccent,
-      Colors.redAccent,
-      Colors.tealAccent,
-      Colors.yellowAccent,
-      Colors.blueAccent,
-      Colors.greenAccent,
-      Colors.indigoAccent,
-      Colors.cyanAccent,
-      Colors.amberAccent,
-      Colors.brown[300]!,
-      Colors.grey,
-      Colors.blueGrey,
-      Colors.black,
-    ];
-
-    final List<Color> favoriteColors = [
-      Colors.indigo,
-      Colors.teal,
-      Colors.amber,
-      Colors.deepOrange,
-      Colors.deepPurple,
-      Colors.lightBlue,
-      Colors.lightGreen,
-      Colors.limeAccent,
-      Colors.orangeAccent,
-      Colors.pinkAccent,
-    ];
-
-    final List<Color> collectionColors = [
-      Colors.purpleAccent,
-      Colors.redAccent,
-      Colors.tealAccent,
-      Colors.yellowAccent,
-      Colors.blueAccent,
-      Colors.greenAccent,
-      Colors.indigoAccent,
-      Colors.cyanAccent,
-      Colors.amberAccent,
-      Colors.brown[300]!,
+    final List<String> contents = [
+      'assets/images/dummies/content.jpg',
+      'assets/images/dummies/dummy_1.jpg',
+      'assets/images/dummies/dummy_2.jpg',
     ];
 
     return DefaultTabController(
@@ -123,7 +67,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                     child: TextField(
                                       autofocus: true,
                                       decoration: InputDecoration(
-                                        hintText: '',
+                                        hintText: 'Search Creator',
                                         border: InputBorder.none,
                                       ),
                                     ),
@@ -227,14 +171,19 @@ class _FindMeScreenState extends State<FindMeScreen> {
                           mainAxisExtent:
                               DisHelperFunctions.screenHeight(context) * 0.25,
                         ),
-                        itemCount: colors.length,
+                        itemCount: contents.length * 5,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
-                              print('Color: ${colors[index]}');
+                              print('Index: {$index}');
                             },
                             child: Container(
-                              color: colors[index],
+                              child: Expanded(
+                                child: Image.asset(
+                                  contents[index % 3],
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                           );
                         },
@@ -247,14 +196,19 @@ class _FindMeScreenState extends State<FindMeScreen> {
                           mainAxisExtent:
                               DisHelperFunctions.screenHeight(context) * 0.25,
                         ),
-                        itemCount: favoriteColors.length,
+                        itemCount: contents.length * 3,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
-                              print('Color: ${favoriteColors[index]}');
+                              print('Index: {$index}');
                             },
                             child: Container(
-                              color: favoriteColors[index],
+                              child: Expanded(
+                                child: Image.asset(
+                                  contents[index % 3],
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                           );
                         },
@@ -267,14 +221,19 @@ class _FindMeScreenState extends State<FindMeScreen> {
                           mainAxisExtent:
                               DisHelperFunctions.screenHeight(context) * 0.25,
                         ),
-                        itemCount: collectionColors.length,
+                        itemCount: contents.length * 2,
                         itemBuilder: (context, index) {
                           return GestureDetector(
                             onTap: () {
-                              print('Color: ${collectionColors[index]}');
+                              print('Index: {$index}');
                             },
                             child: Container(
-                              color: collectionColors[index],
+                              child: Expanded(
+                                child: Image.asset(
+                                  contents[index % 3],
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
                           );
                         },

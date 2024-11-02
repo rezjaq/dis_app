@@ -1,3 +1,4 @@
+import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -9,7 +10,7 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  bool isLoginSelected = true; // Track the selected button
+  bool isLoginSelected = false; // Track the selected button
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +62,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   style: TextStyle(
                     fontSize: DisHelperFunctions.screenWidth(context) *
                         0.04, // Adjusted font size
-                    color: DisColors.darkerGrey,
+                    color: Colors.brown[400],
                   ),
                 ),
               ),
@@ -99,7 +100,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       duration: Duration(milliseconds: 50),
                       curve: Curves.easeInOut,
                       decoration: BoxDecoration(
-                        color: DisColors.black,
+                        color: Colors.black, // Active background color
                         borderRadius: BorderRadius.circular(30),
                       ),
                       height: DisHelperFunctions.screenHeight(context) * 0.08,
@@ -129,8 +130,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               'Login',
                               style: TextStyle(
                                 color: isLoginSelected
-                                    ? DisColors.white
-                                    : DisColors.black,
+                                    ? Colors.white
+                                    : Colors.black,
                                 fontSize:
                                     DisHelperFunctions.screenWidth(context) *
                                         0.06, // Adjusted font size
@@ -158,8 +159,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                               'Sign-up',
                               style: TextStyle(
                                 color: isLoginSelected
-                                    ? DisColors.black
-                                    : DisColors.white,
+                                    ? Colors.black
+                                    : Colors.white,
                                 fontSize:
                                     DisHelperFunctions.screenWidth(context) *
                                         0.06, // Adjusted font size

@@ -32,7 +32,6 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
     selectedItems = List<bool>.filled(cartItems.length, false);
   }
 
-  // Format harga dengan titik
   final NumberFormat currencyFormat = NumberFormat('#,###', 'id');
 
   int get totalPrice {
@@ -63,6 +62,27 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
     );
   }
 
+  void _showWarningDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("No Item Selected"),
+          content:
+              Text("Please select at least one product before proceeding."),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,6 +94,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
             Navigator.pop(context);
           },
         ),
+        backgroundColor: DisColors.primary,
       ),
       body: Column(
         children: [
@@ -88,7 +109,9 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                 });
               },
             ),
-            title: Text("Select All"),
+            title: Text("Select All",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            tileColor: Colors.white, // Set tile background to white
           ),
           Expanded(
             child: ListView.builder(
@@ -96,11 +119,21 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(
-                      vertical: 4.0, horizontal: 8.0),
-                  child: Card(
-                    elevation: 2,
+                      vertical: 8.0, horizontal: 10.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white, // Keep product item background white
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 6,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(10.0),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -117,11 +150,11 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                               _showImageDialog(cartItems[index].imagePath);
                             },
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(10),
                               child: Image.asset(
                                 cartItems[index].imagePath,
-                                width: 70,
-                                height: 70,
+                                width: 80,
+                                height: 80,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -133,12 +166,19 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                               children: [
                                 Text(
                                   cartItems[index].title,
-                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
                                 ),
-                                Text(cartItems[index].photographer),
+                                SizedBox(height: 2),
+                                Text(cartItems[index].photographer,
+                                    style: TextStyle(color: Colors.grey[600])),
+                                SizedBox(height: 4),
                                 Text(
                                   "IDR ${currencyFormat.format(cartItems[index].price)}",
-                                  style: TextStyle(color: Colors.orange),
+                                  style: TextStyle(
+                                      color: Colors.orange,
+                                      fontWeight: FontWeight.w600),
                                 ),
                               ],
                             ),
@@ -157,50 +197,84 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Total Price (${selectedItems.where((selected) => selected).length} Content)",
+                  "Total Price (${selectedItems.where((selected) => selected).length} Items)",
                   style: TextStyle(fontSize: 16),
                 ),
-                Text(
-                  "IDR ${currencyFormat.format(totalPrice)}",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: DisColors.primary,
-                    fontWeight: FontWeight.bold,
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: DisColors.primary),
+                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white,
+                  ),
+                  padding: EdgeInsets.all(8),
+                  child: Text(
+                    "IDR ${currencyFormat.format(totalPrice)}",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: DisColors.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: const EdgeInsets.only(
+                left: 16.0,
+                right: 16.0,
+                bottom: 16.0,
+                top: 8.0), // Add top padding for the button
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
                   backgroundColor: DisColors.primary,
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: 5,
+                  shadowColor: Colors.black54,
                 ),
                 onPressed: () {
-                  List<CartItem> selectedCartItems = [];
-                  for (int i = 0; i < cartItems.length; i++) {
-                    if (selectedItems[i]) {
-                      selectedCartItems.add(cartItems[i]);
+                  // Check if any item is selected
+                  if (selectedItems.contains(true)) {
+                    List<CartItem> selectedCartItems = [];
+                    for (int i = 0; i < cartItems.length; i++) {
+                      if (selectedItems[i]) {
+                        selectedCartItems.add(cartItems[i]);
+                      }
                     }
-                  }
 
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          CheckoutScreen(selectedItems: selectedCartItems),
-                    ),
-                  );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            CheckoutScreen(selectedItems: selectedCartItems),
+                      ),
+                    );
+                  } else {
+                    // Show a warning dialog if no items are selected
+                    _showWarningDialog();
+                  }
                 },
-                child: Text(
-                  "Buy Now",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.shopping_cart,
+                        color: Colors.white), // Shopping cart icon
+                    SizedBox(width: 8),
+                    Text(
+                      "Buy Now",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),

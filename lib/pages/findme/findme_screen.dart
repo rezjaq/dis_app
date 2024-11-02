@@ -55,7 +55,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                           Expanded(
                             child: Container(
                               height: 40,
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              padding: EdgeInsets.symmetric(horizontal: 4.0),
                               decoration: BoxDecoration(
                                 border: Border.all(
                                     color: DisColors.primary, width: 1.5),
@@ -69,6 +69,8 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                       decoration: InputDecoration(
                                         hintText: 'Search Creator',
                                         border: InputBorder.none,
+                                        contentPadding: EdgeInsets.only(
+                                            bottom: 12), // Mengangkat teks
                                       ),
                                     ),
                                   ),
@@ -137,7 +139,6 @@ class _FindMeScreenState extends State<FindMeScreen> {
                               IconButton(
                                 onPressed: () {},
                                 icon: SvgPicture.asset(
-                                  //disini
                                   'assets/icons/robot_2.svg',
                                   color: DisColors.primary,
                                   width: 24,
@@ -178,11 +179,9 @@ class _FindMeScreenState extends State<FindMeScreen> {
                               print('Index: {$index}');
                             },
                             child: Container(
-                              child: Expanded(
-                                child: Image.asset(
-                                  contents[index % 3],
-                                  fit: BoxFit.cover,
-                                ),
+                              child: Image.asset(
+                                contents[index % 3],
+                                fit: BoxFit.cover,
                               ),
                             ),
                           );
@@ -203,11 +202,9 @@ class _FindMeScreenState extends State<FindMeScreen> {
                               print('Index: {$index}');
                             },
                             child: Container(
-                              child: Expanded(
-                                child: Image.asset(
-                                  contents[index % 3],
-                                  fit: BoxFit.cover,
-                                ),
+                              child: Image.asset(
+                                contents[index % 3],
+                                fit: BoxFit.cover,
                               ),
                             ),
                           );
@@ -228,11 +225,9 @@ class _FindMeScreenState extends State<FindMeScreen> {
                               print('Index: {$index}');
                             },
                             child: Container(
-                              child: Expanded(
-                                child: Image.asset(
-                                  contents[index % 3],
-                                  fit: BoxFit.cover,
-                                ),
+                              child: Image.asset(
+                                contents[index % 3],
+                                fit: BoxFit.cover,
                               ),
                             ),
                           );

@@ -121,7 +121,7 @@ class _AccountScreenState extends State<AccountScreen> {
                   children: [
                     GestureDetector(
                       onTap: () {
-                        _showImageDialog('assets/images/faza.png');
+                        _showImageDialog('assets/images/profile_2.jpg');
                       },
                       child: Container(
                         padding: const EdgeInsets.all(0),
@@ -132,7 +132,8 @@ class _AccountScreenState extends State<AccountScreen> {
                         child: CircleAvatar(
                           radius: MediaQuery.of(context).size.width * 0.15,
                           backgroundColor: Colors.transparent,
-                          backgroundImage: AssetImage('assets/images/faza.png'),
+                          backgroundImage:
+                              AssetImage('assets/images/profile_2.jpg'),
                         ),
                       ),
                     ),

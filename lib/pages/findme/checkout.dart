@@ -1,41 +1,41 @@
+import 'package:dis_app/pages/findme/chart_screen.dart';
+import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: CheckoutScreen(),
-    );
-  }
-}
+import 'package:intl/intl.dart';
+import 'package:dis_app/utils/constants/colors.dart';
 
 class CheckoutScreen extends StatelessWidget {
-  final List<CheckoutGroup> groups = [
-    CheckoutGroup(
-      photographer: "photographer_jatim",
-      items: [
-        CheckoutItem("dsc76543.JPG", 20000, "assets/images/photo2.jpg"),
-      ],
-    ),
-    CheckoutGroup(
-      photographer: "photographer01",
-      items: [
-        CheckoutItem("img_7652.JPG", 15000, "assets/images/photo3.jpg"),
-      ],
-    ),
-  ];
+  final List<CartItem> selectedItems;
 
-  int get totalPrice => groups.fold(0, (total, group) {
-        return total +
-            group.items.fold(0, (subtotal, item) => subtotal + item.price);
-      });
+  CheckoutScreen({required this.selectedItems});
+
+  // Formatter untuk harga dengan titik
+  final NumberFormat currencyFormat = NumberFormat('#,###', 'id');
+
+  int get totalPrice {
+    // Hitung total harga berdasarkan items yang dipilih
+    return selectedItems.fold(0, (total, item) => total + item.price);
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Group items by photographer
+    Map<String, List<CheckoutItem>> groupedItems = {};
+    for (var item in selectedItems) {
+      if (groupedItems.containsKey(item.photographer)) {
+        groupedItems[item.photographer]!
+            .add(CheckoutItem(item.title, item.price, item.imagePath));
+      } else {
+        groupedItems[item.photographer] = [
+          CheckoutItem(item.title, item.price, item.imagePath)
+        ];
+      }
+    }
+
+    List<CheckoutGroup> groups = groupedItems.entries.map((entry) {
+      return CheckoutGroup(photographer: entry.key, items: entry.value);
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Checkout"),
@@ -60,16 +60,43 @@ class CheckoutScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         ListTile(
-                          leading: Icon(Icons.camera_alt, color: Colors.black),
+                          leading: Icon(Icons.camera_alt_outlined,
+                              color: DisColors.black),
                           title: Text(group.photographer),
                         ),
                         Column(
                           children: group.items.map((item) {
                             return ListTile(
-                              leading: Image.asset(item.imagePath,
-                                  width: 50, height: 50, fit: BoxFit.cover),
+                              leading: GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => Dialog(
+                                      child: GestureDetector(
+                                        onTap: () => Navigator.pop(context),
+                                        child: Image.asset(
+                                          item.imagePath,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.asset(
+                                    item.imagePath,
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
                               title: Text(item.title),
-                              subtitle: Text("IDR ${item.price}"),
+                              subtitle: Text(
+                                "IDR ${currencyFormat.format(item.price)}",
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
                             );
                           }).toList(),
                         ),
@@ -80,15 +107,11 @@ class CheckoutScreen extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              Text("Subtotal",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
                               Text(
-                                  "Total Price (${group.items.length} Content):"),
-                              Text(
-                                "IDR ${group.items.fold(0, (sum, item) => sum + item.price)}",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.orange,
-                                ),
-                              ),
+                                  "IDR ${currencyFormat.format(group.items.fold(0, (sum, item) => sum + item.price))}"),
                             ],
                           ),
                         ),
@@ -99,57 +122,46 @@ class CheckoutScreen extends StatelessWidget {
               },
             ),
           ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.payment, color: Colors.orange),
-            title: Text("Payment Option"),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text("Qris"),
-                Icon(Icons.arrow_forward_ios, size: 16),
-              ],
-            ),
-            onTap: () {
-              // Implement payment option selection
-            },
-          ),
-          Divider(),
           Padding(
             padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+            child: Column(
               children: [
-                Text(
-                  "Total Payments",
-                  style: TextStyle(fontSize: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text("Total Price",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold)),
+                    Text("IDR ${currencyFormat.format(totalPrice)}",
+                        style:
+                            TextStyle(fontSize: 20, color: DisColors.primary)),
+                  ],
                 ),
-                Text(
-                  "IDR $totalPrice",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.orange,
-                    fontWeight: FontWeight.bold,
+                SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: DisColors.primary,
+                    ),
+                    onPressed: () {
+                      DisHelperFunctions.showAlert(
+                        context,
+                        "Order Confirmation",
+                        "Are you sure you want to place the order?",
+                      );
+                    },
+                    child: Text(
+                      "Place Order",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: DisColors.black,
+                      ),
+                    ),
                   ),
                 ),
               ],
-            ),
-          ),
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                ),
-                onPressed: () {
-                  // Implement Place Order functionality
-                },
-                child: Text("Place Order"),
-              ),
             ),
           ),
         ],
@@ -158,17 +170,17 @@ class CheckoutScreen extends StatelessWidget {
   }
 }
 
-class CheckoutGroup {
-  final String photographer;
-  final List<CheckoutItem> items;
-
-  CheckoutGroup({required this.photographer, required this.items});
-}
-
 class CheckoutItem {
   final String title;
   final int price;
   final String imagePath;
 
   CheckoutItem(this.title, this.price, this.imagePath);
+}
+
+class CheckoutGroup {
+  final String photographer;
+  final List<CheckoutItem> items;
+
+  CheckoutGroup({required this.photographer, required this.items});
 }

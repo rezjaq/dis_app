@@ -48,7 +48,7 @@ class NotLoggedInScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SvgPicture.asset(
-                      'assets/images/login.svg',
+                      'assets/images/unlogin.svg',
                       height: 350,
                     ),
                   ],

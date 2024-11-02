@@ -23,7 +23,6 @@ class BaseScreen extends StatefulWidget {
 
 class _BaseScreenState extends State<BaseScreen> {
   int _selectedIndex = 0;
-
   List<Widget> get _widgetOptions => <Widget>[
         HomeScreen(
           cameras: widget.cameras,
@@ -31,6 +30,15 @@ class _BaseScreenState extends State<BaseScreen> {
         FindMeScreen(),
         AccountScreen(),
       ];
+  // bool isLoggedIn = false;
+
+  // List<Widget> get _widgetOptions => <Widget>[
+  //       HomeScreen(
+  //         cameras: widget.cameras,
+  //       ),
+  //       FindMeScreen(),
+  //       isLoggedIn ? AccountScreen() : NotLoggedInScreen(),
+  //     ];
 
   void _onItemTapped(int index) {
     setState(() {
@@ -71,8 +79,13 @@ class _BaseScreenState extends State<BaseScreen> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: SvgIcon(assetName: 'assets/images/only-logo.svg', color: _selectedIndex == 0 ? DisColors.white : DisColors.black,),
-              activeIcon: SvgIcon(assetName: 'assets/images/only-logo.svg', color: DisColors.primary),
+              icon: SvgIcon(
+                assetName: 'assets/images/only-logo.svg',
+                color: _selectedIndex == 0 ? DisColors.white : DisColors.black,
+              ),
+              activeIcon: SvgIcon(
+                  assetName: 'assets/images/only-logo.svg',
+                  color: DisColors.primary),
               label: 'FindMe',
             ),
             BottomNavigationBarItem(
@@ -81,8 +94,10 @@ class _BaseScreenState extends State<BaseScreen> {
               label: 'Account',
             ),
           ],
-          unselectedItemColor: _selectedIndex == 0 ? DisColors.white : DisColors.black,
-          backgroundColor: _selectedIndex == 0 ? DisColors.black : DisColors.white,
+          unselectedItemColor:
+              _selectedIndex == 0 ? DisColors.white : DisColors.black,
+          backgroundColor:
+              _selectedIndex == 0 ? DisColors.black : DisColors.white,
         ),
       ),
     );
@@ -144,7 +159,9 @@ class _HomeScreenState extends State<HomeScreen> {
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(child: Text('No posts available', style: TextStyle(color: DisColors.white)));
+                return Center(
+                    child: Text('No posts available',
+                        style: TextStyle(color: DisColors.white)));
               } else {
                 final post = snapshot.data!;
 

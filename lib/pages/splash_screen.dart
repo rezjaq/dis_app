@@ -19,7 +19,7 @@ class _FindMeSplashScreenState extends State<FindMeSplashScreen>
 
   // For the background wave animation
   late Animation<double> _backgroundAnimation;
-  bool _startWaveAnimation = false; // Control when to start the wave animation
+  bool _startWaveAnimation = false;
 
   @override
   void initState() {

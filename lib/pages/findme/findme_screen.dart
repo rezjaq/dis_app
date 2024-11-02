@@ -14,7 +14,7 @@ class FindMeScreen extends StatefulWidget {
 
 class _FindMeScreenState extends State<FindMeScreen> {
   int _selectedIndex = 0;
-  bool _isSearching = false; // Toggle search view
+  bool _isSearching = false;
 
   void _onButtonPressed(int index) {
     setState(() {
@@ -123,7 +123,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                     child: TextField(
                                       autofocus: true,
                                       decoration: InputDecoration(
-                                        hintText: 'FotoTree atau Kreator',
+                                        hintText: '',
                                         border: InputBorder.none,
                                       ),
                                     ),
@@ -193,6 +193,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                               IconButton(
                                 onPressed: () {},
                                 icon: SvgPicture.asset(
+                                  //disini
                                   'assets/icons/robot_2.svg',
                                   color: DisColors.primary,
                                   width: 24,

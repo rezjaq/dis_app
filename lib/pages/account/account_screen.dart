@@ -1,3 +1,4 @@
+import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
@@ -98,220 +99,252 @@ class _AccountScreenState extends State<AccountScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: DisColors.white,
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Profile Section
             Container(
               width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.35,
+              height: DisHelperFunctions.screenHeight(context) * 0.375,
               decoration: const BoxDecoration(
                 color: DisColors.primary,
                 borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(32),
-                  bottomRight: Radius.circular(32),
+                  bottomLeft: Radius.circular(24.0),
+                  bottomRight: Radius.circular(24.0),
                 ),
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                    top: 40, left: 20, right: 20, bottom: 32),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        _showImageDialog('assets/images/profile_2.jpg');
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(0),
-                        decoration: const BoxDecoration(
-                          color: DisColors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: CircleAvatar(
-                          radius: MediaQuery.of(context).size.width * 0.15,
-                          backgroundColor: Colors.transparent,
-                          backgroundImage:
-                              AssetImage('assets/images/profile_2.jpg'),
-                        ),
+              padding: const EdgeInsets.only(
+                top: DisSizes.appBarHeight - 12,
+                left: DisSizes.md,
+                right: DisSizes.md,
+                bottom: DisSizes.lg,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: DisHelperFunctions.screenWidth(context) * 0.3,
+                    height: DisHelperFunctions.screenWidth(context) * 0.3,
+                    decoration: BoxDecoration(
+                      color: DisColors.white,
+                      borderRadius: BorderRadius.circular(DisHelperFunctions.screenWidth(context) * 0.3),
+                      border: Border.all(
+                        color: DisColors.white,
+                        width: 1.5,
                       ),
                     ),
-                    // Profile Info
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.55,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 30),
-                          const Text(
-                            "FAZA FIZI FUFU FAFA",
-                            style: TextStyle(
-                              color: DisColors.black,
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(DisHelperFunctions.screenWidth(context) * 0.3),
+                      child: Image.asset(
+                        'assets/images/profile_2.jpg',
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: DisHelperFunctions.screenWidth(context) * 0.55,
+                    height: DisHelperFunctions.screenHeight(context) * 0.3,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "steffanie_joe_brown",
+                          style: TextStyle(
+                            color: DisColors.black,
+                            fontSize: DisSizes.fontSizeMd,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: DisSizes.sm),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "1,234",
+                                  style: TextStyle(
+                                    color: DisColors.black,
+                                    fontSize: DisSizes.md,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Text(
+                                  "Followers",
+                                  style: TextStyle(
+                                    color: DisColors.black,
+                                    fontSize: DisSizes.fontSizeXs,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(height: 8),
-                          // Followers and Following Row
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              // Followers
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: const [
-                                    Text("1",
-                                        style: TextStyle(
-                                            color: DisColors.black,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w500)),
-                                    SizedBox(height: 4),
-                                    Text("Followers",
-                                        style: TextStyle(
-                                            color: DisColors.black,
-                                            fontSize: 12)),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "1,234",
+                                  style: TextStyle(
+                                    color: DisColors.black,
+                                    fontSize: DisSizes.md,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                Text(
+                                  "Following",
+                                  style: TextStyle(
+                                    color: DisColors.black,
+                                    fontSize: DisSizes.fontSizeXs,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: DisSizes.sm),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                DisHelperFunctions.navigateToRoute(context, '/change-profile');
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: DisSizes.sm,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: DisColors.white,
+                                  borderRadius: BorderRadius.circular(DisSizes.buttonRadius),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.edit,
+                                      size: DisSizes.iconSm,
+                                      color: DisColors.black,
+                                    ),
+                                    const SizedBox(width: DisSizes.xs),
+                                    Text(
+                                      "Edit Profile",
+                                      style: TextStyle(
+                                        color: DisColors.black,
+                                        fontSize: DisSizes.fontSizeXs,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                              // Following
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: const [
-                                    Text("12000",
-                                        style: TextStyle(
-                                            color: DisColors.black,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w500)),
-                                    SizedBox(height: 4),
-                                    Text("Following",
-                                        style: TextStyle(
-                                            color: DisColors.black,
-                                            fontSize: 12)),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                _pickImage();
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: DisSizes.sm,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: DisColors.white,
+                                  borderRadius: BorderRadius.circular(DisSizes.buttonRadius),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.add,
+                                      size: DisSizes.iconSm,
+                                      color: DisColors.black,
+                                    ),
+                                    const SizedBox(width: DisSizes.xs),
+                                    Text(
+                                      "Upload",
+                                      style: TextStyle(
+                                        color: DisColors.black,
+                                        fontSize: DisSizes.fontSizeXs,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                          // Edit Profile and Upload Button Row
-                          Row(
-                            children: [
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.pushNamed(
-                                      context, '/change-profile');
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: DisColors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 8),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(DisSizes.sm),
-                                  ),
-                                ),
-                                icon: const Icon(Icons.edit,
-                                    color: DisColors.black),
-                                label: const Text("Edit Profile",
-                                    style: TextStyle(
-                                        color: DisColors.black,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500)),
-                              ),
-                              const SizedBox(width: 8),
-                              ElevatedButton.icon(
-                                onPressed: _pickImage,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: DisColors.white,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 8),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(DisSizes.sm),
-                                  ),
-                                ),
-                                icon: const Icon(Icons.add,
-                                    color: DisColors.black),
-                                label: const Text("Upload",
-                                    style: TextStyle(
-                                        color: DisColors.black,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500)),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
-
-            // Toggle Sell/Post Section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(
+                horizontal: DisSizes.md,
+                vertical: DisSizes.md,
+              ),
               child: Row(
                 children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => _toggleSection(true),
-                      child: Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: isSellSelected
-                              ? DisColors.primary
-                              : DisColors.white,
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(DisSizes.xs),
-                            bottomLeft: Radius.circular(DisSizes.xs),
-                          ),
-                          border: Border.all(
-                            color: DisColors.primary,
-                            width: 1,
-                          ),
+                  GestureDetector(
+                    onTap: () => _toggleSection(true),
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: DisHelperFunctions.screenWidth(context) * 0.45,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: DisSizes.md,
+                        vertical: DisSizes.sm,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSellSelected ? DisColors.primary : DisColors.white,
+                        borderRadius: BorderRadius.horizontal(
+                          left: Radius.circular(DisSizes.buttonRadius),
                         ),
-                        child: const Text(
-                          "Sell",
-                          style: TextStyle(
-                              color: DisColors.black,
-                              fontSize: DisSizes.fontSizeMd,
-                              fontWeight: FontWeight.bold),
+                        border: Border.all(
+                          color: DisColors.primary,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Text(
+                        "Sell",
+                        style: TextStyle(
+                          color: DisColors.black,
+                          fontSize: DisSizes.fontSizeSm,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => _toggleSection(false),
-                      child: Container(
-                        alignment: Alignment.center,
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: !isSellSelected
-                              ? DisColors.primary
-                              : DisColors.white,
-                          borderRadius: const BorderRadius.only(
-                            topRight: Radius.circular(DisSizes.xs),
-                            bottomRight: Radius.circular(DisSizes.xs),
-                          ),
-                          border: Border.all(
-                            color: DisColors.darkGrey,
-                            width: 1,
-                          ),
+                  GestureDetector(
+                    onTap: () => _toggleSection(false),
+                    child: Container(
+                      alignment: Alignment.center,
+                      width: DisHelperFunctions.screenWidth(context) * 0.45,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: DisSizes.md,
+                        vertical: DisSizes.sm,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSellSelected ? DisColors.white : DisColors.primary,
+                        borderRadius: BorderRadius.horizontal(
+                          right: Radius.circular(DisSizes.buttonRadius),
                         ),
-                        child: const Text(
-                          "Post",
-                          style: TextStyle(
-                              color: DisColors.black,
-                              fontSize: DisSizes.fontSizeMd,
-                              fontWeight: FontWeight.bold),
+                        border: Border.all(
+                          color: DisColors.primary,
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Text(
+                        "Post",
+                        style: TextStyle(
+                          color: DisColors.black,
+                          fontSize: DisSizes.fontSizeSm,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
@@ -319,6 +352,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 ],
               ),
             ),
+            const SizedBox(height: DisSizes.md),
             isSellSelected ? _buildSellSection() : _buildPostSection(),
           ],
         ),

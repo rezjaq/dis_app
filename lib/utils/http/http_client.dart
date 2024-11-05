@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class DisHttpClient {
-  static const String _baseUrl = 'http://api.dis.com/api'; // Change api.dis.com with your IP Address
+  static const String _baseUrl = 'http://10.0.2.2:8000/api'; // Change api.dis.com with your IP Address
   static final FlutterSecureStorage _storage = FlutterSecureStorage();
 
   static Future<Map<String, dynamic>> get(String endpoint) async {

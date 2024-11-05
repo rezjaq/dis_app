@@ -175,6 +175,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                         itemCount: contents.length * 5,
                         itemBuilder: (context, index) {
                           return GestureDetector(
+                            key: Key("all_$index"),
                             onTap: () {
                               print('Index: {$index}');
                             },
@@ -198,6 +199,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                         itemCount: contents.length * 3,
                         itemBuilder: (context, index) {
                           return GestureDetector(
+                            key: Key("favorite_$index"),
                             onTap: () {
                               print('Index: {$index}');
                             },
@@ -221,6 +223,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                         itemCount: contents.length * 2,
                         itemBuilder: (context, index) {
                           return GestureDetector(
+                            key: Key("collection_$index"),
                             onTap: () {
                               print('Index: {$index}');
                             },

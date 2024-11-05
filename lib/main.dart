@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
         '/register': (context) => RegisterScreen(),
         '/change-profile': (context) => EditProfileScreen(),
         '/change-password': (context) => ChangePasswordScreen(),
-        '/forget-screen': (context) => ForgetPasswordScreen(),
+        '/forget-password': (context) => ForgetPasswordScreen(),
         '/otp-screen': (context) => OtpVerificationScreen(),
         '/home': (context) => BaseScreen(cameras: _cameras),
         '/camera': (context) => CameraScreen(cameras: _cameras),

@@ -155,6 +155,26 @@ class ChangePasswordRequest {
   }
 }
 
+class AddAccountRequest {
+  final String bank;
+  final String name;
+  final String number;
+
+  AddAccountRequest({
+    required this.bank,
+    required this.name,
+    required this.number,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'bank': bank,
+      'name': name,
+      'number': number,
+    };
+  }
+}
+
 class ChangePhotoRequest {
   final XFile photo;
 

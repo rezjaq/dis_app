@@ -1,4 +1,5 @@
 import 'package:dis_app/pages/findme/chart_screen.dart';
+import 'package:dis_app/pages/findme/search_face.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
@@ -15,6 +16,32 @@ class FindMeScreen extends StatefulWidget {
 class _FindMeScreenState extends State<FindMeScreen> {
   int _selectedIndex = 0;
   bool _isSearching = false;
+  String _searchText = '';
+  final List<String> _allContents = [
+    'content.jpg',
+    'dummy_1.jpg',
+    'dummy_2.jpg',
+  ];
+  List<String> _filteredContents = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredContents = [];
+  }
+
+  void _onSearchTextChanged(String text) {
+    setState(() {
+      _searchText = text;
+      if (_searchText.isNotEmpty) {
+        _filteredContents = _allContents
+            .where((fileName) => fileName.contains(_searchText))
+            .toList();
+      } else {
+        _filteredContents = [];
+      }
+    });
+  }
 
   void _onButtonPressed(int index) {
     setState(() {
@@ -24,12 +51,6 @@ class _FindMeScreenState extends State<FindMeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> contents = [
-      'assets/images/dummies/content.jpg',
-      'assets/images/dummies/dummy_1.jpg',
-      'assets/images/dummies/dummy_2.jpg',
-    ];
-
     return DefaultTabController(
       length: 3,
       child: Scaffold(
@@ -49,6 +70,8 @@ class _FindMeScreenState extends State<FindMeScreen> {
                             onPressed: () {
                               setState(() {
                                 _isSearching = false;
+                                _searchText = '';
+                                _filteredContents = [];
                               });
                             },
                           ),
@@ -66,11 +89,12 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                   Expanded(
                                     child: TextField(
                                       autofocus: true,
+                                      onChanged: _onSearchTextChanged,
                                       decoration: InputDecoration(
-                                        hintText: 'Search Creator',
+                                        hintText: 'Search by file name',
                                         border: InputBorder.none,
-                                        contentPadding: EdgeInsets.only(
-                                            bottom: 12), // Mengangkat teks
+                                        contentPadding:
+                                            EdgeInsets.only(bottom: 12),
                                       ),
                                     ),
                                   ),
@@ -83,7 +107,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                             icon: Icon(Icons.filter_list,
                                 color: DisColors.primary),
                             onPressed: () {
-                              // Add filter action here
+                              // Tambahkan aksi filter di sini
                             },
                           ),
                         ],
@@ -137,7 +161,14 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                 ),
                               ),
                               IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            SearchFaceScreen()),
+                                  );
+                                },
                                 icon: SvgPicture.asset(
                                   'assets/icons/robot_2.svg',
                                   color: DisColors.primary,
@@ -161,89 +192,85 @@ class _FindMeScreenState extends State<FindMeScreen> {
                     Tab(text: 'Collection'),
                   ],
                 ),
-                Expanded(
-                  child: TabBarView(
-                    children: [
-                      GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 4.0,
-                          mainAxisSpacing: 4.0,
-                          mainAxisExtent:
-                              DisHelperFunctions.screenHeight(context) * 0.25,
-                        ),
-                        itemCount: contents.length * 5,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            key: Key("all_$index"),
-                            onTap: () {
-                              print('Index: {$index}');
-                            },
-                            child: Container(
-                              child: Image.asset(
-                                contents[index % 3],
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 4.0,
-                          mainAxisSpacing: 4.0,
-                          mainAxisExtent:
-                              DisHelperFunctions.screenHeight(context) * 0.25,
-                        ),
-                        itemCount: contents.length * 3,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            key: Key("favorite_$index"),
-                            onTap: () {
-                              print('Index: {$index}');
-                            },
-                            child: Container(
-                              child: Image.asset(
-                                contents[index % 3],
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 4.0,
-                          mainAxisSpacing: 4.0,
-                          mainAxisExtent:
-                              DisHelperFunctions.screenHeight(context) * 0.25,
-                        ),
-                        itemCount: contents.length * 2,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            key: Key("collection_$index"),
-                            onTap: () {
-                              print('Index: {$index}');
-                            },
-                            child: Container(
-                              child: Image.asset(
-                                contents[index % 3],
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ),
               ],
+              Expanded(
+                child: _isSearching
+                    ? _buildSearchResults(_filteredContents)
+                    : TabBarView(
+                        children: [
+                          _buildGridContent(_allContents),
+                          _buildGridContent(_allContents),
+                          _buildGridContent(_allContents),
+                        ],
+                      ),
+              ),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSearchResults(List<String> contents) {
+    if (contents.isEmpty) {
+      // Menampilkan pesan jika hasil pencarian kosong
+      return Center(
+        child: Text(
+          'No results found',
+          style: TextStyle(
+            fontSize: 18,
+            color: Colors.grey,
+          ),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: contents.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          leading: Image.asset(
+            'assets/images/dummies/${contents[index]}',
+            width: 50,
+            height: 50,
+            fit: BoxFit.cover,
+          ),
+          title: Text('Babel Run Action 2024',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Row(
+            children: [
+              Icon(Icons.location_on, color: Colors.green, size: 16),
+              SizedBox(width: 4),
+              Text('FotoTree'),
+            ],
+          ),
+          onTap: () {
+            print('Selected: ${contents[index]}');
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildGridContent(List<String> contents) {
+    return GridView.builder(
+      padding: EdgeInsets.all(8.0),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3, // Jumlah kolom
+        crossAxisSpacing: 8.0,
+        mainAxisSpacing: 8.0,
+        childAspectRatio: 0.7, // Rasio aspek kotak agar lebih tinggi
+      ),
+      itemCount: contents.length,
+      itemBuilder: (context, index) {
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(8.0),
+          child: Image.asset(
+            'assets/images/dummies/${contents[index]}',
+            fit: BoxFit.cover,
+          ),
+        );
+      },
     );
   }
 }

@@ -55,11 +55,16 @@ dependencies:
   uuid: ^4.5.1
   flutter_bloc: ^8.1.6
   hydrated_bloc: ^9.1.5
+  flutter_launcher_icons: ^0.11.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+flutter_icons:
+  android: true
+  iso: true
+  image_path: "assets/logo/search.png"
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
@@ -75,6 +80,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/logo/
     - assets/images/dummies/
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

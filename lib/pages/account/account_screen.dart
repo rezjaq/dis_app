@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/constants/colors.dart';
-import 'package:dis_app/pages/account/form_sell.dart';
-import 'package:dis_app/pages/account/change_profile.dart';
-import 'dart:convert';
 import 'dart:io';
+
+enum SellFilter { all, available, sold }
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({Key? key}) : super(key: key);
@@ -17,12 +16,19 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   bool isSellSelected = true;
+  SellFilter selectedFilter = SellFilter.all;
   List<String> sellImagePaths = [];
   List<String> postImagePaths = [];
 
   void _toggleSection(bool isSell) {
     setState(() {
       isSellSelected = isSell;
+    });
+  }
+
+  void _selectFilter(SellFilter filter) {
+    setState(() {
+      selectedFilter = filter;
     });
   }
 
@@ -62,21 +68,11 @@ class _AccountScreenState extends State<AccountScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => UploadContentPage(
-                      imagePath: imagePath,
-                      onUpload: (String uploadedImagePath) {
-                        setState(() {
-                          sellImagePaths.add(uploadedImagePath);
-                          isSellSelected =
-                              true; // Optional: Keeps the selection on Sell
-                        });
-                        Navigator.of(context).pop();
-                      },
-                    ),
-                  ),
-                );
+                setState(() {
+                  sellImagePaths.add(imagePath);
+                  isSellSelected = true;
+                });
+                Navigator.of(context).pop();
               },
               child: const Text("Sell"),
             ),
@@ -84,7 +80,7 @@ class _AccountScreenState extends State<AccountScreen> {
               onPressed: () {
                 setState(() {
                   postImagePaths.add(imagePath);
-                  isSellSelected = false; // Switch to Post section
+                  isSellSelected = false;
                 });
                 Navigator.of(context).pop();
               },
@@ -105,7 +101,7 @@ class _AccountScreenState extends State<AccountScreen> {
           children: [
             Container(
               width: double.infinity,
-              height: DisHelperFunctions.screenHeight(context) * 0.375,
+              height: DisHelperFunctions.screenHeight(context) * 0.300,
               decoration: const BoxDecoration(
                 color: DisColors.primary,
                 borderRadius: BorderRadius.only(
@@ -115,7 +111,7 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
               padding: const EdgeInsets.only(
                 top: DisSizes.appBarHeight - 12,
-                left: DisSizes.md,
+                left: DisSizes.lg,
                 right: DisSizes.md,
                 bottom: DisSizes.lg,
               ),
@@ -128,14 +124,16 @@ class _AccountScreenState extends State<AccountScreen> {
                     height: DisHelperFunctions.screenWidth(context) * 0.3,
                     decoration: BoxDecoration(
                       color: DisColors.white,
-                      borderRadius: BorderRadius.circular(DisHelperFunctions.screenWidth(context) * 0.3),
+                      borderRadius: BorderRadius.circular(
+                          DisHelperFunctions.screenWidth(context) * 0.3),
                       border: Border.all(
                         color: DisColors.white,
                         width: 1.5,
                       ),
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(DisHelperFunctions.screenWidth(context) * 0.3),
+                      borderRadius: BorderRadius.circular(
+                          DisHelperFunctions.screenWidth(context) * 0.3),
                       child: Image.asset(
                         'assets/images/profile_2.jpg',
                         fit: BoxFit.cover,
@@ -153,7 +151,7 @@ class _AccountScreenState extends State<AccountScreen> {
                           "steffanie_joe_brown",
                           style: TextStyle(
                             color: DisColors.black,
-                            fontSize: DisSizes.fontSizeMd,
+                            fontSize: DisSizes.fontSizeLg,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -169,7 +167,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                   "1,234",
                                   style: TextStyle(
                                     color: DisColors.black,
-                                    fontSize: DisSizes.md,
+                                    fontSize: DisSizes.lg,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -189,7 +187,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                   "1,234",
                                   style: TextStyle(
                                     color: DisColors.black,
-                                    fontSize: DisSizes.md,
+                                    fontSize: DisSizes.lg,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
@@ -204,13 +202,14 @@ class _AccountScreenState extends State<AccountScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: DisSizes.sm),
+                        const SizedBox(height: DisSizes.md),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             GestureDetector(
                               onTap: () {
-                                DisHelperFunctions.navigateToRoute(context, '/change-profile');
+                                DisHelperFunctions.navigateToRoute(
+                                    context, '/change-profile');
                               },
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
@@ -219,7 +218,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: DisColors.white,
-                                  borderRadius: BorderRadius.circular(DisSizes.buttonRadius),
+                                  borderRadius: BorderRadius.circular(
+                                      DisSizes.buttonRadius),
                                 ),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -253,7 +253,8 @@ class _AccountScreenState extends State<AccountScreen> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: DisColors.white,
-                                  borderRadius: BorderRadius.circular(DisSizes.buttonRadius),
+                                  borderRadius: BorderRadius.circular(
+                                      DisSizes.buttonRadius),
                                 ),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -301,7 +302,9 @@ class _AccountScreenState extends State<AccountScreen> {
                         vertical: DisSizes.sm,
                       ),
                       decoration: BoxDecoration(
-                        color: isSellSelected ? DisColors.primary : DisColors.white,
+                        color: isSellSelected
+                            ? DisColors.primary
+                            : DisColors.white,
                         borderRadius: BorderRadius.horizontal(
                           left: Radius.circular(DisSizes.buttonRadius),
                         ),
@@ -330,7 +333,9 @@ class _AccountScreenState extends State<AccountScreen> {
                         vertical: DisSizes.sm,
                       ),
                       decoration: BoxDecoration(
-                        color: isSellSelected ? DisColors.white : DisColors.primary,
+                        color: isSellSelected
+                            ? DisColors.white
+                            : DisColors.primary,
                         borderRadius: BorderRadius.horizontal(
                           right: Radius.circular(DisSizes.buttonRadius),
                         ),
@@ -352,7 +357,6 @@ class _AccountScreenState extends State<AccountScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: DisSizes.md),
             isSellSelected ? _buildSellSection() : _buildPostSection(),
           ],
         ),
@@ -360,40 +364,57 @@ class _AccountScreenState extends State<AccountScreen> {
     );
   }
 
-  // Sell
   Widget _buildSellSection() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 4.0,
-          mainAxisSpacing: 4.0,
-          mainAxisExtent: MediaQuery.of(context).size.height * 0.25,
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(
+              left: 16.0,
+              top: 5.0,
+              right: 5.0,
+              bottom: 5.0), // Added left padding
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _buildFilterButton("All", SellFilter.all),
+              _buildFilterButton("Available", SellFilter.available),
+              _buildFilterButton("Sold", SellFilter.sold),
+            ],
+          ),
         ),
-        itemCount: sellImagePaths.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () => _showImageDialog(sellImagePaths[index]),
-            child: Container(
-              color: Colors.grey,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.file(
-                  File(sellImagePaths[index]),
-                  fit: BoxFit.cover,
-                ),
-              ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              crossAxisSpacing: 4.0,
+              mainAxisSpacing: 4.0,
+              mainAxisExtent: MediaQuery.of(context).size.height * 0.25,
             ),
-          );
-        },
-      ),
+            itemCount: sellImagePaths.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () => _showImageDialog(sellImagePaths[index]),
+                child: Container(
+                  color: Colors.grey,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8.0),
+                    child: Image.file(
+                      File(sellImagePaths[index]),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
-  // Post
   Widget _buildPostSection() {
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -422,6 +443,33 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildFilterButton(String label, SellFilter filter) {
+    final isSelected = selectedFilter == filter;
+    return GestureDetector(
+      onTap: () => _selectFilter(filter),
+      child: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        margin: const EdgeInsets.symmetric(horizontal: 4),
+        decoration: BoxDecoration(
+          color: isSelected ? DisColors.primary : DisColors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: DisColors.primary,
+            width: 1.5,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? DisColors.black : DisColors.primary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }

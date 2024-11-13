@@ -12,12 +12,16 @@ class UserInitial extends UserState {}
 class UserLoading extends UserState {}
 
 class UserSuccess extends UserState {
-  final String message;
+  final String? message;
+  final Map<String, dynamic>? data;
 
-  const UserSuccess({required this.message});
+  const UserSuccess({this.message, this.data});
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => [
+    message ?? '',
+    data ?? {},
+  ];
 }
 
 class UserFailure extends UserState {

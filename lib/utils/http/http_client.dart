@@ -1,10 +1,9 @@
 import 'dart:convert';
+import 'package:dis_app/utils/local_storage/local_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class DisHttpClient {
   static const String _baseUrl = 'http://10.0.2.2:8000/api'; // Change api.dis.com with your IP Address
-  static final FlutterSecureStorage _storage = FlutterSecureStorage();
 
   static Future<Map<String, dynamic>> get(String endpoint) async {
     final headers = await _getHeaders();
@@ -52,10 +51,10 @@ class DisHttpClient {
   }
 
   static Future<Map<String, String>> _getHeaders() async {
-    final token = await _storage.read(key: 'token');
+    final token = await DisLocalStorage().readData<String>('access_token');
     return {
       'Content-Type': 'application/json',
-      if (token != null) 'Authorization': '$token',
+      if (token != null) 'Authorization': 'Bearer $token',
     };
   }
 

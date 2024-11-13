@@ -28,6 +28,7 @@ class AuthController {
       else {
         final accessToken = response['data']['access_token'];
         await DisLocalStorage().saveData('access_token', accessToken);
+        print("Access Token: $accessToken");
         return response['data'];
       }
     } catch (e) {

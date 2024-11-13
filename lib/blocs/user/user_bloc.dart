@@ -2,6 +2,7 @@ import 'package:dis_app/blocs/user/user_event.dart';
 import 'package:dis_app/blocs/user/user_state.dart';
 import 'package:dis_app/controllers/user_controller.dart';
 import 'package:dis_app/models/user_model.dart';
+import 'package:dis_app/utils/local_storage/local_storage.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
@@ -12,8 +13,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       emit(UserLoading());
       try {
         final response = await userController.get();
-        emit(UserSuccess(message: response['data']));
+        print("Response: $response");
+        emit(UserSuccess(data: response));
       } catch (e) {
+        print(e);
         emit(UserFailure(message: e.toString()));
       }
     });
@@ -50,7 +53,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       emit(UserLoading());
       try {
         final response = await userController.logout();
-        emit(UserSuccess(message: response['data']));
+        if (response['data'] != true) {
+          throw response['errors'];
+        } else {
+          DisLocalStorage().removeData('access_token');
+          emit(UserSuccess(message: response['data']));
+        }
       } catch (e) {
         emit(UserFailure(message: e.toString()));
       }

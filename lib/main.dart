@@ -10,12 +10,16 @@ import 'package:dis_app/pages/account/changePass_screen.dart';
 import 'package:dis_app/pages/home_screen.dart';
 import 'package:dis_app/pages/camera_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 
 late List<CameraDescription> _cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   _cameras = await availableCameras();
+  final storage = await HydratedStorage.build(storageDirectory: await getApplicationDocumentsDirectory());
+  HydratedBloc.storage = storage;
   runApp(MyApp());
 }
 

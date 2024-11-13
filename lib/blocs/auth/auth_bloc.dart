@@ -20,7 +20,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           phone: event.phone,
         ));
         print("Response: {$response}");
-        emit(AuthSuccess(message: response['data']));
+        emit(AuthSuccess(message: "User registered successfully"));
       } catch (e) {
         print("Error: {$e}");
         emit(AuthFailure(message: e.toString()));
@@ -34,8 +34,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emailOrPhone: event.emailOrPhone,
           password: event.password,
         ));
-        emit(AuthSuccess(message: response['data']));
+        print("Response: {$response}");
+        emit(AuthSuccess(message: "Login successful"));
       } catch (e) {
+        print("Error: {$e}");
         emit(AuthFailure(message: e.toString()));
       }
     });

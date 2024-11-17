@@ -1,5 +1,5 @@
+import 'package:dis_app/pages/findme/ListFaceScreen.dart';
 import 'package:dis_app/pages/findme/chart_screen.dart';
-import 'package:dis_app/pages/findme/search_face.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
@@ -165,8 +165,9 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            SearchFaceScreen()),
+                                        builder: (context) => ListFaceScreen(
+                                              imagePath: '',
+                                            )),
                                   );
                                 },
                                 icon: SvgPicture.asset(

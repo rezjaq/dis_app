@@ -3,6 +3,7 @@ import 'package:dis_app/pages/auth/forgetPass_screen.dart';
 import 'package:dis_app/pages/auth/otp_screen.dart';
 import 'package:dis_app/pages/auth/register_screen.dart';
 import 'package:dis_app/pages/auth/login_screen.dart';
+import 'package:dis_app/pages/bank/bank_screen.dart';
 import 'package:dis_app/pages/splash_screen.dart';
 import 'package:dis_app/pages/transaction/balance_screen.dart';
 import 'package:dis_app/pages/transaction/transaction_screen.dart';
@@ -22,7 +23,8 @@ late List<CameraDescription> _cameras;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   _cameras = await availableCameras();
-  final storage = await HydratedStorage.build(storageDirectory: await getApplicationDocumentsDirectory());
+  final storage = await HydratedStorage.build(
+      storageDirectory: await getApplicationDocumentsDirectory());
   HydratedBloc.storage = storage;
   runApp(MyApp());
 }
@@ -52,6 +54,7 @@ class MyApp extends StatelessWidget {
         '/camera': (context) => CameraScreen(cameras: _cameras),
         '/transaction': (context) => TransactionScreen(),
         '/balance': (context) => BalanceScreen(),
+        '/bank-account': (context) => BankScreen(),
         '/withdrawal-history': (context) => WithdrawalHistoryScreen(),
       },
     );

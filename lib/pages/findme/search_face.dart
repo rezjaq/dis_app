@@ -1,7 +1,10 @@
 import 'package:camera/camera.dart';
+import 'package:dis_app/pages/findme/DisplayPhotoScreen.dart';
+import 'package:dis_app/pages/findme/ListFaceScreen.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import 'package:dis_app/utils/constants/colors.dart';
 
 class SearchFaceScreen extends StatefulWidget {
   @override
@@ -28,10 +31,6 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
     _controller = CameraController(frontCamera, ResolutionPreset.high);
     await _controller.initialize();
     setState(() => _isInitialized = true);
-
-    _controller.startImageStream((CameraImage image) {
-      // Tidak ada logika deteksi wajah di sini
-    });
   }
 
   Future<void> _capturePhoto() async {
@@ -39,21 +38,28 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
       try {
         XFile photo = await _controller.takePicture();
         final directory = await getApplicationDocumentsDirectory();
-        final imagePath = '${directory.path}/aligned_face_photo.jpg';
+        final timestamp = DateTime.now().millisecondsSinceEpoch;
+        final imagePath = '${directory.path}/aligned_face_photo_$timestamp.jpg';
+
         await photo.saveTo(imagePath);
 
-        // Log untuk memastikan foto disimpan
-        print("Foto disimpan di $imagePath");
-
-        // Navigasi ke halaman DisplayPhotoScreen setelah foto diambil
-        Navigator.push(
+        final result = await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => DisplayPhotoScreen(imagePath: imagePath),
           ),
         );
+
+        if (result != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ListFaceScreen(imagePath: result),
+            ),
+          );
+        }
       } catch (e) {
-        print("Error mengambil foto: $e");
+        print("Error capturing photo: $e");
       }
     } else {
       print("Camera not initialized");
@@ -70,42 +76,26 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search Face'),
+        title: Text('Tambah Selfie'),
       ),
       body: _isInitialized
           ? Stack(
               children: [
-                // Fullscreen CameraPreview
                 Positioned.fill(
                   child: Transform(
                     alignment: Alignment.center,
-                    transform: Matrix4.rotationY(3.14159), // Horizontal flip
+                    transform: Matrix4.rotationY(3.14159),
                     child: CameraPreview(_controller),
                   ),
                 ),
-                // Overlay image (lebih kecil dan posisi lebih tepat di tengah)
                 Positioned(
-                  top: MediaQuery.of(context).size.height / 3 -
-                      140, // Menurunkan overlay sedikit
-                  left: (MediaQuery.of(context).size.width - 250) /
-                      2, // Posisi horizontal tengah
-                  child: Image.asset(
-                    'assets/images/overlay.png',
-                    width: 250, // Ukuran overlay lebih kecil
-                    height: 350, // Ukuran overlay lebih kecil
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                // Tombol Ambil Foto di atas layer overlay dan memastikan tidak tertutup
-                Positioned(
-                  bottom: 40, // Posisi tombol dari bawah
-                  left: (MediaQuery.of(context).size.width - 150) /
-                      2, // Tengah horizontal
+                  bottom: 40,
+                  left: (MediaQuery.of(context).size.width - 150) / 2,
                   child: ElevatedButton(
-                    onPressed: _capturePhoto, // Tombol bisa langsung diklik
+                    onPressed: _capturePhoto,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.black,
-                      backgroundColor: Colors.white, // Teks hitam
+                      foregroundColor: DisColors.black,
+                      backgroundColor: DisColors.white,
                       padding:
                           EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                       shape: RoundedRectangleBorder(
@@ -118,26 +108,6 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
               ],
             )
           : Center(child: CircularProgressIndicator()),
-    );
-  }
-}
-
-class DisplayPhotoScreen extends StatelessWidget {
-  final String imagePath;
-
-  DisplayPhotoScreen({required this.imagePath});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Foto Tersimpan'),
-      ),
-      body: Center(
-        child: imagePath.isNotEmpty
-            ? Image.file(File(imagePath))
-            : Center(child: CircularProgressIndicator()),
-      ),
     );
   }
 }

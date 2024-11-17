@@ -1,3 +1,4 @@
+import 'package:dis_app/pages/bank/listBank_screen.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -78,7 +79,9 @@ class _AddbankScreenState extends State<AddbankScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  _saveBankAccount(context);
+                },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.all(16),
                   backgroundColor: DisColors.primary,
@@ -121,6 +124,13 @@ class _AddbankScreenState extends State<AddbankScreen> {
           setState(() {});
         },
       ),
+    );
+  }
+
+  void _saveBankAccount(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => BankAccountListScreen()),
     );
   }
 }

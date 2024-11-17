@@ -4,8 +4,10 @@ import 'package:dis_app/pages/account/account_screen.dart';
 import 'package:dis_app/pages/camera_screen.dart';
 import 'package:dis_app/pages/findme/findme_screen.dart';
 import 'package:dis_app/models/photo_model.dart';
+import 'package:dis_app/pages/transaction/transaction_screen.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
+import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
@@ -24,12 +26,12 @@ class BaseScreen extends StatefulWidget {
 class _BaseScreenState extends State<BaseScreen> {
   int _selectedIndex = 0;
   List<Widget> get _widgetOptions => <Widget>[
-        HomeScreen(
-          cameras: widget.cameras,
-        ),
-        FindMeScreen(),
-        AccountScreen(),
-      ];
+    HomeScreen(cameras: widget.cameras,),
+    FindMeScreen(),
+    Container(),
+    TransactionScreen(),
+    AccountScreen(),
+  ];
   // bool isLoggedIn = false;
 
   // List<Widget> get _widgetOptions => <Widget>[
@@ -53,51 +55,77 @@ class _BaseScreenState extends State<BaseScreen> {
         index: _selectedIndex,
         children: _widgetOptions,
       ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(
-              color: _selectedIndex == 0 ? DisColors.white : DisColors.grey,
-              width: 1.0,
-            ),
-          ),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          selectedLabelStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: DisSizes.fontSizeXs,
-            color: DisColors.primary,
-          ),
-          fixedColor: DisColors.primary,
-          type: BottomNavigationBarType.fixed,
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_outlined),
-              activeIcon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: SvgIcon(
-                assetName: 'assets/images/only-logo.svg',
-                color: _selectedIndex == 0 ? DisColors.white : DisColors.black,
+      bottomNavigationBar: Material(
+        elevation: 10,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    color: _selectedIndex == 0 ? DisColors.white : DisColors.grey,
+                    width: 1.0,
+                  ),
+                ),
               ),
-              activeIcon: SvgIcon(
-                  assetName: 'assets/images/only-logo.svg',
-                  color: DisColors.primary),
-              label: 'FindMe',
+              child: BottomNavigationBar(
+                currentIndex: _selectedIndex,
+                onTap: _onItemTapped,
+                selectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: DisSizes.fontSizeXs,
+                  color: DisColors.primary,
+                ),
+                fixedColor: DisColors.primary,
+                type: BottomNavigationBarType.fixed,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.home_outlined),
+                    activeIcon: Icon(Icons.home),
+                    label: 'Home',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: SvgIcon(
+                      assetName: 'assets/images/only-logo.svg',
+                      color: _selectedIndex == 0 ? DisColors.white : DisColors.darkGrey,
+                    ),
+                    activeIcon: SvgIcon(
+                        assetName: 'assets/images/only-logo.svg',
+                        color: DisColors.primary),
+                    label: 'FindMe',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: SizedBox.shrink(), // Empty space for the floating button
+                    label: '',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.receipt_long_outlined),
+                    activeIcon: Icon(Icons.receipt_long),
+                    label: 'Transaction',
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(Icons.account_circle_outlined),
+                    activeIcon: Icon(Icons.account_circle),
+                    label: 'Account',
+                  ),
+                ],
+                unselectedItemColor:
+                _selectedIndex == 0 ? DisColors.white : DisColors.darkGrey,
+                backgroundColor:
+                _selectedIndex == 0 ? DisColors.black : DisColors.white,
+              ),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle_outlined),
-              activeIcon: Icon(Icons.account_circle),
-              label: 'Account',
-            ),
+            Positioned(
+              top: -28,
+              left: DisHelperFunctions.screenWidth(context) / 2 - 28,
+              child: FloatingActionButton(
+                onPressed: () => _onItemTapped(2),
+                child: Icon(Icons.add, color: DisColors.white),
+                backgroundColor: DisColors.primary,
+              ),
+            )
           ],
-          unselectedItemColor:
-              _selectedIndex == 0 ? DisColors.white : DisColors.black,
-          backgroundColor:
-              _selectedIndex == 0 ? DisColors.black : DisColors.white,
         ),
       ),
     );

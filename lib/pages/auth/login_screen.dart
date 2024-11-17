@@ -198,15 +198,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               // Login Button
                               ElevatedButton(
                                 onPressed: () {
-                                  //DisHelperFunctions.navigateToRoute(context, '/home'); // If you not connect to API, you can use this code
-                                  if (_formKey.currentState!.validate()) {
+                                  DisHelperFunctions.navigateToRoute(context, '/home'); // If you not connect to API, you can use this code
+                                  /*if (_formKey.currentState!.validate()) {
                                     BlocProvider.of<AuthBloc>(context).add(
                                       AuthLoginEvent(
                                         emailOrPhone: _emailOrPhoneController.text,
                                         password: _passwordController.text,
                                       ),
                                     );
-                                  } // If you connect to API, you can use this code
+                                  }*/ // If you connect to API, you can use this code
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: DisColors.primary,

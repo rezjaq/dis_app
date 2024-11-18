@@ -1,136 +1,160 @@
-import 'package:dis_app/pages/bank/listBank_screen.dart';
-import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:dis_app/utils/constants/colors.dart';
 
-class AddbankScreen extends StatefulWidget {
-  @override
-  _AddbankScreenState createState() => _AddbankScreenState();
-}
-
-class _AddbankScreenState extends State<AddbankScreen> {
-  final _bankAccountNameController = TextEditingController();
-  final _accountNumberController = TextEditingController();
-  final _bankNameController = TextEditingController();
-
-  final _bankAccountNumberFocusNode = FocusNode();
-  final _accountNumberFocusNode = FocusNode();
-  final _bankNameFocusNode = FocusNode();
-
-  @override
-  void dispose() {
-    _bankAccountNameController.dispose();
-    _accountNumberController.dispose();
-    _bankNameController.dispose();
-    _bankAccountNumberFocusNode.dispose();
-    _accountNumberFocusNode.dispose();
-    _bankAccountNumberFocusNode.dispose();
-    super.dispose();
-  }
-
+class AddBankScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Add Bank Account',
-          style: TextStyle(color: DisColors.black, fontWeight: FontWeight.bold),
+        title: Text(
+          "Add Bank Account",
+          style: TextStyle(color: DisColors.black),
         ),
-        backgroundColor: Colors.white,
-        elevation: 0.5,
+        centerTitle: true,
+        backgroundColor: DisColors.white,
+        elevation: 1,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: DisColors.black),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        centerTitle: true,
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 20),
-            const Text(
-              'Full Name',
-              style: TextStyle(color: Colors.yellow), // Warna kuning
+            // Full Name Field
+            Text(
+              "Full Name",
+              style: TextStyle(fontSize: 14.0, color: DisColors.primary),
             ),
-            const SizedBox(height: 10),
-            _buildTextFormField(_bankAccountNameController,
-                'Name of the bank account', _bankAccountNumberFocusNode),
-            const SizedBox(height: 20),
-            const Text(
-              'Account Number',
-              style: TextStyle(color: Colors.yellow), // Warna kuning
+            SizedBox(height: 8.0),
+            TextFormField(
+              decoration: InputDecoration(
+                hintText: "Bank account's name",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
             ),
-            const SizedBox(height: 10),
-            _buildTextFormField(_accountNumberController, 'Add account number',
-                _accountNumberFocusNode),
-            const SizedBox(height: 20),
-            const Text(
-              'Bank Name',
-              style: TextStyle(color: Colors.yellow), // Warna kuning
+            SizedBox(height: 16.0),
+            // Account Number Field
+            Text(
+              "Account Number",
+              style: TextStyle(fontSize: 14.0, color: DisColors.primary),
             ),
-            const SizedBox(height: 10),
-            _buildTextFormField(
-                _bankNameController, 'Add bank name', _bankNameFocusNode),
-            const SizedBox(
-                height: 30), // Jarak antara elemen terakhir dan tombol
+            SizedBox(height: 8.0),
+            TextFormField(
+              decoration: InputDecoration(
+                hintText: "Add account number",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 16.0),
+            // Bank Name Field
+            Text(
+              "Bank Name",
+              style: TextStyle(fontSize: 14.0, color: DisColors.primary),
+            ),
+            SizedBox(height: 8.0),
+            DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
+              hint: Text("Add bank name"),
+              items: [
+                DropdownMenuItem(
+                  value: "Bank A",
+                  child: Text("Bank A"),
+                ),
+                DropdownMenuItem(
+                  value: "Bank B",
+                  child: Text("Bank B"),
+                ),
+                DropdownMenuItem(
+                  value: "Bank C",
+                  child: Text("Bank C"),
+                ),
+              ],
+              onChanged: (value) {
+                // Handle selection
+              },
+            ),
+            Spacer(),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  _saveBankAccount(context);
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      title: Column(
+                        children: [
+                          Icon(Icons.check_circle_outline,
+                              color: DisColors.success, size: 85.0),
+                          SizedBox(height: 16.0),
+                          Text("Success!",
+                              style: TextStyle(fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      content: Text("Your new bank account has been added"),
+                      actions: [
+                        Center(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.pushReplacementNamed(
+                                  context, '/BankAccountListScreen');
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: DisColors.primary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                            ),
+                            child: Text(
+                              "OK",
+                              style: TextStyle(
+                                color: DisColors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(16),
                   backgroundColor: DisColors.primary,
+                  padding: EdgeInsets.symmetric(vertical: 14.0),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
-                child: const Text(
-                  'Save',
-                  style: TextStyle(color: Colors.black),
+                child: Text(
+                  "Save",
+                  style: TextStyle(
+                    color: DisColors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                  ),
                 ),
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildTextFormField(
-      TextEditingController controller, String labelText, FocusNode focusNode,
-      {bool obscureText = false}) {
-    return Focus(
-      focusNode: focusNode,
-      child: TextFormField(
-        controller: controller,
-        obscureText: obscureText,
-        decoration: InputDecoration(
-          hintText: labelText,
-          filled: true,
-          fillColor: Colors.grey[100],
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide.none,
-          ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        ),
-        onTap: () {
-          setState(() {});
-        },
-      ),
-    );
-  }
-
-  void _saveBankAccount(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => BankAccountListScreen()),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:dis_app/pages/bank/editBank_screen.dart';
+import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 
 class BankAccountDetailScreen extends StatelessWidget {
@@ -53,7 +54,7 @@ class BankAccountDetailScreen extends StatelessWidget {
                         IconButton(
                           icon: const Icon(
                             Icons.edit,
-                            color: Colors.green,
+                            color: DisColors.success,
                           ),
                           onPressed: () {
                             Navigator.push(
@@ -71,7 +72,7 @@ class BankAccountDetailScreen extends StatelessWidget {
                         IconButton(
                           icon: const Icon(
                             Icons.delete,
-                            color: Colors.red,
+                            color: DisColors.error,
                           ),
                           onPressed: () {
                             _showDeleteConfirmation(context);
@@ -86,7 +87,7 @@ class BankAccountDetailScreen extends StatelessWidget {
                   'Account Name',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey,
+                    color: DisColors.darkerGrey,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -102,7 +103,7 @@ class BankAccountDetailScreen extends StatelessWidget {
                   'Account Number',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey,
+                    color: DisColors.darkerGrey,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -118,7 +119,7 @@ class BankAccountDetailScreen extends StatelessWidget {
                   'Bank Name',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey,
+                    color: DisColors.darkerGrey,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -156,7 +157,7 @@ class BankAccountDetailScreen extends StatelessWidget {
               },
               child: const Text(
                 'Cancel',
-                style: TextStyle(color: Colors.orange),
+                style: TextStyle(color: DisColors.primary),
               ),
             ),
             TextButton(
@@ -166,7 +167,7 @@ class BankAccountDetailScreen extends StatelessWidget {
               },
               child: const Text(
                 'Yes',
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: DisColors.error),
               ),
             ),
           ],

@@ -26,12 +26,14 @@ class BaseScreen extends StatefulWidget {
 class _BaseScreenState extends State<BaseScreen> {
   int _selectedIndex = 0;
   List<Widget> get _widgetOptions => <Widget>[
-    HomeScreen(cameras: widget.cameras,),
-    FindMeScreen(),
-    Container(),
-    TransactionScreen(),
-    AccountScreen(),
-  ];
+        HomeScreen(
+          cameras: widget.cameras,
+        ),
+        FindMeScreen(),
+        Container(),
+        TransactionScreen(),
+        AccountScreen(),
+      ];
   // bool isLoggedIn = false;
 
   // List<Widget> get _widgetOptions => <Widget>[
@@ -64,7 +66,8 @@ class _BaseScreenState extends State<BaseScreen> {
               decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide(
-                    color: _selectedIndex == 0 ? DisColors.white : DisColors.grey,
+                    color:
+                        _selectedIndex == 0 ? DisColors.white : DisColors.grey,
                     width: 1.0,
                   ),
                 ),
@@ -88,7 +91,9 @@ class _BaseScreenState extends State<BaseScreen> {
                   BottomNavigationBarItem(
                     icon: SvgIcon(
                       assetName: 'assets/images/only-logo.svg',
-                      color: _selectedIndex == 0 ? DisColors.white : DisColors.darkGrey,
+                      color: _selectedIndex == 0
+                          ? DisColors.white
+                          : DisColors.darkGrey,
                     ),
                     activeIcon: SvgIcon(
                         assetName: 'assets/images/only-logo.svg',
@@ -96,7 +101,7 @@ class _BaseScreenState extends State<BaseScreen> {
                     label: 'FindMe',
                   ),
                   BottomNavigationBarItem(
-                    icon: SizedBox.shrink(), // Empty space for the floating button
+                    icon: SizedBox.shrink(),
                     label: '',
                   ),
                   BottomNavigationBarItem(
@@ -111,9 +116,9 @@ class _BaseScreenState extends State<BaseScreen> {
                   ),
                 ],
                 unselectedItemColor:
-                _selectedIndex == 0 ? DisColors.white : DisColors.darkGrey,
+                    _selectedIndex == 0 ? DisColors.white : DisColors.darkGrey,
                 backgroundColor:
-                _selectedIndex == 0 ? DisColors.black : DisColors.white,
+                    _selectedIndex == 0 ? DisColors.black : DisColors.white,
               ),
             ),
             Positioned(

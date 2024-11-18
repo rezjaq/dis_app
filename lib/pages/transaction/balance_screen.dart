@@ -4,7 +4,6 @@ import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
-
 import '../../common/widgets/cardHistory.dart';
 
 class BalanceScreen extends StatefulWidget {
@@ -106,7 +105,7 @@ class _BalanceScreenState extends State<BalanceScreen> {
                       GestureDetector(
                         onTap: () {
                           DisHelperFunctions.navigateToRoute(
-                              context, 'history-withdrawal');
+                              context, '/history-withdrawal');
                         },
                         child: Container(
                           alignment: Alignment.center,
@@ -125,15 +124,16 @@ class _BalanceScreenState extends State<BalanceScreen> {
                               Text(
                                 "Withdrawal History",
                                 style: TextStyle(
-                                    color: DisColors.black,
-                                    fontSize: DisSizes.fontSizeSm,
-                                    fontWeight: FontWeight.w500),
+                                  color: DisColors.black,
+                                  fontSize: DisSizes.fontSizeSm,
+                                  fontWeight: FontWeight.w500,
+                                ),
                                 textAlign: TextAlign.center,
                               ),
                             ],
                           ),
                         ),
-                      ),
+                      )
                     ],
                   ),
                   SizedBox(
@@ -186,7 +186,7 @@ class _BalanceScreenState extends State<BalanceScreen> {
                         GestureDetector(
                           onTap: () {
                             DisHelperFunctions.navigateToRoute(
-                                context, '/withdrawal-history');
+                                context, '/withdraw');
                           },
                           child: Column(
                             children: [
@@ -235,8 +235,11 @@ class _BalanceScreenState extends State<BalanceScreen> {
                               horizontal: 16.0, vertical: 12.0),
                           decoration: BoxDecoration(
                             border: Border(
-                                bottom: BorderSide(
-                                    color: DisColors.grey, width: 2.0)),
+                              bottom: BorderSide(
+                                color: DisColors.grey,
+                                width: 2.0,
+                              ),
+                            ),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -244,13 +247,24 @@ class _BalanceScreenState extends State<BalanceScreen> {
                               Text(
                                 "Transaction History",
                                 style: TextStyle(
-                                    color: DisColors.black,
-                                    fontSize: DisSizes.fontSizeMd,
-                                    fontWeight: FontWeight.w500),
+                                  color: DisColors.black,
+                                  fontSize: DisSizes.fontSizeMd,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                color: DisColors.black,
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            TransactionHistoryScreen()),
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: DisColors.black,
+                                ),
                               ),
                             ],
                           ),
@@ -281,7 +295,6 @@ class _BalanceScreenState extends State<BalanceScreen> {
                           ),
                           child: InkWell(
                             onTap: () {
-                              // Navigasi ke TransactionHistoryScreen
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(

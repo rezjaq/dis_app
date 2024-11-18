@@ -1,3 +1,4 @@
+import 'package:dis_app/pages/account/form_sell.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -68,11 +69,22 @@ class _AccountScreenState extends State<AccountScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                setState(() {
-                  sellImagePaths.add(imagePath);
-                  isSellSelected = true;
-                });
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // Close the dialog
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UploadContentPage(
+                      imagePath: imagePath,
+                      onUpload: (uploadedImagePath) {
+                        // Tambahkan path gambar ke sellImagePaths
+                        setState(() {
+                          sellImagePaths.add(uploadedImagePath);
+                        });
+                        Navigator.pop(context); // Kembali ke halaman sebelumnya
+                      },
+                    ),
+                  ),
+                );
               },
               child: const Text("Sell"),
             ),
@@ -369,10 +381,7 @@ class _AccountScreenState extends State<AccountScreen> {
       children: [
         Padding(
           padding: const EdgeInsets.only(
-              left: 16.0,
-              top: 5.0,
-              right: 5.0,
-              bottom: 5.0), // Added left padding
+              left: 16.0, top: 5.0, right: 5.0, bottom: 5.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [

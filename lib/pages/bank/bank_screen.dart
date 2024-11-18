@@ -1,6 +1,7 @@
 import 'package:dis_app/pages/bank/addBank_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:dis_app/utils/constants/colors.dart';
 
 class BankScreen extends StatelessWidget {
   @override
@@ -9,13 +10,13 @@ class BankScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           "Bank Account List",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(color: DisColors.black),
         ),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: DisColors.white,
         elevation: 1,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: DisColors.black),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -47,21 +48,20 @@ class BankScreen extends StatelessWidget {
                 "Add a bank account to start withdrawing your commission.",
                 style: TextStyle(
                   fontSize: 14.0,
-                  color: Colors.grey,
+                  color: DisColors.darkerGrey,
                 ),
                 textAlign: TextAlign.center,
               ),
               SizedBox(height: 32.0),
               ElevatedButton(
                 onPressed: () {
-                  // Navigasi ke AddBankScreen
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => AddbankScreen()),
+                    MaterialPageRoute(builder: (context) => AddBankScreen()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFFFCC00), // Warna kuning
+                  backgroundColor: DisColors.primary,
                   padding:
                       EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
                   shape: RoundedRectangleBorder(
@@ -71,7 +71,7 @@ class BankScreen extends StatelessWidget {
                 child: Text(
                   "Add Bank Account",
                   style: TextStyle(
-                    color: Colors.black,
+                    color: DisColors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
                   ),

@@ -1,7 +1,7 @@
 import 'package:dis_app/pages/findme/checkout.dart';
-import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:dis_app/utils/constants/colors.dart';
 
 class ShoppingCartScreen extends StatefulWidget {
   @override
@@ -24,7 +24,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
         "img_1239.JPG", "photographer01", 15000, "assets/images/profile_2.jpg"),
   ];
 
-  List<bool> selectedItems = [];
+  late List<bool> selectedItems;
 
   @override
   void initState() {
@@ -73,7 +73,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
               child: Text("OK"),
             ),
@@ -111,7 +111,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
             ),
             title: Text("Select All",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-            tileColor: Colors.white, // Set tile background to white
+            tileColor: Colors.white,
           ),
           Expanded(
             child: ListView.builder(
@@ -120,70 +120,84 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                 return Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical: 8.0, horizontal: 10.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white, // Keep product item background white
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 6,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
+                  child: Dismissible(
+                    key: UniqueKey(),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20.0),
+                      alignment: Alignment.centerRight,
+                      color: Colors.red,
+                      child: Icon(Icons.delete, color: Colors.white),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Checkbox(
-                            value: selectedItems[index],
-                            onChanged: (bool? value) {
-                              setState(() {
-                                selectedItems[index] = value ?? false;
-                              });
-                            },
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              _showImageDialog(cartItems[index].imagePath);
-                            },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.asset(
-                                cartItems[index].imagePath,
-                                width: 80,
-                                height: 80,
-                                fit: BoxFit.cover,
+                    onDismissed: (direction) {
+                      setState(() {
+                        cartItems.removeAt(index);
+                        selectedItems.removeAt(index);
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text(
+                                "Item ${cartItems[index].title} removed.")),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 6,
+                              offset: Offset(0, 3)),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Checkbox(
+                              value: selectedItems[index],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  selectedItems[index] = value ?? false;
+                                });
+                              },
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                _showImageDialog(cartItems[index].imagePath);
+                              },
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image.asset(cartItems[index].imagePath,
+                                    width: 80, height: 80, fit: BoxFit.cover),
                               ),
                             ),
-                          ),
-                          SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  cartItems[index].title,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16),
-                                ),
-                                SizedBox(height: 2),
-                                Text(cartItems[index].photographer,
-                                    style: TextStyle(color: Colors.grey[600])),
-                                SizedBox(height: 4),
-                                Text(
-                                  "IDR ${currencyFormat.format(cartItems[index].price)}",
-                                  style: TextStyle(
-                                      color: Colors.orange,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ],
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(cartItems[index].title,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16)),
+                                  SizedBox(height: 2),
+                                  Text(cartItems[index].photographer,
+                                      style:
+                                          TextStyle(color: Colors.grey[600])),
+                                  SizedBox(height: 4),
+                                  Text(
+                                      "IDR ${currencyFormat.format(cartItems[index].price)}",
+                                      style: TextStyle(
+                                          color: Colors.orange,
+                                          fontWeight: FontWeight.w600)),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -210,10 +224,9 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                   child: Text(
                     "IDR ${currencyFormat.format(totalPrice)}",
                     style: TextStyle(
-                      fontSize: 20,
-                      color: DisColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 20,
+                        color: DisColors.primary,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -221,10 +234,7 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
           ),
           Padding(
             padding: const EdgeInsets.only(
-                left: 16.0,
-                right: 16.0,
-                bottom: 16.0,
-                top: 8.0), // Add top padding for the button
+                left: 16.0, right: 16.0, bottom: 16.0, top: 8.0),
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -256,15 +266,13 @@ class _ShoppingCartScreenState extends State<ShoppingCartScreen> {
                       ),
                     );
                   } else {
-                    // Show a warning dialog if no items are selected
                     _showWarningDialog();
                   }
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.shopping_cart,
-                        color: Colors.white), // Shopping cart icon
+                    Icon(Icons.shopping_cart, color: Colors.white),
                     SizedBox(width: 8),
                     Text(
                       "Buy Now",

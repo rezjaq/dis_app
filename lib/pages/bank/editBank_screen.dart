@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:dis_app/utils/constants/colors.dart';
 
 class EditBankAccountScreen extends StatefulWidget {
   final String accountName;
@@ -67,7 +68,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
               'Account Name',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.orange,
+                color: DisColors.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -85,7 +86,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
               'Account Number',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.orange,
+                color: DisColors.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -104,7 +105,7 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
               'Bank Name',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.orange,
+                color: DisColors.textPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -136,8 +137,8 @@ class _EditBankAccountScreenState extends State<EditBankAccountScreen> {
                   // Save logic here
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.yellow,
-                  foregroundColor: Colors.black,
+                  backgroundColor: DisColors.primary,
+                  foregroundColor: DisColors.black,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),

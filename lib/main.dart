@@ -4,6 +4,7 @@ import 'package:dis_app/pages/auth/otp_screen.dart';
 import 'package:dis_app/pages/auth/register_screen.dart';
 import 'package:dis_app/pages/auth/login_screen.dart';
 import 'package:dis_app/pages/bank/bank_screen.dart';
+import 'package:dis_app/pages/bank/listBank_screen.dart';
 import 'package:dis_app/pages/splash_screen.dart';
 import 'package:dis_app/pages/transaction/balance_screen.dart';
 import 'package:dis_app/pages/transaction/transaction_screen.dart';
@@ -13,7 +14,7 @@ import 'package:dis_app/pages/account/change_profile.dart';
 import 'package:dis_app/pages/account/changePass_screen.dart';
 import 'package:dis_app/pages/home_screen.dart';
 import 'package:dis_app/pages/camera_screen.dart';
-import 'package:dis_app/utils/constants/colors.dart';
+import 'package:dis_app/pages/withdraw/withdraw_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -55,7 +56,9 @@ class MyApp extends StatelessWidget {
         '/transaction': (context) => TransactionScreen(),
         '/balance': (context) => BalanceScreen(),
         '/bank-account': (context) => BankScreen(),
-        '/withdrawal-history': (context) => WithdrawalHistoryScreen(),
+        '/BankAccountListScreen': (context) => BankAccountListScreen(),
+        '/withdraw': (context) => WithdrawScreen(),
+        '/history-withdrawal': (context) => WithdrawalHistoryScreen(),
       },
     );
   }

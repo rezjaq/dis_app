@@ -278,10 +278,9 @@ class _UploadContentPageState extends State<UploadContentPage> {
               Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    // Handle upload action
+                    // Pastikan path gambar sudah ada
                     if (_imagePath != null) {
-                      widget.onUpload(_imagePath!);
-                      Navigator.pop(context);
+                      widget.onUpload(_imagePath!); // Panggil callback
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
         '/transaction': (context) => TransactionScreen(),
         '/balance': (context) => BalanceScreen(),
         '/bank-account': (context) => BankScreen(),
-        '/BankAccountListScreen': (context) => BankAccountListScreen(),
+        // '/BankAccountListScreen': (context) => BankAccountListScreen(),
         '/withdraw': (context) => WithdrawScreen(),
         '/history-withdrawal': (context) => WithdrawalHistoryScreen(),
       },

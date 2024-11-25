@@ -165,8 +165,8 @@ class ListPhotoRequest {
 class UpdateSellPhotoRequest {
   final String id;
   final String name;
-  final double basePrice;
-  final double sellPrice;
+  final String basePrice;
+  final String sellPrice;
   final String description;
 
   UpdateSellPhotoRequest({

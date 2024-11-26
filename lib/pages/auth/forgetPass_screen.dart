@@ -1,4 +1,5 @@
 import 'package:dis_app/pages/auth/otp_screen.dart';
+import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -37,7 +38,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   Text(
                     'Forgot Password?',
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: DisSizes.fontSizeXl,
                       fontWeight: FontWeight.bold,
                       color: DisColors.black,
                     ),
@@ -46,7 +47,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                   Text(
                     'Please enter the phone number we will send the OTP to this phone number.',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: DisSizes.fontSizeMd,
                       color: DisColors.darkerGrey,
                     ),
                   ),
@@ -94,7 +95,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       child: Text(
                         'Send OTP',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: DisSizes.fontSizeMd,
                           color: DisColors.black,
                         ),
                       ),

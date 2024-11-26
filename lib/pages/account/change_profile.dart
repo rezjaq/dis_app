@@ -18,7 +18,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController(text: '******');
+  final _passwordController = TextEditingController(text: '');
 
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();

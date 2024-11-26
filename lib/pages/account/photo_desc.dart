@@ -6,11 +6,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as path;
-
-import '../../../utils/constants/colors.dart';
+import 'package:dis_app/utils/constants/show_confirmation.dart'; 
 
 class PostFormPhotoScreen extends StatefulWidget {
   final XFile? imageFile;
+
   const PostFormPhotoScreen({Key? key, required this.imageFile}) : super(key: key);
 
   @override
@@ -155,24 +155,10 @@ class _PostFormPhotoScreenState extends State<PostFormPhotoScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Konfirmasi'),
-          content: const Text('Apakah Anda yakin ingin kembali? Foto tidak akan disimpan.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Tidak', style: TextStyle(color: DisColors.black)),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.pop(context);
-              },
-              child: const Text('Ya, Saya Yakin', style: TextStyle(color: DisColors.error)),
-            ),
-          ],
+        return DisShowConfirmation(
+          onConfirm: () {
+            Navigator.pop(context); // Kembali ke layar sebelumnya
+          },
         );
       },
     );

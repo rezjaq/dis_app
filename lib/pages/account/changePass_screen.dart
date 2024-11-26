@@ -1,6 +1,11 @@
+
+import 'package:dis_app/utils/constants/colors.dart';
+import 'package:dis_app/utils/constants/sizes.dart';
+
 import 'package:dis_app/blocs/user/user_bloc.dart';
 import 'package:dis_app/blocs/user/user_event.dart';
 import 'package:dis_app/blocs/user/user_state.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dis_app/utils/constants/colors.dart';
@@ -35,18 +40,19 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       appBar: AppBar(
         title: const Text(
           'Change Password',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(color: DisColors.black, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: DisColors.white,
         elevation: 0.5,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: DisColors.black),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
         centerTitle: true,
       ),
+
       body: BlocListener<UserBloc, UserState>(
         listener: (context, state) {
           if (state is UserLoading) {
@@ -55,6 +61,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               barrierDismissible: false,
               builder: (context) => const Center(
                 child: CircularProgressIndicator(),
+
               ),
             );
           } else if (state is UserSuccess) {
@@ -153,13 +160,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         decoration: InputDecoration(
           hintText: hintText,
           filled: true,
-          fillColor: Colors.grey[100],
+          fillColor: DisColors.grey,
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(DisSizes.borderRadiusMd),
             borderSide: BorderSide.none,
           ),
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              const EdgeInsets.symmetric(horizontal: DisSizes.md, vertical: DisSizes.sm),
         ),
       ),
     );

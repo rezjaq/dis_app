@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:dis_app/utils/constants/colors.dart';
+import 'package:dis_app/utils/constants/row.dart';
+import 'package:dis_app/utils/constants/success.dart';
+import 'package:dis_app/utils/constants/failed.dart';
 
 class ConfirmTransactionScreen extends StatelessWidget {
   final String amount;
@@ -65,13 +68,16 @@ class ConfirmTransactionScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildRow('Withdraw Amount', 'IDR $amount'),
+                  DisBuildRow(label: 'Withdraw Amount', value: 'IDR $amount'),
                   const SizedBox(height: 8),
-                  _buildRow('Withdraw To', bankDetails['name']),
+                  DisBuildRow(label: 'Withdraw To', value: bankDetails['name']),
                   const SizedBox(height: 8),
-                  _buildRow('Bank Name', bankDetails['bank']),
+                  DisBuildRow(label: 'Bank Name', value: bankDetails['bank']),
                   const SizedBox(height: 8),
-                  _buildRow('Account Number', bankDetails['accountNumber']),
+                  DisBuildRow(
+                    label: 'Account Number',
+                    value: bankDetails['accountNumber'],
+                  ),
                 ],
               ),
             ),
@@ -84,17 +90,24 @@ class ConfirmTransactionScreen extends StatelessWidget {
                   final int availableBalance = bankDetails['balance'] ?? 0;
 
                   if (withdrawAmount < 10000) {
-                    _showErrorDialog(
-                      context,
-                      "Minimum withdrawal amount is IDR 10,000.",
+                    showDialog(
+                      context: context,
+                      builder: (context) => DisFailed(
+                        message: "Minimum withdrawal amount is IDR 10,000.",
+                        onRetry: () => Navigator.pop(context),
+                      ),
                     );
                     return;
                   }
 
                   if (withdrawAmount > availableBalance) {
-                    _showErrorDialog(
-                      context,
-                      "Insufficient balance. Please check your account.",
+                    showDialog(
+                      context: context,
+                      builder: (context) => DisFailed(
+                        message:
+                            "Insufficient balance. Please check your account.",
+                        onRetry: () => Navigator.pop(context),
+                      ),
                     );
                     return;
                   }
@@ -102,11 +115,19 @@ class ConfirmTransactionScreen extends StatelessWidget {
                   final bool success = await _simulateTransaction();
 
                   if (success) {
-                    _showSuccessDialog(context);
+                    showDialog(
+                      context: context,
+                      builder: (context) => DisSuccess(
+                        onClose: () => Navigator.pop(context),
+                      ),
+                    );
                   } else {
-                    _showErrorDialog(
-                      context,
-                      "Transaction failed. Please try again.",
+                    showDialog(
+                      context: context,
+                      builder: (context) => DisFailed(
+                        message: "Transaction failed. Please try again.",
+                        onRetry: () => Navigator.pop(context),
+                      ),
                     );
                   }
                 },
@@ -129,128 +150,8 @@ class ConfirmTransactionScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(
-            color: DisColors.black,
-          ),
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: DisColors.black,
-          ),
-        ),
-      ],
-    );
-  }
-
   Future<bool> _simulateTransaction() async {
     await Future.delayed(const Duration(seconds: 2));
     return true;
-  }
-
-  void _showSuccessDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        title: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.check_circle,
-              color: DisColors.success,
-              size: 80.0,
-            ),
-            const SizedBox(height: 16.0),
-            const Text(
-              "Success!",
-              style: TextStyle(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-        content: const Text(
-          "Your commission has been transferred to your bank account.",
-          textAlign: TextAlign.center,
-        ),
-        actions: [
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: DisColors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: const Text(
-                "OK",
-                style: TextStyle(
-                  color: DisColors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showErrorDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        title: Column(
-          children: [
-            const Icon(Icons.error, color: DisColors.error, size: 80.0),
-            const SizedBox(height: 16.0),
-            const Text(
-              "Failed!",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        content: Text(message),
-        actions: [
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: DisColors.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              child: const Text(
-                "Retry",
-                style: TextStyle(
-                  color: DisColors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

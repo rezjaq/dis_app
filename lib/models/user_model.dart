@@ -43,13 +43,19 @@ class User {
       phone: json['phone'],
       username: json['username'],
       photo: json['photo'],
-      role: UserRole.values.firstWhere((e) => e.toString().split('.').last == json['role']),
-      emailVerifiedAt: json['emailVerifiedAt'] != null ? DateTime.parse(json['emailVerifiedAt']) : null,
+      role: UserRole.values
+          .firstWhere((e) => e.toString().split('.').last == json['role']),
+      emailVerifiedAt: json['emailVerifiedAt'] != null
+          ? DateTime.parse(json['emailVerifiedAt'])
+          : null,
       balance: json['balance'],
-      accounts: (json['accounts'] as List).map((account) => Account.fromJson(account)).toList(),
+      accounts: (json['accounts'] as List)
+          .map((account) => Account.fromJson(account))
+          .toList(),
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
-      deletedAt: json['deletedAt'] != null ? DateTime.parse(json['deletedAt']) : null,
+      deletedAt:
+          json['deletedAt'] != null ? DateTime.parse(json['deletedAt']) : null,
     );
   }
 
@@ -185,6 +191,29 @@ class ChangePhotoRequest {
   Map<String, dynamic> toJson() {
     return {
       'photo': photo,
+    };
+  }
+}
+
+class ChangeProfileRequest {
+  final String name;
+  final String email;
+  final String phone;
+  final String username;
+
+  ChangeProfileRequest({
+    required this.name,
+    required this.email,
+    required this.phone,
+    required this.username,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'email': email,
+      'phone': phone,
+      'username': username,
     };
   }
 }

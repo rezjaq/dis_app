@@ -1,9 +1,11 @@
 import 'package:camera/camera.dart';
+import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
+import 'package:dis_app/blocs/searchFace/searchFace_state.dart';
+import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
 import 'package:dis_app/pages/findme/DisplayPhotoScreen.dart';
 import 'package:dis_app/pages/findme/ListFaceScreen.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 
 class SearchFaceScreen extends StatefulWidget {
@@ -12,80 +14,69 @@ class SearchFaceScreen extends StatefulWidget {
 }
 
 class _SearchFaceScreenState extends State<SearchFaceScreen> {
-  late CameraController _controller;
-  late List<CameraDescription> _cameras;
-  bool _isInitialized = false;
+  late SearchFaceBloc _bloc;
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    _bloc = BlocProvider.of<SearchFaceBloc>(context);
   }
 
-  Future<void> _initializeCamera() async {
-    _cameras = await availableCameras();
-    final frontCamera = _cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
-    );
-
-    _controller = CameraController(frontCamera, ResolutionPreset.high);
-    await _controller.initialize();
-    setState(() => _isInitialized = true);
-  }
-
-  Future<void> _capturePhoto() async {
-    if (_controller.value.isInitialized) {
-      try {
-        XFile photo = await _controller.takePicture();
-        final directory = await getApplicationDocumentsDirectory();
-        final timestamp = DateTime.now().millisecondsSinceEpoch;
-        final imagePath = '${directory.path}/aligned_face_photo_$timestamp.jpg';
-
-        await photo.saveTo(imagePath);
-
-        final result = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DisplayPhotoScreen(imagePath: imagePath),
-          ),
-        );
-
-        if (result != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ListFaceScreen(imagePath: result),
-            ),
-          );
-        }
-      } catch (e) {
-        print("Error capturing photo: $e");
-      }
-    } else {
-      print("Camera not initialized");
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  void _capturePhoto() {
+    _bloc.add(CapturePhotoEvent());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tambah Selfie'),
+        title: Text(
+          'Tambah Selfie',
+          style: TextStyle(color: DisColors.white),
+        ),
+        backgroundColor: DisColors.primary,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: DisColors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
-      body: _isInitialized
-          ? Stack(
+      body: BlocConsumer<SearchFaceBloc, SearchFaceState>(
+        listener: (context, state) async {
+          if (state is SearchFacePhotoCaptured) {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    DisplayPhotoScreen(imagePath: state.imagePath),
+              ),
+            );
+
+            if (result != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ListFaceScreen(imagePath: result),
+                ),
+              );
+            }
+          } else if (state is SearchFaceError) {
+            print("Error: ${state.message}");
+          }
+        },
+        builder: (context, state) {
+          if (state is SearchFaceLoading) {
+            return Center(child: CircularProgressIndicator());
+          } else if (state is SearchFaceLoaded) {
+            return Stack(
               children: [
                 Positioned.fill(
                   child: Transform(
                     alignment: Alignment.center,
                     transform: Matrix4.rotationY(3.14159),
-                    child: CameraPreview(_controller),
+                    child: CameraPreview(state.controller),
                   ),
                 ),
                 Positioned(
@@ -94,8 +85,8 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
                   child: ElevatedButton(
                     onPressed: _capturePhoto,
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: DisColors.black,
-                      backgroundColor: DisColors.white,
+                      foregroundColor: DisColors.white,
+                      backgroundColor: DisColors.primary,
                       padding:
                           EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                       shape: RoundedRectangleBorder(
@@ -106,8 +97,12 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
                   ),
                 ),
               ],
-            )
-          : Center(child: CircularProgressIndicator()),
+            );
+          } else {
+            return Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
     );
   }
 }

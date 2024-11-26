@@ -19,7 +19,8 @@ class UserController {
 
   Future<Map<String, dynamic>> update(UpdateUserRequest request) async {
     try {
-      final response = await DisHttpClient.patch('user/update', request.toJson());
+      final response =
+          await DisHttpClient.patch('user/update', request.toJson());
       if (response['data'] == null) {
         throw response['errors'];
       } else {
@@ -44,9 +45,11 @@ class UserController {
     }
   }
 
-  Future<Map<String, dynamic>> changePassword(ChangePasswordRequest request) async {
+  Future<Map<String, dynamic>> changePassword(
+      ChangePasswordRequest request) async {
     try {
-      final response = await DisHttpClient.patch('user/change_password', request.toJson());
+      final response =
+          await DisHttpClient.patch('user/change_password', request.toJson());
       if (response['data'] == null) {
         throw response['errors'];
       } else {
@@ -59,7 +62,8 @@ class UserController {
 
   Future<Map<String, dynamic>> addAccount(AddAccountRequest request) async {
     try {
-      final response = await DisHttpClient.post('user/add_account', request.toJson());
+      final response =
+          await DisHttpClient.post('user/add_account', request.toJson());
       if (response['data'] == null) {
         throw response['errors'];
       } else {

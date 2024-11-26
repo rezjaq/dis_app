@@ -38,7 +38,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<UserChangePasswordEvent>((event, emit) async {
       emit(UserLoading());
       try {
-        final response = await userController.changePassword(ChangePasswordRequest(
+        final response =
+            await userController.changePassword(ChangePasswordRequest(
           oldPassword: event.oldPassword,
           newPassword: event.newPassword,
           confirmPassword: event.confirmPassword,
@@ -61,6 +62,29 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         }
       } catch (e) {
         emit(UserFailure(message: e.toString()));
+      }
+    });
+
+    on<UserChangeProfileEvent>((event, emit) async {
+      emit(UserLoading());
+      try {
+        final requestBody = ChangeProfileRequest(
+          name: event.name,
+          email: event.email,
+          phone: event.phone,
+          username: event.username,
+        );
+        final response = await userController
+            .update(requestBody.toJson() as UpdateUserRequest);
+        if (response['success'] == true) {
+          emit(UserSuccess(
+              message: response['message'] ?? "Profile updated successfully!"));
+        } else {
+          emit(UserFailure(
+              message: response['message'] ?? "Failed to update profile."));
+        }
+      } catch (e) {
+        emit(UserFailure(message: "An error occurred: ${e.toString()}"));
       }
     });
   }

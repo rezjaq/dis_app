@@ -3,51 +3,51 @@ import 'package:dis_app/utils/local_storage/local_storage.dart';
 import 'package:http/http.dart' as http;
 
 class DisHttpClient {
-  static const String _baseUrl = 'http://10.0.2.2:8000/api'; // Change api.dis.com with your IP Address
+  static const String _baseUrl =
+      'http://10.0.2.2:8000/api'; // Change api.dis.com with your IP Address
 
   static Future<Map<String, dynamic>> get(String endpoint) async {
     final headers = await _getHeaders();
-    final response = await http.get(Uri.parse('$_baseUrl/$endpoint'), headers: headers);
+    final response =
+        await http.get(Uri.parse('$_baseUrl/$endpoint'), headers: headers);
     return _handleResponse(response);
   }
 
-  static Future<Map<String, dynamic>> post(String endpoint, dynamic body) async {
+  static Future<Map<String, dynamic>> post(
+      String endpoint, dynamic body) async {
     final headers = await _getHeaders();
-    final response = await http.post(Uri.parse('$_baseUrl/$endpoint'), headers: headers, body: json.encode(body));
+    final response = await http.post(Uri.parse('$_baseUrl/$endpoint'),
+        headers: headers, body: json.encode(body));
     return _handleResponse(response);
   }
 
   static Future<Map<String, dynamic>> put(String endpoint, dynamic body) async {
     final headers = await _getHeaders();
-    final response = await http.put(Uri.parse('$_baseUrl/$endpoint'), headers: headers, body: json.encode(body));
+    final response = await http.put(Uri.parse('$_baseUrl/$endpoint'),
+        headers: headers, body: json.encode(body));
     return _handleResponse(response);
   }
 
   static Future<Map<String, dynamic>> delete(String endpoint) async {
     final headers = await _getHeaders();
-    final response = await http.delete(Uri.parse('$_baseUrl/$endpoint'), headers: headers);
+    final response =
+        await http.delete(Uri.parse('$_baseUrl/$endpoint'), headers: headers);
     return _handleResponse(response);
   }
 
-  static Future<Map<String, dynamic>> patch(String endpoint, dynamic body) async {
+  static Future<Map<String, dynamic>> patch(
+      String endpoint, dynamic body) async {
     final headers = await _getHeaders();
-    final response = await http.patch(Uri.parse('$_baseUrl/$endpoint'), headers: headers, body: json.encode(body));
+    final response = await http.patch(Uri.parse('$_baseUrl/$endpoint'),
+        headers: headers, body: json.encode(body));
     return _handleResponse(response);
   }
 
-  static Future<Map<String, dynamic>> multipart(String endpoint, Map<String, String> files, Map<String, String> fields) async {
+  static Future<http.MultipartRequest> multipartRequest(String endpoint, String method) async {
     final headers = await _getHeaders();
-    final request = http.MultipartRequest('POST', Uri.parse('$_baseUrl/$endpoint'));
+    var request = http.MultipartRequest(method, Uri.parse('$_baseUrl/$endpoint'));
     request.headers.addAll(headers);
-    files.forEach((key, value) {
-      request.files.add(http.MultipartFile.fromBytes(key, value.codeUnits, filename: key));
-    });
-    fields.forEach((key, value) {
-      request.fields[key] = value;
-    });
-    final response = await request.send();
-    final responseString = await response.stream.bytesToString();
-    return json.decode(responseString);
+    return request;
   }
 
   static Future<Map<String, String>> _getHeaders() async {

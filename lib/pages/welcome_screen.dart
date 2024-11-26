@@ -133,8 +133,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                     ? Colors.white
                                     : Colors.black,
                                 fontSize:
-                                    DisHelperFunctions.screenWidth(context) *
-                                        0.06, // Adjusted font size
+                                    DisSizes.fontSizeXl, // Adjusted font size
                               ),
                             ),
                           ),
@@ -162,8 +161,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                                     ? Colors.black
                                     : Colors.white,
                                 fontSize:
-                                    DisHelperFunctions.screenWidth(context) *
-                                        0.06, // Adjusted font size
+                                    DisSizes.fontSizeXl, // Adjusted font size
                               ),
                             ),
                           ),

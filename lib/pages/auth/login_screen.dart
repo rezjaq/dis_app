@@ -26,7 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
-  Map<String, dynamic>? _message;
 
   @override
   Widget build(BuildContext context) {
@@ -36,53 +35,30 @@ class _LoginScreenState extends State<LoginScreen> {
         child: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthSuccess) {
-              setState(() {
-                _message = {"success": state.message};
-              });
-              Timer(
-                const Duration(seconds: 3),
-                    () {
-                  setState(() {
-                    _message = null;
-                  });
-                },
-              );
               DisHelperFunctions.navigateToRoute(context, '/home');
-            }
-            if (state is AuthFailure) {
-              setState(() {
-                _message = {"error": state.message};
-              });
-              Timer(
-                const Duration(seconds: 3),
-                    () {
-                  setState(() {
-                    _message = null;
-                  });
-                },
-              );
             }
           },
           child: BlocBuilder<AuthBloc, AuthState>(
               builder: (context, state) {
                 return Stack(
                   children: [
-                    if (_message != null)
+                    if (state is AuthLoading)
+                      const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    if (state is AuthSuccess)
                       Positioned(
                         top: 0,
                         left: 0,
                         right: 0,
-                        child: DisAlertBanner(
-                            message: _message!["error"] != null
-                                ? _message!["error"]
-                                : _message!["success"],
-                            color: _message!["error"] != null
-                                ? DisColors.error
-                                : DisColors.success,
-                            icon: _message!["error"] != null
-                                ? Icons.error
-                                : Icons.check_circle
-                        ),
+                          child: DisAlertBanner(message: state.message, color: DisColors.success, icon: Icons.check_circle)
+                      ),
+                    if (state is AuthFailure)
+                      Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: DisAlertBanner(message: state.message, color: DisColors.error, icon: Icons.error)
                       ),
                     Positioned(
                       top: 0,
@@ -94,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: DisHelperFunctions.screenHeight(context) * 0.5,
                           color: DisColors.primary,
                           child: Padding(
-                            padding: const EdgeInsets.all(DisSizes.md),
+                            padding: const EdgeInsets.all(16.0),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -104,152 +80,163 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ],
                             ),
-                          ),
+                          ],
                         ),
                       ),
                     ),
-                    Positioned(
-                      top: DisHelperFunctions.screenHeight(context) * 0.3,
-                      left: DisSizes.md,
-                      right: DisSizes.md,
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: DisColors.white,
-                          borderRadius: BorderRadius.circular(DisSizes.borderRadiusXl),
-                          boxShadow: [
-                            BoxShadow(
-                              color: DisColors.grey.withOpacity(0.2),
-                              blurRadius: 10,
-                              spreadRadius: 5,
-                            ),
-                          ],
+                  ),
+                ),
+                Positioned(
+                  top: DisHelperFunctions.screenHeight(context) * 0.3,
+                  left: DisSizes.md,
+                  right: DisSizes.md,
+                  child: Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.2),
+                          blurRadius: 10,
+                          spreadRadius: 5,
                         ),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
+                      ],
+                    ),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Title and Description
+                          const Text(
+                            "Hi, Welcome Back! 👋",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            "Let's Detect Your Facial Emotion",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          // Email or Phone Number Field
+                          DisTextFormField(
+                              labelText: "Email or Phone Number",
+                              hintText: "Enter your email or phone number",
+                              controller: _emailOrPhoneController,
+                              validator: (value) {
+                                return DisValidator.validateEmpty(value);
+                              }),
+                          const SizedBox(height: DisSizes.md),
+                          // Password Field
+                          DisTextFormField(
+                            labelText: "Password",
+                            hintText: "Enter your password",
+                            obscureText: !_isPasswordVisible,
+                            showPasswordToggle: true,
+                            controller: _passwordController,
+                            validator: (value) {
+                              return DisValidator.validateEmpty(value);
+                            },
+                          ),
+                          const SizedBox(height: DisSizes.md),
+                          // Remember Me and Forgot Password Row
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              // Title and Description
-                              const Text(
-                                "Hi, Welcome Back! 👋",
-                                style: TextStyle(
-                                  fontSize: DisSizes.fontSizeXl,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              const Text(
-                                "Let's Detect Your Facial Emotion",
-                                style: TextStyle(
-                                  fontSize: DisSizes.fontSizeMd,
-                                  color: DisColors.grey,
-                                ),
-                              ),
-                              const SizedBox(height: DisSizes.lg),
-                              // Email or Phone Number Field
-                              DisTextFormField(
-                                  labelText: "Email or Phone Number",
-                                  hintText: "Enter your email or phone number",
-                                  controller: _emailOrPhoneController,
-                                  validator: (value) {
-                                    return DisValidator.validateEmpty(value);
-                                  }),
-                              const SizedBox(height: DisSizes.md),
-                              // Password Field
-                              DisTextFormField(
-                                labelText: "Password",
-                                hintText: "Enter your password",
-                                obscureText: !_isPasswordVisible,
-                                showPasswordToggle: true,
-                                controller: _passwordController,
-                                validator: (value) {
-                                  return DisValidator.validateEmpty(value);
-                                },
-                              ),
-                              const SizedBox(height: DisSizes.md),
-                              // Remember Me and Forgot Password Row
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Checkbox(
-                                        value: _rememberMe,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            _rememberMe = value ?? false;
-                                          });
-                                        },
-                                      ),
-                                      const Text("Remember Me"),
-                                    ],
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      DisHelperFunctions.navigateToRoute(context, '/forgot-password');
+                                  Checkbox(
+                                    value: _rememberMe,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _rememberMe = value ?? false;
+                                      });
                                     },
-                                    child: const Text("Forgot Password?",
-                                        style: TextStyle(color: DisColors.error)),
                                   ),
+                                  const Text("Remember Me"),
                                 ],
                               ),
-                              const SizedBox(height: DisSizes.md),
-                              // Login Button
-                              ElevatedButton(
+                              TextButton(
                                 onPressed: () {
-                                  DisHelperFunctions.navigateToRoute(context, '/home'); // If you not connect to API, you can use this code
-                                  /*if (_formKey.currentState!.validate()) {
+                                  // DisHelperFunctions.navigateToRoute(context, '/home'); // If you not connect to API, you can use this code
+                                  if (_formKey.currentState!.validate()) {
                                     BlocProvider.of<AuthBloc>(context).add(
                                       AuthLoginEvent(
                                         emailOrPhone: _emailOrPhoneController.text,
                                         password: _passwordController.text,
                                       ),
                                     );
-                                  }*/ // If you connect to API, you can use this code
+                                  } // If you connect to API, you can use this code
                                 },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: DisColors.primary,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                child: const Center(
-                                  child: Text(
-                                    "Login",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: DisColors.black,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: DisSizes.md),
-                              // Sign Up link
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Text("Don't have an account? "),
-                                  TextButton(
-                                    onPressed: () {
-                                      DisHelperFunctions.navigateToRoute(context, '/register');
-                                    },
-                                    child: const Text("Sign Up",
-                                        style: TextStyle(color: DisColors.primary)),
-                                  ),
-                                ],
+                                child: const Text("Forgot Password?",
+                                    style: TextStyle(color: DisColors.error)),
                               ),
                             ],
                           ),
-                        ),
+                          const SizedBox(height: DisSizes.md),
+                          // Login Button
+                          ElevatedButton(
+                            onPressed: () {
+                              DisHelperFunctions.navigateToRoute(context,
+                                  '/home'); // If you not connect to API, you can use this code
+                              // if (_formKey.currentState!.validate()) {
+                              //   BlocProvider.of<AuthBloc>(context).add(
+                              //     AuthLoginEvent(
+                              //       emailOrPhone: _emailOrPhoneController.text,
+                              //       password: _passwordController.text,
+                              //     ),
+                              //   );
+                              // } // , If you connect to API, you can use this code
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: DisColors.primary,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Center(
+                              child: Text(
+                                "Login",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: DisColors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: DisSizes.md),
+                          // Sign Up link
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text("Don't have an account? "),
+                              TextButton(
+                                onPressed: () {
+                                  DisHelperFunctions.navigateToRoute(
+                                      context, '/register');
+                                },
+                                child: const Text("Sign Up",
+                                    style: TextStyle(color: DisColors.primary)),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                );
-              }
-          ),
+                  ),
+                ),
+              ],
+            );
+          }),
         ),
       ),
     );

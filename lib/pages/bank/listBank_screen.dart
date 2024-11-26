@@ -4,26 +4,31 @@ import 'package:flutter/material.dart';
 class BankAccountListScreen extends StatelessWidget {
   final List<Map<String, String>> bankAccounts = [
     {
+      'id': "1",
       'accountNumber': '901803692999',
       'name': 'KAMALA HARRIS',
       'bank': 'SEABANK',
     },
     {
+      'id': "2",
       'accountNumber': '202503692999',
       'name': 'KAMALA HARRIS',
       'bank': 'Bank Syariah Indonesia (BSI)',
     },
     {
+      'id': "3",
       'accountNumber': '7651803692999',
       'name': 'KAMALA HARRIS',
       'bank': 'Bank Mandiri',
     },
     {
+      'id': "4",
       'accountNumber': '901803692999',
       'name': 'KAMALA HARRIS',
       'bank': 'Bank Central Asia (BCA)',
     },
     {
+      'id': "5",
       'accountNumber': '777803692999',
       'name': 'KAMALA HARRIS',
       'bank': 'Bank Rakyat Indonesia (BRI)',
@@ -61,9 +66,7 @@ class BankAccountListScreen extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) => BankAccountDetailScreen(
-                    accountName: account['name']!,
-                    accountNumber: account['accountNumber']!,
-                    bankName: account['bank']!,
+                    id: account['id']!,
                   ),
                 ),
               );

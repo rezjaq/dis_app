@@ -1,4 +1,11 @@
 import 'package:camera/camera.dart';
+import 'package:dis_app/blocs/chart/chart_bloc.dart';
+import 'package:dis_app/blocs/displayPhoto/displayPhoto_bloc.dart';
+import 'package:dis_app/blocs/listFace/listFace_bloc.dart';
+import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
+import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
+import 'package:dis_app/blocs/user/user_bloc.dart';
+import 'package:dis_app/controllers/user_controller.dart';
 import 'package:dis_app/pages/auth/forgetPass_screen.dart';
 import 'package:dis_app/pages/auth/otp_screen.dart';
 import 'package:dis_app/pages/auth/register_screen.dart';
@@ -16,6 +23,7 @@ import 'package:dis_app/pages/home_screen.dart';
 import 'package:dis_app/pages/camera_screen.dart';
 import 'package:dis_app/pages/withdraw/withdraw_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -25,9 +33,24 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   _cameras = await availableCameras();
   final storage = await HydratedStorage.build(
-      storageDirectory: await getApplicationDocumentsDirectory());
+    storageDirectory: await getApplicationDocumentsDirectory(),
+  );
   HydratedBloc.storage = storage;
-  runApp(MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => UserBloc(userController: UserController())),
+        BlocProvider(create: (_) => CartBloc()),
+        BlocProvider(create: (context) => ListFaceBloc()),
+        BlocProvider(create: (context) => SearchFaceBloc()),
+        BlocProvider(
+          create: (context) => SearchFaceBloc()..add(InitializeCameraEvent()),
+        ),
+        BlocProvider(create: (_) => DisplayPhotoBloc()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -56,7 +79,7 @@ class MyApp extends StatelessWidget {
         '/transaction': (context) => TransactionScreen(),
         '/balance': (context) => BalanceScreen(),
         '/bank-account': (context) => BankScreen(),
-        '/BankAccountListScreen': (context) => BankAccountListScreen(),
+        // '/BankAccountListScreen': (context) => BankAccountListScreen(),
         '/withdraw': (context) => WithdrawScreen(),
         '/history-withdrawal': (context) => WithdrawalHistoryScreen(),
       },

@@ -59,6 +59,7 @@ class _BalanceScreenState extends State<BalanceScreen> {
               fontWeight: FontWeight.bold,
               fontSize: DisSizes.fontSizeMd),
         ),
+        centerTitle: true,
       ),
       body: Stack(
         children: [

@@ -1,4 +1,5 @@
 import 'package:dis_app/pages/bank/addBank_screen.dart';
+import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:dis_app/utils/constants/colors.dart';
@@ -24,35 +25,35 @@ class BankScreen extends StatelessWidget {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: DisSizes.md),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               SvgPicture.asset(
                 'assets/images/noBankAccount.svg',
-                height: 200,
+                height: DisSizes.imageSize,
               ),
-              SizedBox(height: 24.0),
+              SizedBox(height: DisSizes.lg),
               // Title Text
               Text(
                 "No Bank Account Linked",
                 style: TextStyle(
-                  fontSize: 20.0,
+                  fontSize: DisSizes.fontSizeXx,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 8.0),
+              SizedBox(height: DisSizes.sm),
               // Subtitle Text
               Text(
                 "Add a bank account to start withdrawing your commission.",
                 style: TextStyle(
-                  fontSize: 14.0,
+                  fontSize: DisSizes.fontSizeSm,
                   color: DisColors.darkerGrey,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 32.0),
+              SizedBox(height: DisSizes.xl),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
@@ -62,8 +63,8 @@ class BankScreen extends StatelessWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: DisColors.primary,
-                  padding:
-                      EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+                  padding: EdgeInsets.symmetric(
+                      horizontal: DisSizes.lg, vertical: DisSizes.md),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -73,7 +74,7 @@ class BankScreen extends StatelessWidget {
                   style: TextStyle(
                     color: DisColors.black,
                     fontWeight: FontWeight.bold,
-                    fontSize: 16.0,
+                    fontSize: DisSizes.md,
                   ),
                 ),
               ),

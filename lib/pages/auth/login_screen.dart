@@ -94,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: DisHelperFunctions.screenHeight(context) * 0.5,
                           color: DisColors.primary,
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(DisSizes.md),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -115,11 +115,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(16),
+                          color: DisColors.white,
+                          borderRadius: BorderRadius.circular(DisSizes.borderRadiusXl),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
+                              color: DisColors.grey.withOpacity(0.2),
                               blurRadius: 10,
                               spreadRadius: 5,
                             ),
@@ -134,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               const Text(
                                 "Hi, Welcome Back! 👋",
                                 style: TextStyle(
-                                  fontSize: 24,
+                                  fontSize: DisSizes.fontSizeXl,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -142,11 +142,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               const Text(
                                 "Let's Detect Your Facial Emotion",
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
+                                  fontSize: DisSizes.fontSizeMd,
+                                  color: DisColors.grey,
                                 ),
                               ),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: DisSizes.lg),
                               // Email or Phone Number Field
                               DisTextFormField(
                                   labelText: "Email or Phone Number",

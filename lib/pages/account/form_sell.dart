@@ -1,3 +1,4 @@
+import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -112,7 +113,7 @@ class _UploadContentPageState extends State<UploadContentPage> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(DisSizes.md),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -146,7 +147,7 @@ class _UploadContentPageState extends State<UploadContentPage> {
                     : 'Belum ada gambar dipilih',
                 readOnly: true,
               ),
-              SizedBox(height: 20),
+              SizedBox(height: DisSizes.ll),
 
               // Currency and Price
               Row(
@@ -181,7 +182,7 @@ class _UploadContentPageState extends State<UploadContentPage> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              SizedBox(height: DisSizes.ll),
 
               // Sale Price (Read-Only)
               TextFormField(
@@ -193,7 +194,7 @@ class _UploadContentPageState extends State<UploadContentPage> {
                 'Pendapatan kamu: $_pendapatan',
                 style: TextStyle(color: DisColors.grey),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: DisSizes.ll),
 
               // Location (Optional)
               TextFormField(
@@ -202,7 +203,7 @@ class _UploadContentPageState extends State<UploadContentPage> {
                   // Implement Google Maps location picker
                 },
               ),
-              SizedBox(height: 20),
+              SizedBox(height: DisSizes.ll),
 
               // Date and Time
               Row(
@@ -236,7 +237,7 @@ class _UploadContentPageState extends State<UploadContentPage> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              SizedBox(height: DisSizes.ll),
 
               // Description
               TextFormField(
@@ -245,13 +246,13 @@ class _UploadContentPageState extends State<UploadContentPage> {
                 ),
                 maxLines: 3,
               ),
-              SizedBox(height: 20),
+              SizedBox(height: DisSizes.ll),
 
               // FotoTree (Optional)
               TextFormField(
                 decoration: InputDecoration(labelText: 'FotoTree (Opsional)'),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: DisSizes.ll),
 
               // Tag Nickname User (Optional)
               Row(
@@ -272,7 +273,7 @@ class _UploadContentPageState extends State<UploadContentPage> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              SizedBox(height: DisSizes.ll),
 
               // Upload Button
               Center(

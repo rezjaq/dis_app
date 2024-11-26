@@ -2,6 +2,7 @@ import 'package:dis_app/blocs/user/user_bloc.dart';
 import 'package:dis_app/blocs/user/user_event.dart';
 import 'package:dis_app/blocs/user/user_state.dart';
 import 'package:dis_app/controllers/user_controller.dart';
+import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -90,11 +91,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(DisSizes.md),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 16),
+                    const SizedBox(height: DisSizes.md),
                     // Profile Picture with edit icon
                     Stack(
                       alignment: Alignment.bottomRight,
@@ -114,19 +115,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: DisSizes.md),
                     // Name Field
                     _buildTextFormField(_nameController, 'Name', _nameFocusNode),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: DisSizes.md),
                     // Email Field
                     _buildTextFormField(_emailController, 'Email', _emailFocusNode),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: DisSizes.md),
                     // Username Field
                     _buildTextFormField(_usernameController, 'Username', _usernameFocusNode),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: DisSizes.md),
                     // Phone Number Field
                     _buildTextFormField(_phoneController, 'Phone Number', _phoneFocusNode),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: DisSizes.md),
                     // Password Field with Change Password button
                     Row(
                       children: [
@@ -139,16 +140,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             readOnly: true,
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: DisSizes.md),
                         ElevatedButton(
                           onPressed: () {
                             Navigator.pushReplacementNamed(context, '/change-password');
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: DisColors.primary,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                            padding: const EdgeInsets.symmetric(horizontal: DisSizes.md, vertical: DisSizes.md),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(DisSizes.borderRadiusMd),
                             ),
                           ),
                           child: const Text(
@@ -158,7 +159,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: DisSizes.lg),
                     // Log Out Button
                     Align(
                       alignment: Alignment.centerLeft,
@@ -179,7 +180,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             // Save Profile Button
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(DisSizes.md),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -190,10 +191,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         _showSaveConfirmationDialog(context);
                       },
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(DisSizes.md),
                         backgroundColor: DisColors.primary,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(DisSizes.borderRadiusMd),
                         ),
                       ),
                       child: const Text(
@@ -230,7 +231,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: DisColors.primary, width: 2.0),
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(horizontal: DisSizes.md, vertical: DisSizes.sm),
           // Adjust label style to use DisColors for primary text color
           labelStyle: TextStyle(
             color: focusNode.hasFocus ? DisColors.textPrimary : DisColors.darkerGrey,
@@ -263,9 +264,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             textAlign: TextAlign.center,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(DisSizes.borderRadiusMd),
           ),
-          contentPadding: const EdgeInsets.symmetric(vertical: 20),
+          contentPadding: const EdgeInsets.symmetric(vertical: DisSizes.ll),
           actionsPadding: const EdgeInsets.only(bottom: 0), // Adjust bottom padding
           actions: [
             Column(
@@ -274,7 +275,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 Container(
                   width: double.infinity,
                   height: 1,
-                  color: const Color(0xFFFFCC00), // Yellow divider color
+                  color: DisColors.primary, // Yellow divider color
                 ),
                 Row(
                   children: [

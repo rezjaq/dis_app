@@ -1,7 +1,14 @@
 import 'dart:io';
+import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
+import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
+import 'package:dis_app/models/face_model.dart';
 import 'package:dis_app/pages/findme/search_face.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dis_app/utils/constants/colors.dart';
+import 'package:dis_app/blocs/listFace/listFace_bloc.dart';
+import 'package:dis_app/blocs/listFace/listFace_event.dart';
+import 'package:dis_app/blocs/listFace/listFace_state.dart';
 
 class ListFaceScreen extends StatefulWidget {
   final String imagePath;
@@ -13,39 +20,19 @@ class ListFaceScreen extends StatefulWidget {
 }
 
 class _ListFaceScreenState extends State<ListFaceScreen> {
-  bool _isLoading = true;
-  List<String> _similarPhotos = []; // Mock similar photos paths
-
   @override
   void initState() {
     super.initState();
-    _loadSimilarPhotos();
-  }
-
-  // Simulated loading function for similar faces
-  Future<void> _loadSimilarPhotos() async {
-    await Future.delayed(Duration(seconds: 2)); // Simulated delay
-
-    // Mock list of similar photos (replace with actual paths or network images if available)
-    _similarPhotos = [
-      'assets/images/similar_face1.jpg',
-      'assets/images/similar_face2.jpg',
-      'assets/images/similar_face3.jpg',
-      'assets/images/similar_face4.jpg',
-    ];
-
-    setState(() {
-      _isLoading = false;
-    });
+    context.read<ListFaceBloc>().add(LoadSimilarPhotos());
   }
 
   void _navigateToSearchFace() {
-    // Navigate to search face screen
+    context.read<SearchFaceBloc>().add(InitializeCameraEvent());
     Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) =>
-              SearchFaceScreen()), // Replace with your actual search face screen
+        builder: (context) => SearchFaceScreen(),
+      ),
     );
   }
 
@@ -53,22 +40,29 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pop(context); // Go back to FindMe page
+        Navigator.pop(context);
         return false;
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Tambah Selfie'),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
+          title: Text(
+            'Tambah Selfie',
+            style: TextStyle(color: DisColors.white),
           ),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: DisColors.white),
+            onPressed: () {
+              context.read<ListFaceBloc>().add(ClearListFace());
+              Navigator.pop(context);
+            },
+          ),
+          backgroundColor: DisColors.primary,
+          elevation: 0,
         ),
         body: Padding(
           padding: EdgeInsets.all(16),
           child: Column(
             children: [
-              // Greeting with icon and text
               Row(
                 children: [
                   Icon(Icons.room, color: DisColors.primary, size: 40),
@@ -82,7 +76,6 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
                 ],
               ),
               SizedBox(height: 20),
-              // Display original photo and "Tambah Selfie" button side-by-side
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -91,11 +84,22 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
                 ],
               ),
               SizedBox(height: 20),
-              // Display similar photos or skeleton loader
               Expanded(
-                child: _isLoading
-                    ? _buildSkeletonLoader()
-                    : _buildSimilarPhotosGrid(),
+                child: BlocBuilder<ListFaceBloc, ListFaceState>(
+                  builder: (context, state) {
+                    if (state is ListFaceLoading) {
+                      return _buildSkeletonLoader();
+                    } else if (state is ListFaceLoaded) {
+                      return _buildSimilarPhotosGrid(state.similarPhotos);
+                    } else if (state is ListFaceError) {
+                      return Center(
+                        child: Text(state.message,
+                            style: TextStyle(color: Colors.red)),
+                      );
+                    }
+                    return SizedBox.shrink();
+                  },
+                ),
               ),
             ],
           ),
@@ -104,7 +108,6 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
     );
   }
 
-  // Widget to display the original photo with label
   Widget _buildOriginalPhoto() {
     return Column(
       children: [
@@ -125,7 +128,6 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
     );
   }
 
-  // Widget to display "Tambah Selfie" button with an empty placeholder image
   Widget _buildAddSelfieButton() {
     return GestureDetector(
       onTap: _navigateToSearchFace,
@@ -139,8 +141,11 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: Center(
-              child: Text('Tambah Selfie',
-                  style: TextStyle(fontSize: 16, color: Colors.purple)),
+              child: Icon(
+                Icons.add_a_photo_sharp,
+                size: 40,
+                color: DisColors.white,
+              ),
             ),
           ),
           SizedBox(height: 8),
@@ -150,7 +155,6 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
     );
   }
 
-  // Skeleton loader widget
   Widget _buildSkeletonLoader() {
     return GridView.builder(
       padding: EdgeInsets.symmetric(horizontal: 20),
@@ -160,7 +164,7 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
       ),
-      itemCount: 4, // Adjust based on the number of placeholders you want
+      itemCount: 4,
       itemBuilder: (context, index) {
         return Container(
           decoration: BoxDecoration(
@@ -172,8 +176,7 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
     );
   }
 
-  // Grid view of similar photos
-  Widget _buildSimilarPhotosGrid() {
+  Widget _buildSimilarPhotosGrid(List<PhotoModel> photos) {
     return GridView.builder(
       padding: EdgeInsets.symmetric(horizontal: 20),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -182,13 +185,13 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
       ),
-      itemCount: _similarPhotos.length,
+      itemCount: photos.length,
       itemBuilder: (context, index) {
         return Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
-              image: AssetImage(_similarPhotos[index]),
+              image: AssetImage(photos[index].imagePath),
               fit: BoxFit.cover,
             ),
           ),

@@ -1,5 +1,9 @@
-import 'package:dis_app/utils/constants/colors.dart';
+import 'package:dis_app/blocs/user/user_bloc.dart';
+import 'package:dis_app/blocs/user/user_event.dart';
+import 'package:dis_app/blocs/user/user_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:dis_app/utils/constants/colors.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   @override
@@ -10,7 +14,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-
   final _currentPasswordFocusNode = FocusNode();
   final _newPasswordFocusNode = FocusNode();
   final _confirmPasswordFocusNode = FocusNode();
@@ -44,69 +47,103 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         ),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
-                  // Current Password Field
-                  const Text('Current Password'),
-                  const SizedBox(height: 10),
-                  _buildTextFormField(_currentPasswordController,
-                      'Enter your current password', _currentPasswordFocusNode,
-                      obscureText: true),
-                  const SizedBox(height: 20),
-                  // New Password Field
-                  const Text('New Password'),
-                  const SizedBox(height: 10),
-                  _buildTextFormField(_newPasswordController,
-                      'Enter your new password', _newPasswordFocusNode,
-                      obscureText: true),
-                  const SizedBox(height: 20),
-                  // New Password Confirmation Field
-                  const Text('New Password Confirmation'),
-                  const SizedBox(height: 10),
-                  _buildTextFormField(_confirmPasswordController,
-                      'Re-type your new password', _confirmPasswordFocusNode,
-                      obscureText: true),
-                ],
+      body: BlocListener<UserBloc, UserState>(
+        listener: (context, state) {
+          if (state is UserLoading) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => const Center(
+                child: CircularProgressIndicator(),
               ),
-            ),
-          ),
-          // Save Password Button
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/change-profile');
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(16),
-                  backgroundColor: DisColors.primary,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  'Save Password',
-                  style: TextStyle(color: Colors.black),
-                ),
-              ),
-            ),
-          ),
-        ],
+            );
+          } else if (state is UserSuccess) {
+            if (Navigator.canPop(context)) {
+              Navigator.of(context).pop();
+            }
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(state.message ?? 'Password changed successfully!'),
+              backgroundColor: DisColors.success,
+            ));
+            Navigator.pop(context);
+          } else if (state is UserFailure) {
+            if (Navigator.canPop(context)) {
+              Navigator.of(context).pop();
+            }
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(state.message),
+              backgroundColor: DisColors.error,
+            ));
+          }
+        },
+        child: _buildForm(context),
       ),
     );
   }
 
+  Widget _buildForm(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
+                _buildTextFieldSection('Current Password',
+                    _currentPasswordController, _currentPasswordFocusNode),
+                const SizedBox(height: 20),
+                _buildTextFieldSection('New Password', _newPasswordController,
+                    _newPasswordFocusNode),
+                const SizedBox(height: 20),
+                _buildTextFieldSection('New Password Confirmation',
+                    _confirmPasswordController, _confirmPasswordFocusNode),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                _onSavePassword(context);
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.all(16),
+                backgroundColor: DisColors.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Save Password',
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextFieldSection(
+      String label, TextEditingController controller, FocusNode focusNode) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label),
+        const SizedBox(height: 10),
+        _buildTextFormField(controller, 'Enter your $label', focusNode,
+            obscureText: true),
+      ],
+    );
+  }
+
   Widget _buildTextFormField(
-      TextEditingController controller, String labelText, FocusNode focusNode,
+      TextEditingController controller, String hintText, FocusNode focusNode,
       {bool obscureText = false}) {
     return Focus(
       focusNode: focusNode,
@@ -114,7 +151,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
-          hintText: labelText,
+          hintText: hintText,
           filled: true,
           fillColor: Colors.grey[100],
           border: OutlineInputBorder(
@@ -124,10 +161,35 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ),
-        onTap: () {
-          setState(() {});
-        },
       ),
     );
+  }
+
+  void _onSavePassword(BuildContext context) {
+    final oldPassword = _currentPasswordController.text.trim();
+    final newPassword = _newPasswordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    if (oldPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Please fill in all fields'),
+        backgroundColor: DisColors.error,
+      ));
+      return;
+    }
+
+    if (newPassword != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('New password and confirmation do not match'),
+        backgroundColor: DisColors.error,
+      ));
+      return;
+    }
+
+    BlocProvider.of<UserBloc>(context).add(UserChangePasswordEvent(
+      oldPassword: oldPassword,
+      newPassword: newPassword,
+      confirmPassword: confirmPassword,
+    ));
   }
 }

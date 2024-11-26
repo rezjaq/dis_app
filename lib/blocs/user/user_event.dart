@@ -7,8 +7,7 @@ abstract class UserEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class UserGetEvent extends UserEvent {
-}
+class UserGetEvent extends UserEvent {}
 
 class UserUpdateEvent extends UserEvent {
   final String name;
@@ -42,4 +41,21 @@ class UserChangePasswordEvent extends UserEvent {
 
 class UserLogoutEvent extends UserEvent {
   const UserLogoutEvent();
+}
+
+class UserChangeProfileEvent extends UserEvent {
+  final String name;
+  final String email;
+  final String phone;
+  final String username;
+
+  const UserChangeProfileEvent({
+    required this.name,
+    required this.email,
+    required this.phone,
+    required this.username,
+  });
+
+  @override
+  List<Object> get props => [name, email, phone, username];
 }

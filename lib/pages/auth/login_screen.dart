@@ -26,7 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
-  Map<String, dynamic>? _message;
 
   @override
   Widget build(BuildContext context) {
@@ -36,70 +35,50 @@ class _LoginScreenState extends State<LoginScreen> {
         child: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthSuccess) {
-              setState(() {
-                _message = {"success": state.message};
-              });
-              Timer(
-                const Duration(seconds: 3),
-                () {
-                  setState(() {
-                    _message = null;
-                  });
-                },
-              );
               DisHelperFunctions.navigateToRoute(context, '/home');
             }
-            if (state is AuthFailure) {
-              setState(() {
-                _message = {"error": state.message};
-              });
-              Timer(
-                const Duration(seconds: 3),
-                () {
-                  setState(() {
-                    _message = null;
-                  });
-                },
-              );
-            }
           },
-          child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
-            return Stack(
-              children: [
-                if (_message != null)
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: DisAlertBanner(
-                        message: _message!["error"] != null
-                            ? _message!["error"]
-                            : _message!["success"],
-                        color: _message!["error"] != null
-                            ? DisColors.error
-                            : DisColors.success,
-                        icon: _message!["error"] != null
-                            ? Icons.error
-                            : Icons.check_circle),
-                  ),
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: ClipPath(
-                    clipper: TopWaveClipper(), // kurva
-                    child: Container(
-                      height: DisHelperFunctions.screenHeight(context) * 0.5,
-                      color: DisColors.primary,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              'assets/images/login.svg',
-                              height: DisHelperFunctions.screenHeight(context) *
-                                  0.4,
+          child: BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                return Stack(
+                  children: [
+                    if (state is AuthLoading)
+                      const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    if (state is AuthSuccess)
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                          child: DisAlertBanner(message: state.message, color: DisColors.success, icon: Icons.check_circle)
+                      ),
+                    if (state is AuthFailure)
+                      Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: DisAlertBanner(message: state.message, color: DisColors.error, icon: Icons.error)
+                      ),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: ClipPath(
+                        clipper: TopWaveClipper(), // kurva
+                        child: Container(
+                          height: DisHelperFunctions.screenHeight(context) * 0.5,
+                          color: DisColors.primary,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  'assets/images/login.svg',
+                                  height: DisHelperFunctions.screenHeight(context) * 0.4,
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -186,8 +165,15 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  DisHelperFunctions.navigateToRoute(
-                                      context, '/forget-password');
+                                  // DisHelperFunctions.navigateToRoute(context, '/home'); // If you not connect to API, you can use this code
+                                  if (_formKey.currentState!.validate()) {
+                                    BlocProvider.of<AuthBloc>(context).add(
+                                      AuthLoginEvent(
+                                        emailOrPhone: _emailOrPhoneController.text,
+                                        password: _passwordController.text,
+                                      ),
+                                    );
+                                  } // If you connect to API, you can use this code
                                 },
                                 child: const Text("Forgot Password?",
                                     style: TextStyle(color: DisColors.error)),

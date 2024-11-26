@@ -19,8 +19,8 @@ class UserController {
 
   Future<Map<String, dynamic>> update(UpdateUserRequest request) async {
     try {
-      final response =
-          await DisHttpClient.patch('user/update', request.toJson());
+      final response = await DisHttpClient.patch(
+          'user/update', request.toJson());
       if (response['data'] == null) {
         throw response['errors'];
       } else {
@@ -48,8 +48,8 @@ class UserController {
   Future<Map<String, dynamic>> changePassword(
       ChangePasswordRequest request) async {
     try {
-      final response =
-          await DisHttpClient.patch('user/change_password', request.toJson());
+      final response = await DisHttpClient.patch(
+          'user/change_password', request.toJson());
       if (response['data'] == null) {
         throw response['errors'];
       } else {
@@ -62,8 +62,8 @@ class UserController {
 
   Future<Map<String, dynamic>> addAccount(AddAccountRequest request) async {
     try {
-      final response =
-          await DisHttpClient.post('user/add_account', request.toJson());
+      final response = await DisHttpClient.post(
+          'user/add_account', request.toJson());
       if (response['data'] == null) {
         throw response['errors'];
       } else {
@@ -71,6 +71,60 @@ class UserController {
       }
     } catch (e) {
       throw Exception('Failed to add account: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> listAccount(ListAccountRequest request) async {
+    try {
+      final queryParams = request.toQueryParams();
+      final response = await DisHttpClient.get('user/accounts?$queryParams');
+      if (response['data'] == null) {
+        throw response['errors'];
+      } else {
+        return response;
+      }
+    }
+    catch (e) {
+      throw Exception('Failed to list account: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> getAccount(GetAccountRequest request) async {
+    try {
+      final response = await DisHttpClient.get('user/account/${request.id}');
+      if (response['data'] == null) {
+        throw response['errors'];
+      } else {
+        return response['data'];
+      }
+    } catch (e) {
+      throw Exception('Failed to get account: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> updateAccount(UpdateAccountRequest request) async {
+    try {
+      final response = await DisHttpClient.patch('user/account/${request.id}', request.toJson());
+      if (response['data'] == null) {
+        throw response['errors'];
+      } else {
+        return response['data'];
+      }
+    } catch (e) {
+      throw Exception('Failed to update account: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteAccount(DeleteAccountRequest request) async {
+    try {
+      final response = await DisHttpClient.delete('user/account/${request.id}');
+      if (response['data'] == null) {
+        throw response['errors'];
+      } else {
+        return response['data'];
+      }
+    } catch (e) {
+      throw Exception('Failed to delete account: $e');
     }
   }
 }

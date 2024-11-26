@@ -43,22 +43,11 @@ class DisHttpClient {
     return _handleResponse(response);
   }
 
-  static Future<Map<String, dynamic>> multipart(String endpoint,
-      Map<String, String> files, Map<String, String> fields) async {
+  static Future<http.MultipartRequest> multipartRequest(String endpoint, String method) async {
     final headers = await _getHeaders();
-    final request =
-        http.MultipartRequest('POST', Uri.parse('$_baseUrl/$endpoint'));
+    var request = http.MultipartRequest(method, Uri.parse('$_baseUrl/$endpoint'));
     request.headers.addAll(headers);
-    files.forEach((key, value) {
-      request.files.add(
-          http.MultipartFile.fromBytes(key, value.codeUnits, filename: key));
-    });
-    fields.forEach((key, value) {
-      request.fields[key] = value;
-    });
-    final response = await request.send();
-    final responseString = await response.stream.bytesToString();
-    return json.decode(responseString);
+    return request;
   }
 
   static Future<Map<String, String>> _getHeaders() async {

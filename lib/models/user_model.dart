@@ -181,6 +181,76 @@ class AddAccountRequest {
   }
 }
 
+class ListAccountRequest {
+  String? bank;
+  String? name;
+  String? number;
+  int? page;
+  int? size;
+
+  ListAccountRequest({
+    this.bank,
+    this.name,
+    this.number,
+    this.page,
+    this.size,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'bank': bank,
+      'name': name,
+      'number': number,
+      'page': page,
+      'size': size,
+    };
+  }
+
+  String toQueryParams() {
+    final params = toJson();
+    params.removeWhere((key, value) => value == null);
+    return params.entries.map((e) => '${e.key}=${e.value}').join('&');
+  }
+}
+
+class GetAccountRequest {
+  final String id;
+
+  GetAccountRequest({
+    required this.id,
+  });
+}
+
+class UpdateAccountRequest {
+  final String id;
+  final String bank;
+  final String name;
+  final String number;
+
+  UpdateAccountRequest({
+    required this.id,
+    required this.bank,
+    required this.name,
+    required this.number,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'bank': bank,
+      'name': name,
+      'number': number,
+    };
+  }
+}
+
+class DeleteAccountRequest {
+  final String id;
+
+  DeleteAccountRequest({
+    required this.id,
+  });
+}
+
 class ChangePhotoRequest {
   final XFile photo;
 

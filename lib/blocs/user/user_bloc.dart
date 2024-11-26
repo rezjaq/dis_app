@@ -65,6 +65,64 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       }
     });
 
+    on<AddBankEvent>((event, emit) async {
+      emit(UserLoading());
+      try {
+        final response = await userController.addAccount(AddAccountRequest(
+          bank: event.bank,
+          name: event.name,
+          number: event.number,
+        ));
+        emit(UserSuccess(message: "Bank account added successfully", data: response['data']));
+      } catch (e) {
+        emit(UserFailure(message: e.toString()));
+      }
+    });
+
+    on<ListBankEvent>((event, emit) async {
+      emit(UserLoading());
+      try {
+        final response = await userController.listAccount(ListAccountRequest());
+        print(response);
+        emit(UserSuccess(data: response));
+      } catch (e) {
+        emit(UserFailure(message: e.toString()));
+      }
+    });
+
+    on<GetBankEvent>((event, emit) async {
+      emit(UserLoading());
+      try {
+        final response = await userController.getAccount(GetAccountRequest(id: event.id));
+        emit(UserSuccess(data: response));
+      } catch (e) {
+        emit(UserFailure(message: e.toString()));
+      }
+    });
+
+    on<UpdateBankEvent>((event, emit) async {
+      emit(UserLoading());
+      try {
+        final response = await userController.updateAccount(UpdateAccountRequest(
+          id: event.id,
+          bank: event.bank,
+          name: event.name,
+          number: event.number,
+        ));
+        emit(UserSuccess(message: "Bank account updated successfully", data: response));
+      } catch (e) {
+        emit(UserFailure(message: e.toString()));
+      }
+    });
+
+    on<DeleteBankEvent>((event, emit) async {
+      emit(UserLoading());
+      try {
+        final response = await userController.deleteAccount(DeleteAccountRequest(id: event.id));
+        emit(UserSuccess(message: "Bank account deleted successfully", data: response));
+      } catch (e) {
+        emit(UserFailure(message: e.toString()));
+
     on<UserChangeProfileEvent>((event, emit) async {
       emit(UserLoading());
       try {

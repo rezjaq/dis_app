@@ -1,6 +1,8 @@
 import 'package:camera/camera.dart';
 import 'package:dis_app/common/widgets/svgIcon.dart';
+import 'package:dis_app/pages/account/NotLoggedInScreen.dart';
 import 'package:dis_app/pages/account/account_screen.dart';
+import 'package:dis_app/pages/account/form_sell.dart';
 import 'package:dis_app/pages/camera_screen.dart';
 import 'package:dis_app/pages/findme/findme_screen.dart';
 import 'package:dis_app/models/photo_model.dart';
@@ -9,6 +11,7 @@ import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'dart:convert';
@@ -25,6 +28,18 @@ class BaseScreen extends StatefulWidget {
 
 class _BaseScreenState extends State<BaseScreen> {
   int _selectedIndex = 0;
+  //if you use API for login
+  // List<Widget> get _widgetOptions => <Widget>[
+  //       HomeScreen(
+  //         cameras: widget.cameras,
+  //       ),
+  //       FindMeScreen(),
+  //       Container(),
+  //       TransactionScreen(),
+  //       _isLoggedIn ? AccountScreen() : NotLoggedInScreen(),
+  //     ];
+
+  // if not use this code
   List<Widget> get _widgetOptions => <Widget>[
         HomeScreen(
           cameras: widget.cameras,
@@ -34,20 +49,69 @@ class _BaseScreenState extends State<BaseScreen> {
         TransactionScreen(),
         AccountScreen(),
       ];
-  // bool isLoggedIn = false;
 
-  // List<Widget> get _widgetOptions => <Widget>[
-  //       HomeScreen(
-  //         cameras: widget.cameras,
-  //       ),
-  //       FindMeScreen(),
-  //       isLoggedIn ? AccountScreen() : NotLoggedInScreen(),
-  //     ];
+  // Handles bottom navigation item selection
+  void _onItemTapped(int index) async {
+    if (index == 2) {
+      await _pickImage();
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  // Picks an image from the gallery
+  Future<void> _pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    if (image != null) {
+      _showUploadOptions(image.path);
+    }
+  }
+
+  // Shows dialog with upload options after selecting an image
+  void _showUploadOptions(String imagePath) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Upload To"),
+          content: const Text("Where do you want to upload this image?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => UploadContentPage(
+                      imagePath: imagePath,
+                      onUpload: (uploadedImagePath) {
+                        setState(() {
+                          // Handle uploaded image
+                        });
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                );
+              },
+              child: const Text("Sell"),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  // Handle post image
+                });
+                Navigator.of(context).pop();
+              },
+              child: const Text("Post"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -103,6 +167,7 @@ class _BaseScreenState extends State<BaseScreen> {
                   BottomNavigationBarItem(
                     icon: SizedBox.shrink(),
                     label: '',
+                    backgroundColor: DisColors.primary,
                   ),
                   BottomNavigationBarItem(
                     icon: Icon(Icons.receipt_long_outlined),
@@ -125,11 +190,12 @@ class _BaseScreenState extends State<BaseScreen> {
               top: -28,
               left: DisHelperFunctions.screenWidth(context) / 2 - 28,
               child: FloatingActionButton(
-                onPressed: () => _onItemTapped(2),
+                onPressed: () =>
+                    _onItemTapped(2), // Trigger Gallery tab selection
                 child: Icon(Icons.add, color: DisColors.white),
                 backgroundColor: DisColors.primary,
               ),
-            )
+            ),
           ],
         ),
       ),

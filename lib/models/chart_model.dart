@@ -5,4 +5,6 @@ class CartItem {
   final String imagePath;
 
   CartItem(this.title, this.photographer, this.price, this.imagePath);
+
+  static fromJson(item) {}
 }

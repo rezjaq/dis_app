@@ -77,7 +77,9 @@ class ProfileHeader extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildActionButton(Icons.edit, "Edit Profile", () {}),
+                    _buildActionButton(Icons.edit, "Edit Profile", () {
+                      Navigator.pushNamed(context, '/change-profile');
+                    }),
                     _buildActionButton(Icons.add, "Upload", onPickImage),
                   ],
                 ),

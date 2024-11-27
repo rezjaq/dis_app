@@ -8,7 +8,7 @@ class DisHelperFunctions {
     );
   }
 
-  static void showAlert(BuildContext context, String title, String message) {
+  static void showAlert(BuildContext context, String title, String message, Function onTap) {
     showDialog(
       context: context,
       builder: (BuildContext ctx) {
@@ -17,7 +17,7 @@ class DisHelperFunctions {
           content: Text(message),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
+              onPressed: () => onTap(),
               child: const Text('OK'),
             ),
           ],

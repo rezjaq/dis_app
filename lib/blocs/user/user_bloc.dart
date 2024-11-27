@@ -122,6 +122,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         emit(UserSuccess(message: "Bank account deleted successfully", data: response));
       } catch (e) {
         emit(UserFailure(message: e.toString()));
+      }
+    });
 
     on<UserChangeProfileEvent>((event, emit) async {
       emit(UserLoading());

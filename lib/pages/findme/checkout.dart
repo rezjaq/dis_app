@@ -225,6 +225,9 @@ class CheckoutScreen extends StatelessWidget {
                                 context,
                                 "Order Confirmation",
                                 "Are you sure you want to place the order?",
+                                  () {
+                                    DisHelperFunctions.navigateToRoute(context, "/payment");
+                                  }
                               );
                             },
                             child: Row(

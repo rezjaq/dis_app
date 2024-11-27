@@ -14,6 +14,7 @@ import 'package:dis_app/pages/bank/bank_screen.dart';
 import 'package:dis_app/pages/bank/listBank_screen.dart';
 import 'package:dis_app/pages/splash_screen.dart';
 import 'package:dis_app/pages/transaction/balance_screen.dart';
+import 'package:dis_app/pages/transaction/payment_page.dart';
 import 'package:dis_app/pages/transaction/transaction_screen.dart';
 import 'package:dis_app/pages/transaction/withdrawal_history_screen.dart';
 import 'package:dis_app/pages/welcome_screen.dart';
@@ -82,6 +83,7 @@ class MyApp extends StatelessWidget {
         // '/BankAccountListScreen': (context) => BankAccountListScreen(),
         '/withdraw': (context) => WithdrawScreen(),
         '/history-withdrawal': (context) => WithdrawalHistoryScreen(),
+        '/payment': (context) => PaymentPage(),
       },
     );
   }

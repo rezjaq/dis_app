@@ -46,7 +46,7 @@ class ProfileHeader extends StatelessWidget {
               borderRadius: BorderRadius.circular(
                   DisHelperFunctions.screenWidth(context) * 0.3),
               child: Image.asset(
-                'assets/images/profile_2.jpg',
+                'assets/images/no_profile.jpeg',
                 fit: BoxFit.cover,
               ),
             ),

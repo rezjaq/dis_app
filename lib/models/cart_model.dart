@@ -1,50 +1,78 @@
-class AddToCartRequest {
+class Cart {
+  final String id;
+  final List<String> photos;
   final String userId;
-  final String productId;
-  final int quantity;
 
-  AddToCartRequest({required this.userId, required this.productId, required this.quantity});
+  Cart({required this.id, required this.photos, required this.userId});
+
+  factory Cart.fromJson(Map<String, dynamic> json) {
+    return Cart(
+      id: json['_id'],
+      photos: List<String>.from(json['photos']),
+      userId: json['user_id'],
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
-      'userId': userId,
-      'productId': productId,
-      'quantity': quantity,
+      'id': id,
+      'photos': photos,
+      'user_id': userId,
     };
   }
 }
 
-class RemoveFromCartRequest {
-  final String id;
+class AddItemRequest {
+  final String photoId;
+  final String userId;
 
-  RemoveFromCartRequest({required this.id});
-}
-
-class UpdateCartRequest {
-  final String id;
-  final int quantity;
-
-  UpdateCartRequest({required this.id, required this.quantity});
+  AddItemRequest({required this.photoId, required this.userId});
 
   Map<String, dynamic> toJson() {
     return {
-      'quantity': quantity,
+      'photo_id': photoId,
+      'user_id': userId,
     };
   }
 }
 
-class GetCartRequest {
+class RemoveItemRequest {
+  final String photoId;
   final String userId;
 
-  GetCartRequest({required this.userId});
+  RemoveItemRequest({required this.photoId, required this.userId});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'photo_id': photoId,
+      'user_id': userId,
+    };
+  }
 }
 
-class ListCartRequest {
-  final String? userId;
+class ListItemsRequest {
+  final String userId;
+  int? page;
+  int? size;
 
-  ListCartRequest({this.userId});
+  ListItemsRequest({required this.userId, this.page, this.size});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'user_id': userId,
+      'page': page,
+      'size': size,
+    };
+  }
 
   String toQueryParams() {
-    return userId != null ? 'userId=$userId' : '';
+    final params = <String, dynamic>{};
+    if (page != null) {
+      params['page'] = page;
+    }
+    if (size != null) {
+      params['size'] = size;
+    }
+    return Uri(queryParameters: params).query;
   }
 }

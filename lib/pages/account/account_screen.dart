@@ -70,7 +70,7 @@ class _AccountScreenState extends State<AccountScreen> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -80,7 +80,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         setState(() {
                           sellImagePaths.add(uploadedImagePath);
                         });
-                        Navigator.pop(context); // Kembali ke halaman sebelumnya
+                        Navigator.pop(context);
                       },
                     ),
                   ),
@@ -88,6 +88,7 @@ class _AccountScreenState extends State<AccountScreen> {
               },
               child: const Text("Sell"),
             ),
+            // Button to post image to "Post"
             TextButton(
               onPressed: () {
                 setState(() {

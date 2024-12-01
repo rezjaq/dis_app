@@ -7,10 +7,9 @@ class CartController {
     try {
       final response = await DisHttpClient.post('cart', request.toJson());
       if (response['data'] == null) {
-        throw response['errors'];
-      } else {
-        return response['data'];
+        throw Exception(response['errors'] ?? 'Unknown error occurred');
       }
+      return response['data'];
     } catch (e) {
       throw Exception('Failed to add to cart: $e');
     }
@@ -20,10 +19,9 @@ class CartController {
     try {
       final response = await DisHttpClient.delete('cart/${request.photoId}');
       if (response['data'] == null) {
-        throw response['errors'];
-      } else {
-        return response['data'];
+        throw Exception(response['errors'] ?? 'Unknown error occurred');
       }
+      return response['data'];
     } catch (e) {
       throw Exception('Failed to remove from cart: $e');
     }
@@ -34,10 +32,9 @@ class CartController {
       final queryParams = request.toQueryParams();
       final response = await DisHttpClient.get('cart?$queryParams');
       if (response['data'] == null) {
-        throw response['errors'];
-      } else {
-        return response;
+        throw Exception(response['errors'] ?? 'Unknown error occurred');
       }
+      return response;
     } catch (e) {
       throw Exception('Failed to list cart items: $e');
     }

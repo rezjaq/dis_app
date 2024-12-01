@@ -7,29 +7,10 @@ import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/blocs/chart/chart_bloc.dart';
 import 'package:dis_app/blocs/chart/chart_event.dart';
 import 'package:dis_app/blocs/chart/chart_state.dart';
+import 'package:dis_app/common/widgets/chartPhotoItem.dart';
 
 class ShoppingCartScreen extends StatelessWidget {
   final NumberFormat currencyFormat = NumberFormat('#,###', 'id');
-
-  void _showImageDialog(BuildContext context, String imagePath) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset(imagePath, fit: BoxFit.cover),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text("Close"),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 
   void _showWarningDialog(BuildContext context) {
     showDialog(
@@ -70,19 +51,20 @@ class ShoppingCartScreen extends StatelessWidget {
         body: BlocBuilder<CartBloc, CartState>(
           builder: (context, state) {
             final cartBloc = context.read<CartBloc>();
-
             return Column(
               children: [
                 ListTile(
                   leading: Checkbox(
                     value: state.selectedItems.every((element) => element),
+                    activeColor: DisColors.primary,
                     onChanged: (bool? value) {
                       cartBloc.add(SelectAllCartItems(value ?? false));
                     },
                   ),
-                  title: Text("Select All",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  title: Text(
+                    "Select All",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                   tileColor: Colors.white,
                 ),
                 Expanded(
@@ -104,70 +86,17 @@ class ShoppingCartScreen extends StatelessWidget {
                           onDismissed: (direction) {
                             cartBloc.add(RemoveCartItem(index));
                           },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black.withOpacity(0.1),
-                                    blurRadius: 6,
-                                    offset: Offset(0, 3)),
-                              ],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Checkbox(
-                                    value: state.selectedItems[index],
-                                    onChanged: (bool? value) {
-                                      cartBloc.add(SelectCartItem(
-                                          index, value ?? false));
-                                    },
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      _showImageDialog(context,
-                                          state.cartItems[index].imagePath);
-                                    },
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.asset(
-                                          state.cartItems[index].imagePath,
-                                          width: 80,
-                                          height: 80,
-                                          fit: BoxFit.cover),
-                                    ),
-                                  ),
-                                  SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(state.cartItems[index].title,
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16)),
-                                        SizedBox(height: 2),
-                                        Text(
-                                            state.cartItems[index].photographer,
-                                            style: TextStyle(
-                                                color: Colors.grey[600])),
-                                        SizedBox(height: 4),
-                                        Text(
-                                            "IDR ${currencyFormat.format(state.cartItems[index].price)}",
-                                            style: TextStyle(
-                                                color: Colors.orange,
-                                                fontWeight: FontWeight.w600)),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                          child: DisCartPhotoItem(
+                            imageAssetPath: state.cartItems[index]
+                                .imagePath, // Gunakan asset path dari state
+                            fileName: state.cartItems[index].title,
+                            photographer: state.cartItems[index].photographer,
+                            price: state.cartItems[index].price.toDouble(),
+                            isChecked: state.selectedItems[index],
+                            onCheckedChange: (bool? value) {
+                              cartBloc
+                                  .add(SelectCartItem(index, value ?? false));
+                            },
                           ),
                         ),
                       );
@@ -193,9 +122,10 @@ class ShoppingCartScreen extends StatelessWidget {
                         child: Text(
                           "IDR ${currencyFormat.format(state.totalPrice)}",
                           style: TextStyle(
-                              fontSize: 20,
-                              color: DisColors.primary,
-                              fontWeight: FontWeight.bold),
+                            fontSize: 20,
+                            color: DisColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],

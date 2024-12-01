@@ -1,5 +1,7 @@
 import 'package:dis_app/blocs/chart/chart_event.dart';
 import 'package:dis_app/blocs/chart/chart_state.dart';
+import 'package:dis_app/controllers/cart_controller.dart';
+import 'package:dis_app/models/cart_model.dart';
 import 'package:dis_app/models/chart_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -28,8 +30,25 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<RemoveCartItem>(_onRemoveCartItem);
   }
 
-  void _onLoadCartItems(LoadCartItems event, Emitter<CartState> emit) {
-    emit(state);
+  void _onLoadCartItems(LoadCartItems event, Emitter<CartState> emit) async {
+    try {
+      // Fetching data from CartController
+      final response = await CartController()
+          .listCartItems(ListItemsRequest(userId: 'someUserId'));
+
+      final cartItems = (response['data'] as List<dynamic>)
+          .map((item) => CartItem.fromJson(item))
+          .toList()
+          .cast<CartItem>();
+
+      emit(CartState(
+        cartItems: cartItems,
+        selectedItems: List<bool>.filled(cartItems.length, false),
+      ));
+    } catch (e) {
+      // Handle error (e.g., logging or state management for error)
+      print('Error loading cart items: $e');
+    }
   }
 
   void _onSelectCartItem(SelectCartItem event, Emitter<CartState> emit) {

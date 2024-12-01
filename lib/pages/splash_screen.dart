@@ -77,14 +77,8 @@ class _FindMeSplashScreenState extends State<FindMeSplashScreen>
           _startWaveAnimation = true; // Start wave animation
         });
 
-        // Navigate to WelcomeScreen after a delay
         Timer(Duration(seconds: 3), () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => WelcomeScreen(),
-            ),
-          );
+          Navigator.pushReplacementNamed(context, '/home');
         });
       });
     });

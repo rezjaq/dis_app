@@ -3,6 +3,8 @@ import 'package:dis_app/blocs/auth/auth_bloc.dart';
 import 'package:dis_app/blocs/auth/auth_event.dart';
 import 'package:dis_app/blocs/auth/auth_state.dart';
 import 'package:dis_app/common/widgets/alertBanner.dart';
+import 'package:dis_app/common/widgets/button.dart';
+import 'package:dis_app/common/widgets/checkbox.dart';
 import 'package:dis_app/common/widgets/textFormField.dart';
 import 'package:dis_app/controllers/auth_controller.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
@@ -84,7 +86,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             children: [
                               SvgPicture.asset(
                                 'assets/images/login.svg',
-                                height: DisHelperFunctions.screenHeight(context) * 0.4,
+                                height:
+                                    DisHelperFunctions.screenHeight(context) *
+                                        0.4,
                               ),
                             ],
                           ),
@@ -155,15 +159,17 @@ class _LoginScreenState extends State<LoginScreen> {
                               children: [
                                 Row(
                                   children: [
-                                    Checkbox(
-                                      value: _rememberMe,
+                                    DisCheckbox(
+                                      initialValue: _rememberMe,
                                       onChanged: (value) {
                                         setState(() {
-                                          _rememberMe = value ?? false;
+                                          _rememberMe = value;
                                         });
                                       },
+                                      label: "Remember Me",
+                                      activeColor: DisColors.primary,
+                                      checkColor: DisColors.white,
                                     ),
-                                    const Text("Remember Me"),
                                   ],
                                 ),
                                 TextButton(
@@ -171,7 +177,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     if (_formKey.currentState!.validate()) {
                                       BlocProvider.of<AuthBloc>(context).add(
                                         AuthLoginEvent(
-                                          emailOrPhone: _emailOrPhoneController.text,
+                                          emailOrPhone:
+                                              _emailOrPhoneController.text,
                                           password: _passwordController.text,
                                         ),
                                       );
@@ -185,35 +192,26 @@ class _LoginScreenState extends State<LoginScreen> {
                               ],
                             ),
                             const SizedBox(height: DisSizes.md),
-                            ElevatedButton(
-                              onPressed: () {
-                                // DisHelperFunctions.navigateToRoute(context, '/home');
-                                if (_formKey.currentState!.validate()) {
+                            DisButton(
+                              label: "Login",
+                              onTap: () {
+                                DisHelperFunctions.navigateToRoute(
+                                    context, '/home');
+                                /*if (_formKey.currentState!.validate()) {
                                   BlocProvider.of<AuthBloc>(context).add(
                                     AuthLoginEvent(
                                       emailOrPhone: _emailOrPhoneController.text,
                                       password: _passwordController.text,
                                     ),
                                   );
-                                }
+                                }*/
                               },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: DisColors.primary,
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  "Login",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: DisColors.black,
-                                  ),
-                                ),
-                              ),
+                              backgroundColor: DisColors.primary,
+                              textColor: DisColors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              width: double
+                                  .infinity, // Mengisi lebar penuh seperti padding asli
                             ),
                             const SizedBox(height: DisSizes.md),
                             Row(
@@ -222,7 +220,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 const Text("Don't have an account? "),
                                 TextButton(
                                   onPressed: () {
-                                    DisHelperFunctions.navigateToRoute(context, '/register');
+                                    DisHelperFunctions.navigateToRoute(
+                                        context, '/register');
                                   },
                                   child: const Text(
                                     "Sign Up",

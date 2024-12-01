@@ -27,12 +27,14 @@ class SectionToggle extends StatelessWidget {
             label: "Sell",
             isSelected: isSellSelected,
             onTap: () => onToggle(true),
+            isFirst: true,
           ),
           _buildToggleButton(
             context: context,
             label: "Post",
             isSelected: !isSellSelected,
             onTap: () => onToggle(false),
+            isFirst: false,
           ),
         ],
       ),
@@ -44,22 +46,24 @@ class SectionToggle extends StatelessWidget {
     required String label,
     required bool isSelected,
     required VoidCallback onTap,
+    required bool
+        isFirst, // Tambahkan untuk mengetahui tombol pertama atau kedua
   }) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         alignment: Alignment.center,
-        width: DisHelperFunctions.screenWidth(context) *
-            0.45, // Gunakan BuildContext
+        width: DisHelperFunctions.screenWidth(context) * 0.45,
         padding: const EdgeInsets.symmetric(
           horizontal: DisSizes.md,
           vertical: DisSizes.sm,
         ),
         decoration: BoxDecoration(
           color: isSelected ? DisColors.primary : DisColors.white,
-          borderRadius: isSelected
-              ? const BorderRadius.horizontal(left: Radius.circular(16))
-              : const BorderRadius.horizontal(right: Radius.circular(16)),
+          borderRadius: BorderRadius.horizontal(
+            left: isFirst ? const Radius.circular(16) : Radius.zero,
+            right: !isFirst ? const Radius.circular(16) : Radius.zero,
+          ),
           border: Border.all(
             color: DisColors.primary,
             width: 1.5,
@@ -68,7 +72,7 @@ class SectionToggle extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: DisColors.black,
+            color: isSelected ? DisColors.white : DisColors.primary,
             fontSize: DisSizes.fontSizeSm,
             fontWeight: FontWeight.w500,
           ),

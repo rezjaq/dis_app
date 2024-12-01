@@ -11,7 +11,7 @@ class CreateTransactionRequest {
 
   Map<String, dynamic> toJson() {
     return {
-      'userId': userId,
+      'user_id': userId,
       'amount': amount,
       'description': description,
     };

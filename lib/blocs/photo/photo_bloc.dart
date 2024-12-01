@@ -97,10 +97,23 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
     on<LikePhotoEvent>((event, emit) async {
       emit(PhotoLoading());
       try {
-        final response = await photoController.likePost(LikePhotoPostRequest(
+        await photoController.likePost(LikePhotoPostRequest(
             id: event.id,
             liked: event.liked // true or false, You can change this value on icon button love
         ));
+        final updatedPhoto = await photoController.get(GetPhotoRequest(
+            id: event.id
+        ));
+        emit(PhotoSuccess(data: updatedPhoto));
+      } catch (e) {
+        emit(PhotoFailure(message: e.toString()));
+      }
+    });
+
+    on<SamplePhotoEvent>((event, emit) async {
+      emit(PhotoLoading());
+      try {
+        final response = await photoController.samplePost();
         emit(PhotoSuccess(data: response));
       } catch (e) {
         emit(PhotoFailure(message: e.toString()));

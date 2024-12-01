@@ -187,15 +187,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             const SizedBox(height: DisSizes.md),
                             ElevatedButton(
                               onPressed: () {
-                                DisHelperFunctions.navigateToRoute(context, '/home');
-                                /*if (_formKey.currentState!.validate()) {
+                                // DisHelperFunctions.navigateToRoute(context, '/home');
+                                if (_formKey.currentState!.validate()) {
                                   BlocProvider.of<AuthBloc>(context).add(
                                     AuthLoginEvent(
                                       emailOrPhone: _emailOrPhoneController.text,
                                       password: _passwordController.text,
                                     ),
                                   );
-                                }*/
+                                }
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: DisColors.primary,

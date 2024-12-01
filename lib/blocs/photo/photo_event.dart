@@ -115,3 +115,22 @@ class LikePhotoEvent extends PhotoEvent {
   @override
   List<Object> get props => [id, liked];
 }
+
+class SamplePhotoEvent extends PhotoEvent {
+  const SamplePhotoEvent();
+}
+
+class CollectionPhotoEvent extends PhotoEvent {
+  final String buyerId;
+  final int? page;
+  final int? size;
+
+  const CollectionPhotoEvent({
+    required this.buyerId,
+    this.page,
+    this.size,
+  });
+
+  @override
+  List<Object?> get props => [buyerId, page, size];
+}

@@ -103,4 +103,30 @@ class PhotoController {
       throw Exception('Failed to like post photo: $e');
     }
   }
+
+  Future<Map<String, dynamic>> samplePost() async {
+    try {
+      final response = await DisHttpClient.get('photo/post/sample');
+      if (response['data'] == null) {
+        throw response['errors'];
+      } else {
+        return response;
+      }
+    } catch (e) {
+      throw Exception('Failed to sample post photo: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> collectionPhoto(CollectionPhotoRequest request) async {
+    try {
+      final response = await DisHttpClient.get('photo/collection/${request.buyerId}');
+      if (response['data'] == null) {
+        throw response['errors'];
+      } else {
+        return response;
+      }
+    } catch (e) {
+      throw Exception('Failed to collection photo: $e');
+    }
+  }
 }

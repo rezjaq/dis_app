@@ -1,3 +1,4 @@
+import 'package:dis_app/models/cart_model.dart';
 import 'package:dis_app/models/chart_model.dart';
 import 'package:equatable/equatable.dart';
 
@@ -7,7 +8,10 @@ class CartState extends Equatable {
 
   const CartState({required this.cartItems, required this.selectedItems});
 
-  CartState copyWith({List<CartItem>? cartItems, List<bool>? selectedItems}) {
+  CartState copyWith({
+    List<CartItem>? cartItems,
+    List<bool>? selectedItems,
+  }) {
     return CartState(
       cartItems: cartItems ?? this.cartItems,
       selectedItems: selectedItems ?? this.selectedItems,

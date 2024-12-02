@@ -1,3 +1,4 @@
+import 'package:dis_app/models/chart_model.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class CartEvent extends Equatable {
@@ -35,4 +36,13 @@ class RemoveCartItem extends CartEvent {
 
   @override
   List<Object> get props => [index];
+}
+
+class AddCartItem extends CartEvent {
+  final CartItem cartItem;
+
+  const AddCartItem(this.cartItem);
+
+  @override
+  List<Object> get props => [cartItem];
 }

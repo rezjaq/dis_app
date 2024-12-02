@@ -1,54 +1,44 @@
-import 'package:dis_app/blocs/chart/chart_event.dart';
-import 'package:dis_app/blocs/chart/chart_state.dart';
-import 'package:dis_app/controllers/cart_controller.dart';
-import 'package:dis_app/models/cart_model.dart';
 import 'package:dis_app/models/chart_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:dis_app/controllers/cart_controller.dart';
+import 'package:dis_app/models/cart_model.dart';
+import 'package:dis_app/blocs/chart/chart_event.dart';
+import 'package:dis_app/blocs/chart/chart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
-  CartBloc()
-      : super(CartState(
-          cartItems: [
-            CartItem("dsc22466.JPG", "photographer01", 15000,
-                "assets/images/profile_2.jpg"),
-            CartItem("dsc76543.JPG", "photographer_jatim", 20000,
-                "assets/images/profile_2.jpg"),
-            CartItem("img_7652.JPG", "photographer01", 15000,
-                "assets/images/profile_2.jpg"),
-            CartItem("img_9087.JPG", "photographer01", 15000,
-                "assets/images/profile_2.jpg"),
-            CartItem("img_0097.JPG", "photographer01", 15000,
-                "assets/images/profile_2.jpg"),
-            CartItem("img_1239.JPG", "photographer01", 15000,
-                "assets/images/profile_2.jpg"),
-          ],
-          selectedItems: List<bool>.filled(6, false),
-        )) {
+  CartBloc() : super(CartState(cartItems: [], selectedItems: [])) {
     on<LoadCartItems>(_onLoadCartItems);
     on<SelectCartItem>(_onSelectCartItem);
     on<SelectAllCartItems>(_onSelectAllCartItems);
     on<RemoveCartItem>(_onRemoveCartItem);
+    on<AddCartItem>(_onAddCartItem);
   }
 
   void _onLoadCartItems(LoadCartItems event, Emitter<CartState> emit) async {
     try {
-      // Fetching data from CartController
-      final response = await CartController()
-          .listCartItems(ListItemsRequest(userId: 'someUserId'));
+      // Mengambil cart items dari sumber dinamis seperti FindMe atau API
+      final cartItems = await CartController().getCartItemsFromFindMe();
 
-      final cartItems = (response['data'] as List<dynamic>)
-          .map((item) => CartItem.fromJson(item))
-          .toList()
-          .cast<CartItem>();
+      // Membuat list selectedItems sesuai panjang cartItems
+      final selectedItems = List<bool>.filled(cartItems.length, false);
 
-      emit(CartState(
-        cartItems: cartItems,
-        selectedItems: List<bool>.filled(cartItems.length, false),
-      ));
+      // Emit state dengan cartItems baru
+      emit(CartState(cartItems: cartItems, selectedItems: selectedItems));
     } catch (e) {
-      // Handle error (e.g., logging or state management for error)
       print('Error loading cart items: $e');
     }
+  }
+
+  void _onAddCartItem(AddCartItem event, Emitter<CartState> emit) {
+    final updatedCartItems = List<CartItem>.from(state.cartItems)
+      ..add(event.cartItem);
+    final updatedSelectedItems = List<bool>.from(state.selectedItems)
+      ..add(false); // Item baru tidak terpilih
+
+    emit(state.copyWith(
+      cartItems: updatedCartItems,
+      selectedItems: updatedSelectedItems,
+    ));
   }
 
   void _onSelectCartItem(SelectCartItem event, Emitter<CartState> emit) {

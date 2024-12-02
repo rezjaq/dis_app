@@ -10,7 +10,11 @@ import 'package:dis_app/blocs/chart/chart_state.dart';
 import 'package:dis_app/common/widgets/chartPhotoItem.dart';
 
 class ShoppingCartScreen extends StatelessWidget {
+  static String? selectedImage;
   final NumberFormat currencyFormat = NumberFormat('#,###', 'id');
+
+  // Constructor with parameter for selectedImage
+  ShoppingCartScreen({String? image});
 
   void _showWarningDialog(BuildContext context) {
     showDialog(
@@ -36,7 +40,16 @@ class ShoppingCartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => CartBloc(),
+      create: (_) => CartBloc()
+        ..add(AddCartItem(
+          CartItem(
+            // Using CartItem instead of Cart
+            title: selectedImage != null ? "New Photo" : "",
+            photographer: selectedImage != null ? "Unknown" : "",
+            price: 10000, // Default price, adjust as needed
+            imagePath: selectedImage ?? '', // Add image path if available
+          ),
+        )),
       child: Scaffold(
         appBar: AppBar(
           title: Text("My Cart"),
@@ -87,8 +100,7 @@ class ShoppingCartScreen extends StatelessWidget {
                             cartBloc.add(RemoveCartItem(index));
                           },
                           child: DisCartPhotoItem(
-                            imageAssetPath: state.cartItems[index]
-                                .imagePath, // Gunakan asset path dari state
+                            imageAssetPath: state.cartItems[index].imagePath,
                             fileName: state.cartItems[index].title,
                             photographer: state.cartItems[index].photographer,
                             price: state.cartItems[index].price.toDouble(),

@@ -78,7 +78,7 @@ class _FindMeSplashScreenState extends State<FindMeSplashScreen>
         });
 
         Timer(Duration(seconds: 3), () {
-          Navigator.pushReplacementNamed(context, '/home');
+          Navigator.pushReplacementNamed(context, '/welcome');
         });
       });
     });

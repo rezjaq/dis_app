@@ -39,4 +39,6 @@ class CartController {
       throw Exception('Failed to list cart items: $e');
     }
   }
+
+  getCartItemsFromFindMe() {}
 }

@@ -4,7 +4,21 @@ class CartItem {
   final int price;
   final String imagePath;
 
-  CartItem(this.title, this.photographer, this.price, this.imagePath);
+  // Constructor with named parameters
+  CartItem({
+    required this.title,
+    required this.photographer,
+    required this.price,
+    required this.imagePath,
+  });
 
-  static fromJson(item) {}
+  // Optionally, you can add the fromJson method if needed
+  static CartItem fromJson(Map<String, dynamic> item) {
+    return CartItem(
+      title: item['title'] ?? '',
+      photographer: item['photographer'] ?? '',
+      price: item['price'] ?? 0,
+      imagePath: item['imagePath'] ?? '',
+    );
+  }
 }

@@ -1,3 +1,5 @@
+import 'package:dis_app/models/user_model.dart';
+import 'package:dis_app/pages/account/change_profile.dart';
 import 'package:flutter/material.dart';
 import '../../../utils/constants/colors.dart';
 import '../../../utils/constants/sizes.dart';
@@ -5,8 +7,9 @@ import '../../../utils/helpers/helper_functions.dart';
 
 class ProfileHeader extends StatelessWidget {
   final VoidCallback onPickImage;
+  final User user;
 
-  const ProfileHeader({Key? key, required this.onPickImage}) : super(key: key);
+  const ProfileHeader({Key? key, required this.onPickImage, required this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +48,9 @@ class ProfileHeader extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(
                   DisHelperFunctions.screenWidth(context) * 0.3),
-              child: Image.asset(
-                'assets/images/no_profile.jpeg',
-                fit: BoxFit.cover,
-              ),
+              child: user.photo != null
+                  ? Image.network(user.photo!, fit: BoxFit.cover)
+                  : const AssetImage("assets/images/no_profile.jpeg") as Widget,
             ),
           ),
           Container(
@@ -58,7 +60,7 @@ class ProfileHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "steffanie_joe_brown",
+                  user.username!,
                   style: TextStyle(
                     color: DisColors.black,
                     fontSize: DisSizes.fontSizeLg,
@@ -69,8 +71,8 @@ class ProfileHeader extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _buildCountInfo("1,234", "Followers"),
-                    _buildCountInfo("1,234", "Following"),
+                    _buildCountInfo(user.followers.toString(), "Followers"),
+                    _buildCountInfo(user.following.toString(), "Following"),
                   ],
                 ),
                 const SizedBox(height: DisSizes.md),
@@ -78,7 +80,9 @@ class ProfileHeader extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     _buildActionButton(Icons.edit, "Edit Profile", () {
-                      Navigator.pushNamed(context, '/change-profile');
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => EditProfileScreen(
+                        user: user,
+                      )));
                     }),
                     _buildActionButton(Icons.add, "Upload", onPickImage),
                   ],

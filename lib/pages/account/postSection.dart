@@ -1,12 +1,13 @@
+import 'package:dis_app/models/photo_model.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
 class PostSection extends StatelessWidget {
-  final List<String> postImagePaths;
+  final List<PostPhoto> postPhotos;
 
   const PostSection({
     Key? key,
-    required this.postImagePaths,
+    required this.postPhotos,
   }) : super(key: key);
 
   @override
@@ -22,16 +23,16 @@ class PostSection extends StatelessWidget {
           mainAxisSpacing: 4.0,
           mainAxisExtent: MediaQuery.of(context).size.height * 0.25,
         ),
-        itemCount: postImagePaths.length,
+        itemCount: postPhotos.length,
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () => _showImageDialog(context, postImagePaths[index]),
+            onTap: () => _showImageDialog(context, postPhotos[index].url),
             child: Container(
               color: Colors.grey,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
-                child: Image.file(
-                  File(postImagePaths[index]),
+                child: Image.network(
+                  postPhotos[index].url,
                   fit: BoxFit.cover,
                 ),
               ),

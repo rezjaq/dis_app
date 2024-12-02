@@ -1,4 +1,8 @@
 import 'package:camera/camera.dart';
+import 'package:dis_app/blocs/auth/auth_bloc.dart';
+import 'package:dis_app/blocs/photo/photo_bloc.dart';
+import 'package:dis_app/blocs/photo/photo_event.dart';
+import 'package:dis_app/blocs/photo/photo_state.dart';
 import 'package:dis_app/common/widgets/svgIcon.dart';
 import 'package:dis_app/pages/account/NotLoggedInScreen.dart';
 import 'package:dis_app/pages/account/account_screen.dart';
@@ -11,6 +15,7 @@ import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
@@ -213,35 +218,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Future<List<PostPhoto>> _posts = fetchPostPhotos();
+  List<PostPhoto> _samplePosts = [];
 
   @override
   void initState() {
     super.initState();
-  }
-
-  Future<List<PostPhoto>> fetchPostPhotos() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final jsonFile = File(path.join(dir.path, 'dummies.json'));
-
-    if (await jsonFile.exists()) {
-      final jsonString = await jsonFile.readAsString();
-      final jsonData = jsonDecode(jsonString) as Map<String, dynamic>;
-      final posts = jsonData['post'] as List<dynamic>;
-
-      // Filter the posts to only include those whose files exist
-      List<PostPhoto> existingPosts = [];
-      for (var post in posts) {
-        final photo = PostPhoto.fromJson(post);
-        final file = File(photo.url);
-        if (await file.exists()) {
-          existingPosts.add(photo);
-        }
-      }
-      return existingPosts;
-    } else {
-      return [];
-    }
+    context.read<PhotoBloc>().add(SamplePhotoEvent());
   }
 
   @override
@@ -250,38 +232,21 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: DisColors.black,
       body: Stack(
         children: [
-          FutureBuilder<List<PostPhoto>>(
-            future: _posts,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Center(child: Text('Error: ${snapshot.error}'));
-              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(
-                    child: Text('No posts available',
-                        style: TextStyle(color: DisColors.white)));
-              } else {
-                final post = snapshot.data!;
-
-                // Filter out posts with non-existing files
-                final validPosts = post.where((photo) {
-                  final file = File(photo.url);
-                  return file.existsSync();
-                }).toList();
-
-                // Check if there are valid posts to display
-                if (validPosts.isEmpty) {
-                  return Center(child: Text('No valid photos available'));
+          BlocBuilder<PhotoBloc, PhotoState>(
+              builder: (context, state) {
+                if (state is PhotoLoading) {
+                  return const Center(child: CircularProgressIndicator(),);
                 }
-
+                if (state is PhotoSuccess) {
+                  _samplePosts = (state.data!['data'] as List)
+                      .map((e) => PostPhoto.fromJson(e))
+                      .toList();
+                }
                 return PageView.builder(
                   scrollDirection: Axis.vertical,
-                  itemCount: validPosts.length,
+                  itemCount: _samplePosts.length,
                   itemBuilder: (context, index) {
-                    final photo = validPosts[index];
-                    final file =
-                        File(photo.url); // This should always exist now
+                    final photo = _samplePosts[index];
                     return Container(
                       child: Stack(
                         children: [
@@ -290,7 +255,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Container(
                               width: MediaQuery.of(context).size.width,
                               height: MediaQuery.of(context).size.height * 0.74,
-                              child: Image.file(file, fit: BoxFit.cover),
+                              child: Image.network(
+                                photo.url,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                           Positioned(
@@ -336,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                               style: TextStyle(
                                                   color: DisColors.white,
                                                   fontSize:
-                                                      DisSizes.fontSizeXs)),
+                                                  DisSizes.fontSizeXs)),
                                         ),
                                       ),
                                     )
@@ -369,15 +337,18 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Column(
                               children: [
                                 _menuButton(Icons.favorite_border_rounded,
-                                    '359', DisColors.white, () {}),
+                                    photo.likes.toString(), !photo.liked ? DisColors.white : DisColors.error, () {
+                                      context.read<PhotoBloc>().add(LikePhotoEvent(
+                                          id: photo.id, liked: !photo.liked));
+                                    }),
                                 const SizedBox(height: 8),
                                 _menuButton(Icons.chat_bubble_outline_rounded,
-                                    '20', DisColors.white, () {}),
+                                    photo.comments.length.toString(), DisColors.white, () {}),
                                 const SizedBox(height: 8),
                                 _menuButton(Icons.more_horiz_rounded, '',
                                     DisColors.white, () {
-                                  _showDialog(context);
-                                }),
+                                      _showDialog(context);
+                                    }),
                               ],
                             ),
                           ),
@@ -387,7 +358,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 );
               }
-            },
           ),
           Positioned(
             right: 0,

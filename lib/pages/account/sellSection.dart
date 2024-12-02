@@ -1,3 +1,4 @@
+import 'package:dis_app/models/photo_model.dart';
 import 'package:dis_app/pages/account/account_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -5,13 +6,13 @@ import 'dart:io';
 import '../../../utils/constants/colors.dart';
 
 class SellSection extends StatelessWidget {
-  final List<String> sellImagePaths;
+  final List<SellPhoto> sellPhotos;
   final SellFilter selectedFilter;
   final ValueChanged<SellFilter> onFilterSelect;
 
   const SellSection({
     Key? key,
-    required this.sellImagePaths,
+    required this.sellPhotos,
     required this.selectedFilter,
     required this.onFilterSelect,
   }) : super(key: key);
@@ -21,14 +22,25 @@ class SellSection extends StatelessWidget {
     return Column(
       children: [
         _buildFilterRow(),
-        _buildImageGrid(context),
+        _buildImageGrid(context, _filterPhotos(sellPhotos, selectedFilter)),
       ],
     );
   }
 
+  List<SellPhoto> _filterPhotos(List<SellPhoto> photos, SellFilter filter) {
+    if (filter == SellFilter.all) {
+      return photos;
+    } else if (filter == SellFilter.available) {
+      return photos.where((photo) => photo.status == 'available').toList();
+    } else if (filter == SellFilter.sold) {
+      return photos.where((photo) => photo.status == 'sold').toList();
+    }
+    return photos;
+  }
+
   Widget _buildFilterRow() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
@@ -67,9 +79,9 @@ class SellSection extends StatelessWidget {
     );
   }
 
-  Widget _buildImageGrid(BuildContext context) {
+  Widget _buildImageGrid(BuildContext context, List<SellPhoto> photos) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GridView.builder(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
@@ -79,16 +91,16 @@ class SellSection extends StatelessWidget {
           mainAxisSpacing: 4.0,
           mainAxisExtent: MediaQuery.of(context).size.height * 0.25,
         ),
-        itemCount: sellImagePaths.length,
+        itemCount: photos.length,
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () => _showImageDialog(context, sellImagePaths[index]),
+            onTap: () => _showImageDialog(context, photos[index].url),
             child: Container(
               color: Colors.grey,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
-                child: Image.file(
-                  File(sellImagePaths[index]),
+                child: Image.network(
+                  photos[index].url,
                   fit: BoxFit.cover,
                 ),
               ),

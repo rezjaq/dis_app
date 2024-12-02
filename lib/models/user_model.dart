@@ -13,7 +13,8 @@ class User {
   final UserRole role;
   final DateTime? emailVerifiedAt;
   final double balance;
-  final List<Account> accounts;
+  final int followers;
+  final int following;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
@@ -28,7 +29,8 @@ class User {
     required this.role,
     this.emailVerifiedAt,
     required this.balance,
-    required this.accounts,
+    this.followers = 0,
+    this.following = 0,
     DateTime? createdAt,
     DateTime? updatedAt,
     this.deletedAt,
@@ -37,10 +39,10 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
-      phone: json['phone'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      email: json['email'] ?? '',
+      phone: json['phone'] ?? '',
       username: json['username'],
       photo: json['photo'],
       role: UserRole.values
@@ -49,11 +51,14 @@ class User {
           ? DateTime.parse(json['emailVerifiedAt'])
           : null,
       balance: json['balance'],
-      accounts: (json['accounts'] as List)
-          .map((account) => Account.fromJson(account))
-          .toList(),
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
+      followers: json['followers'] ?? 0,
+      following: json['following'] ?? 0,
+      createdAt: json['createdAt'] != null
+          ? DateTime.parse(json['createdAt'])
+          : DateTime.now(),
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
+          : DateTime.now(),
       deletedAt:
           json['deletedAt'] != null ? DateTime.parse(json['deletedAt']) : null,
     );
@@ -70,7 +75,8 @@ class User {
       'role': role.toString().split('.').last,
       'emailVerifiedAt': emailVerifiedAt?.toIso8601String(),
       'balance': balance,
-      'accounts': accounts.map((account) => account.toJson()).toList(),
+      'followers': followers,
+      'following': following,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'deletedAt': deletedAt?.toIso8601String(),

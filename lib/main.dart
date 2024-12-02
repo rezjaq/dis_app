@@ -2,10 +2,12 @@ import 'package:camera/camera.dart';
 import 'package:dis_app/blocs/chart/chart_bloc.dart';
 import 'package:dis_app/blocs/displayPhoto/displayPhoto_bloc.dart';
 import 'package:dis_app/blocs/listFace/listFace_bloc.dart';
+import 'package:dis_app/blocs/photo/photo_bloc.dart';
 import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
 import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
 import 'package:dis_app/blocs/user/user_bloc.dart';
 import 'package:dis_app/controllers/user_controller.dart';
+import 'package:dis_app/models/user_model.dart';
 import 'package:dis_app/pages/auth/forgetPass_screen.dart';
 import 'package:dis_app/pages/auth/otp_screen.dart';
 import 'package:dis_app/pages/auth/register_screen.dart';
@@ -28,6 +30,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'controllers/photo_controller.dart';
+
 late List<CameraDescription> _cameras;
 
 Future<void> main() async {
@@ -41,6 +45,7 @@ Future<void> main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => UserBloc(userController: UserController())),
+        BlocProvider(create: (_) => PhotoBloc(photoController: PhotoController())),
         BlocProvider(create: (_) => CartBloc()),
         BlocProvider(create: (context) => ListFaceBloc()),
         BlocProvider(create: (context) => SearchFaceBloc()),
@@ -71,7 +76,7 @@ class MyApp extends StatelessWidget {
         '/welcome': (context) => WelcomeScreen(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
-        '/change-profile': (context) => EditProfileScreen(),
+        '/change-profile': (context) => EditProfileScreen(user: ModalRoute.of(context)!.settings.arguments as User,),
         '/change-password': (context) => ChangePasswordScreen(),
         '/forget-password': (context) => ForgetPasswordScreen(),
         '/otp-screen': (context) => OtpVerificationScreen(),

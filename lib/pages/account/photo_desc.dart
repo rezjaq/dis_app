@@ -131,6 +131,10 @@ class _PostFormPhotoScreenState extends State<PostFormPhotoScreen> {
         url: "${saveImage.path}",
         name: fileName,
         description: desc,
+        type: 'post',
+        likes: 0,
+        liked: false,
+        userId: '1',
       );
 
       final jsonFile = File(path.join(dir.path, 'dummies.json'));

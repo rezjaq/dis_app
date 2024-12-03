@@ -13,7 +13,8 @@ import 'package:dis_app/blocs/listFace/listFace_state.dart';
 class ListFaceScreen extends StatefulWidget {
   final String imagePath;
 
-  ListFaceScreen({required this.imagePath});
+  ListFaceScreen(
+      {required this.imagePath, required List<MatchedPhoto> matchedPhotos});
 
   @override
   _ListFaceScreenState createState() => _ListFaceScreenState();
@@ -40,6 +41,7 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
+        context.read<ListFaceBloc>().add(ClearListFace());
         Navigator.pop(context);
         return false;
       },
@@ -85,7 +87,14 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
               ),
               SizedBox(height: 20),
               Expanded(
-                child: BlocBuilder<ListFaceBloc, ListFaceState>(
+                child: BlocConsumer<ListFaceBloc, ListFaceState>(
+                  listener: (context, state) {
+                    if (state is ListFaceError) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.message)),
+                      );
+                    }
+                  },
                   builder: (context, state) {
                     if (state is ListFaceLoading) {
                       return _buildSkeletonLoader();
@@ -176,7 +185,7 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
     );
   }
 
-  Widget _buildSimilarPhotosGrid(List<PhotoModel> photos) {
+  Widget _buildSimilarPhotosGrid(List<MatchedPhoto> photos) {
     return GridView.builder(
       padding: EdgeInsets.symmetric(horizontal: 20),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -191,7 +200,7 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
-              image: AssetImage(photos[index].imagePath),
+              image: NetworkImage(photos[index].url), // Memuat gambar dari URL
               fit: BoxFit.cover,
             ),
           ),

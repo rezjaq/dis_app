@@ -16,13 +16,8 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
   void _onLoadCartItems(LoadCartItems event, Emitter<CartState> emit) async {
     try {
-      // Mengambil cart items dari sumber dinamis seperti FindMe atau API
       final cartItems = await CartController().getCartItemsFromFindMe();
-
-      // Membuat list selectedItems sesuai panjang cartItems
       final selectedItems = List<bool>.filled(cartItems.length, false);
-
-      // Emit state dengan cartItems baru
       emit(CartState(cartItems: cartItems, selectedItems: selectedItems));
     } catch (e) {
       print('Error loading cart items: $e');
@@ -33,7 +28,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     final updatedCartItems = List<CartItem>.from(state.cartItems)
       ..add(event.cartItem);
     final updatedSelectedItems = List<bool>.from(state.selectedItems)
-      ..add(false); // Item baru tidak terpilih
+      ..add(false);
 
     emit(state.copyWith(
       cartItems: updatedCartItems,

@@ -6,6 +6,7 @@ import 'package:dis_app/blocs/photo/photo_bloc.dart';
 import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
 import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
 import 'package:dis_app/blocs/user/user_bloc.dart';
+import 'package:dis_app/controllers/face_controller.dart';
 import 'package:dis_app/controllers/user_controller.dart';
 import 'package:dis_app/models/user_model.dart';
 import 'package:dis_app/pages/auth/forgetPass_screen.dart';
@@ -41,17 +42,20 @@ Future<void> main() async {
     storageDirectory: await getApplicationDocumentsDirectory(),
   );
   HydratedBloc.storage = storage;
+
+  final faceController = FaceController();
+
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => UserBloc(userController: UserController())),
-        BlocProvider(create: (_) => PhotoBloc(photoController: PhotoController())),
+        BlocProvider(
+            create: (_) => PhotoBloc(photoController: PhotoController())),
         BlocProvider(create: (_) => CartBloc()),
         BlocProvider(create: (context) => ListFaceBloc()),
-        BlocProvider(create: (context) => SearchFaceBloc()),
         BlocProvider(
-          create: (context) => SearchFaceBloc()..add(InitializeCameraEvent()),
-        ),
+            create: (context) =>
+                SearchFaceBloc(faceController)..add(InitializeCameraEvent())),
         BlocProvider(create: (_) => DisplayPhotoBloc()),
       ],
       child: MyApp(),
@@ -76,7 +80,9 @@ class MyApp extends StatelessWidget {
         '/welcome': (context) => WelcomeScreen(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegisterScreen(),
-        '/change-profile': (context) => EditProfileScreen(user: ModalRoute.of(context)!.settings.arguments as User,),
+        '/change-profile': (context) => EditProfileScreen(
+              user: ModalRoute.of(context)!.settings.arguments as User,
+            ),
         '/change-password': (context) => ChangePasswordScreen(),
         '/forget-password': (context) => ForgetPasswordScreen(),
         '/otp-screen': (context) => OtpVerificationScreen(),

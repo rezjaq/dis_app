@@ -27,8 +27,10 @@ class DisplayPhotoScreen extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) =>
-                    ListFaceScreen(imagePath: state.savedPath),
+                builder: (context) => ListFaceScreen(
+                  imagePath: state.savedPath,
+                  matchedPhotos: [],
+                ),
               ),
             );
           } else if (state is DisplayPhotoErrorState) {
@@ -106,8 +108,10 @@ class DisplayPhotoScreen extends StatelessWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              ListFaceScreen(imagePath: imagePath),
+                          builder: (context) => ListFaceScreen(
+                            imagePath: imagePath,
+                            matchedPhotos: [],
+                          ),
                         ),
                       );
                     },

@@ -147,8 +147,10 @@ class _FindMeScreenState extends State<FindMeScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                ListFaceScreen(imagePath: '')),
+                            builder: (context) => ListFaceScreen(
+                                  imagePath: '',
+                                  matchedPhotos: [],
+                                )),
                       );
                     },
                     icon: SvgPicture.asset(

@@ -1,14 +1,10 @@
-
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
-
 import 'package:dis_app/blocs/user/user_bloc.dart';
 import 'package:dis_app/blocs/user/user_event.dart';
 import 'package:dis_app/blocs/user/user_state.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dis_app/utils/constants/colors.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   @override
@@ -52,7 +48,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         ),
         centerTitle: true,
       ),
-
       body: BlocListener<UserBloc, UserState>(
         listener: (context, state) {
           if (state is UserLoading) {
@@ -61,7 +56,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               barrierDismissible: false,
               builder: (context) => const Center(
                 child: CircularProgressIndicator(),
-
               ),
             );
           } else if (state is UserSuccess) {
@@ -165,8 +159,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             borderRadius: BorderRadius.circular(DisSizes.borderRadiusMd),
             borderSide: BorderSide.none,
           ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: DisSizes.md, vertical: DisSizes.sm),
+          contentPadding: const EdgeInsets.symmetric(
+              horizontal: DisSizes.md, vertical: DisSizes.sm),
         ),
       ),
     );

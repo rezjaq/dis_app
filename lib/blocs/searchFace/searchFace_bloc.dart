@@ -1,60 +1,76 @@
-import 'dart:async';
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:camera/camera.dart';
-import 'package:dis_app/blocs/searchFace/searchFace_state.dart';
-import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:dis_app/controllers/face_controller.dart';
+import 'searchFace_state.dart';
+import 'serachFace_event.dart';
 
 class SearchFaceBloc extends Bloc<SearchFaceEvent, SearchFaceState> {
   late CameraController _controller;
-  late List<CameraDescription> _cameras;
-  bool _isInitialized = false;
+  final FaceController _faceController;
 
-  SearchFaceBloc() : super(SearchFaceInitial()) {
+  SearchFaceBloc(this._faceController) : super(SearchFaceInitial()) {
     on<InitializeCameraEvent>(_onInitializeCamera);
     on<CapturePhotoEvent>(_onCapturePhoto);
+    on<SearchMatchedPhotosEvent>(_onSearchMatchedPhotos);
   }
-
-  CameraController get controller => _controller;
 
   Future<void> _onInitializeCamera(
       InitializeCameraEvent event, Emitter<SearchFaceState> emit) async {
-    if (_isInitialized) {
-      emit(SearchFaceLoaded(controller: _controller));
-      return;
-    }
-
     emit(SearchFaceLoading());
     try {
-      _cameras = await availableCameras();
-      final frontCamera = _cameras.firstWhere(
+      final cameras = await availableCameras();
+
+      final frontCamera = cameras.firstWhere(
         (camera) => camera.lensDirection == CameraLensDirection.front,
+        orElse: () => throw CameraException(
+          'CAMERA_NOT_FOUND',
+          'Kamera depan tidak ditemukan',
+        ),
       );
-      _controller = CameraController(frontCamera, ResolutionPreset.high);
+
+      _controller = CameraController(
+        frontCamera,
+        ResolutionPreset.low,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg,
+      );
+
       await _controller.initialize();
-      _isInitialized = true;
       emit(SearchFaceLoaded(controller: _controller));
     } catch (e) {
-      emit(SearchFaceError(message: e.toString()));
+      emit(SearchFaceError(message: 'Gagal menginisialisasi kamera: $e'));
     }
   }
 
   Future<void> _onCapturePhoto(
       CapturePhotoEvent event, Emitter<SearchFaceState> emit) async {
-    try {
-      if (_controller.value.isInitialized) {
-        final XFile photo = await _controller.takePicture();
-        final directory = await getApplicationDocumentsDirectory();
-        final timestamp = DateTime.now().millisecondsSinceEpoch;
-        final imagePath = '${directory.path}/aligned_face_photo_$timestamp.jpg';
+    if (!_controller.value.isInitialized) {
+      emit(SearchFaceError(message: 'CameraController belum diinisialisasi.'));
+      return;
+    }
 
-        await photo.saveTo(imagePath);
-        emit(SearchFacePhotoCaptured(imagePath: imagePath));
+    try {
+      final XFile photo = await _controller.takePicture();
+      emit(SearchFacePhotoCaptured(imagePath: photo.path));
+    } catch (e) {
+      emit(SearchFaceError(message: 'Gagal mengambil foto: $e'));
+    }
+  }
+
+  Future<void> _onSearchMatchedPhotos(
+      SearchMatchedPhotosEvent event, Emitter<SearchFaceState> emit) async {
+    try {
+      emit(SearchFaceLoading());
+      final matchedPhotos =
+          await _faceController.getMatchedPhotos(event.userId);
+
+      if (matchedPhotos.isEmpty) {
+        emit(SearchFaceNoMatchFound());
       } else {
-        emit(SearchFaceError(message: "Camera not initialized"));
+        emit(SearchFaceMatchedPhotosLoaded(matchedPhotos: matchedPhotos));
       }
     } catch (e) {
-      emit(SearchFaceError(message: e.toString()));
+      emit(SearchFaceError(message: 'Gagal mencari foto yang cocok: $e'));
     }
   }
 

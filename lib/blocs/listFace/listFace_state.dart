@@ -9,7 +9,7 @@ abstract class ListFaceState extends Equatable {
 class ListFaceLoading extends ListFaceState {}
 
 class ListFaceLoaded extends ListFaceState {
-  final List<PhotoModel> similarPhotos;
+  final List<MatchedPhoto> similarPhotos;
 
   ListFaceLoaded(this.similarPhotos);
 

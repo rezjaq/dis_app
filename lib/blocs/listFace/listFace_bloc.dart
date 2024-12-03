@@ -7,19 +7,35 @@ class ListFaceBloc extends Bloc<ListFaceEvent, ListFaceState> {
   ListFaceBloc() : super(ListFaceLoading()) {
     on<LoadSimilarPhotos>(_onLoadSimilarPhotos);
     on<AddSelfiePhoto>(_onAddSelfiePhoto);
-    on<ClearListFace>(_onClearListFace); // Tambahkan handler ini
+    on<ClearListFace>(_onClearListFace);
   }
 
   Future<void> _onLoadSimilarPhotos(
       LoadSimilarPhotos event, Emitter<ListFaceState> emit) async {
     try {
       await Future.delayed(Duration(seconds: 2));
+      //contoh saja
       final photos = [
-        // Contoh file saja
-        PhotoModel(imagePath: 'assets/images/similar_face1.jpg'),
-        PhotoModel(imagePath: 'assets/images/similar_face2.jpg'),
-        PhotoModel(imagePath: 'assets/images/similar_face3.jpg'),
-        PhotoModel(imagePath: 'assets/images/similar_face4.jpg'),
+        MatchedPhoto(
+          id: '1',
+          url: 'https://example.com/similar_face1.jpg',
+          userId: 'user1',
+        ),
+        MatchedPhoto(
+          id: '2',
+          url: 'https://example.com/similar_face2.jpg',
+          userId: 'user1',
+        ),
+        MatchedPhoto(
+          id: '3',
+          url: 'https://example.com/similar_face3.jpg',
+          userId: 'user1',
+        ),
+        MatchedPhoto(
+          id: '4',
+          url: 'https://example.com/similar_face4.jpg',
+          userId: 'user1',
+        ),
       ];
       emit(ListFaceLoaded(photos));
     } catch (e) {
@@ -30,13 +46,16 @@ class ListFaceBloc extends Bloc<ListFaceEvent, ListFaceState> {
   void _onAddSelfiePhoto(AddSelfiePhoto event, Emitter<ListFaceState> emit) {
     if (state is ListFaceLoaded) {
       final currentState = state as ListFaceLoaded;
-      final updatedPhotos = List<PhotoModel>.from(currentState.similarPhotos)
-        ..add(PhotoModel(imagePath: event.newPhotoPath));
+      final updatedPhotos = List<MatchedPhoto>.from(currentState.similarPhotos)
+        ..add(MatchedPhoto(
+          id: 'new_id',
+          url: event.newPhotoPath,
+          userId: 'user1',
+        ));
       emit(ListFaceLoaded(updatedPhotos));
     }
   }
 
-  // Handler baru untuk ClearListFace
   void _onClearListFace(ClearListFace event, Emitter<ListFaceState> emit) {
     emit(ListFaceLoading()); // Reset ke loading atau initial state
   }

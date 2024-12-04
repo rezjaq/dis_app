@@ -149,7 +149,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                         MaterialPageRoute(
                             builder: (context) => ListFaceScreen(
                                   imagePath: '',
-                                  matchedPhotos: [],
+                                  matchedFaces: [],
                                 )),
                       );
                     },

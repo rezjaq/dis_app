@@ -1,31 +1,66 @@
-class MatchedPhoto {
-  final String id;
-  final String url;
-  final String userId;
-  final String? buyerId;
+class BoundBox {
+  final double x;
+  final double y;
+  final double width;
+  final double height;
 
-  MatchedPhoto({
-    required this.id,
-    required this.url,
-    required this.userId,
-    this.buyerId,
+  BoundBox({
+    required this.x,
+    required this.y,
+    required this.width,
+    required this.height,
   });
 
-  factory MatchedPhoto.fromJson(Map<String, dynamic> json) {
-    return MatchedPhoto(
-      id: json['_id'] ?? '',
-      url: json['url'] ?? '',
-      userId: json['user_id'] ?? '',
-      buyerId: json['buyer_id'],
+  factory BoundBox.fromJson(Map<String, dynamic> json) {
+    return BoundBox(
+      x: json['x'],
+      y: json['y'],
+      width: json['width'],
+      height: json['height'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      '_id': id,
+      'x': x,
+      'y': y,
+      'width': width,
+      'height': height,
+    };
+  }
+}
+
+class Face {
+  final String id;
+  final String url;
+  final String userId;
+  final List<BoundBox> detections;
+
+  Face({
+    required this.id,
+    required this.url,
+    required this.userId,
+    required this.detections,
+  });
+
+  factory Face.fromJson(Map<String, dynamic> json) {
+    var list = json['detections'] as List;
+    List<BoundBox> detectionsList =
+        list.map((i) => BoundBox.fromJson(i)).toList();
+    return Face(
+      id: json['id'],
+      url: json['url'],
+      userId: json['userId'],
+      detections: detectionsList,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
       'url': url,
-      'user_id': userId,
-      'buyer_id': buyerId,
+      'userId': userId,
+      'detections': detections.map((e) => e.toJson()).toList(),
     };
   }
 }

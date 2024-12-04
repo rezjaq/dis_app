@@ -1,20 +1,23 @@
 import 'dart:io';
+import 'package:dis_app/blocs/listFace/listFace_bloc.dart';
+import 'package:dis_app/blocs/listFace/listFace_event.dart';
+import 'package:dis_app/blocs/listFace/listFace_state.dart';
 import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
 import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
 import 'package:dis_app/models/face_model.dart';
 import 'package:dis_app/pages/findme/search_face.dart';
+import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dis_app/utils/constants/colors.dart';
-import 'package:dis_app/blocs/listFace/listFace_bloc.dart';
-import 'package:dis_app/blocs/listFace/listFace_event.dart';
-import 'package:dis_app/blocs/listFace/listFace_state.dart';
 
 class ListFaceScreen extends StatefulWidget {
   final String imagePath;
+  final List<Face> matchedFaces;
 
-  ListFaceScreen(
-      {required this.imagePath, required List<MatchedPhoto> matchedPhotos});
+  ListFaceScreen({
+    required this.imagePath,
+    required this.matchedFaces,
+  });
 
   @override
   _ListFaceScreenState createState() => _ListFaceScreenState();
@@ -59,7 +62,6 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
             },
           ),
           backgroundColor: DisColors.primary,
-          elevation: 0,
         ),
         body: Padding(
           padding: EdgeInsets.all(16),
@@ -71,7 +73,7 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Halo Bos, RoboYu mencari foto kamu berdasarkan selfie ini',
+                      'Halo, RoboYu sedang mencari foto berdasarkan selfie ini',
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
@@ -99,7 +101,7 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
                     if (state is ListFaceLoading) {
                       return _buildSkeletonLoader();
                     } else if (state is ListFaceLoaded) {
-                      return _buildSimilarPhotosGrid(state.similarPhotos);
+                      return _buildSimilarPhotosGrid(state.similarFaces);
                     } else if (state is ListFaceError) {
                       return Center(
                         child: Text(state.message,
@@ -185,7 +187,7 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
     );
   }
 
-  Widget _buildSimilarPhotosGrid(List<MatchedPhoto> photos) {
+  Widget _buildSimilarPhotosGrid(List<Face> faces) {
     return GridView.builder(
       padding: EdgeInsets.symmetric(horizontal: 20),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -194,13 +196,13 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
       ),
-      itemCount: photos.length,
+      itemCount: faces.length,
       itemBuilder: (context, index) {
         return Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
-              image: NetworkImage(photos[index].url), // Memuat gambar dari URL
+              image: NetworkImage(faces[index].url), // Memuat gambar dari URL
               fit: BoxFit.cover,
             ),
           ),

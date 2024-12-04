@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:camera/camera.dart';
-import 'package:dis_app/models/face_model.dart';
 
 abstract class SearchFaceState extends Equatable {
   @override
@@ -30,15 +29,19 @@ class SearchFacePhotoCaptured extends SearchFaceState {
 }
 
 class SearchFaceMatchedPhotosLoaded extends SearchFaceState {
-  final List<MatchedPhoto> matchedPhotos;
+  final List<String> matchedPhotos;
 
   SearchFaceMatchedPhotosLoaded({required this.matchedPhotos});
 
   @override
   List<Object?> get props => [matchedPhotos];
+
+  get similarFaces => null;
 }
 
 class SearchFaceNoMatchFound extends SearchFaceState {}
+
+class SearchFaceUploaded extends SearchFaceState {}
 
 class SearchFaceError extends SearchFaceState {
   final String message;
@@ -48,3 +51,5 @@ class SearchFaceError extends SearchFaceState {
   @override
   List<Object?> get props => [message];
 }
+
+class SearchFaceNoFaceDetected extends SearchFaceState {}

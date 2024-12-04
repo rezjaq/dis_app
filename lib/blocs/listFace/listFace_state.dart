@@ -9,12 +9,12 @@ abstract class ListFaceState extends Equatable {
 class ListFaceLoading extends ListFaceState {}
 
 class ListFaceLoaded extends ListFaceState {
-  final List<MatchedPhoto> similarPhotos;
+  final List<Face> similarFaces;
 
-  ListFaceLoaded(this.similarPhotos);
+  ListFaceLoaded(this.similarFaces);
 
   @override
-  List<Object?> get props => [similarPhotos];
+  List<Object?> get props => [similarFaces];
 }
 
 class ListFaceError extends ListFaceState {

@@ -14,49 +14,41 @@ class ListFaceBloc extends Bloc<ListFaceEvent, ListFaceState> {
       LoadSimilarPhotos event, Emitter<ListFaceState> emit) async {
     try {
       await Future.delayed(Duration(seconds: 2));
-      //contoh saja
-      final photos = [
-        MatchedPhoto(
+      final faces = [
+        Face(
           id: '1',
-          url: 'https://example.com/similar_face1.jpg',
+          url: 'https://example.com/similar1.jpg',
           userId: 'user1',
+          detections: [],
         ),
-        MatchedPhoto(
+        Face(
           id: '2',
-          url: 'https://example.com/similar_face2.jpg',
-          userId: 'user1',
-        ),
-        MatchedPhoto(
-          id: '3',
-          url: 'https://example.com/similar_face3.jpg',
-          userId: 'user1',
-        ),
-        MatchedPhoto(
-          id: '4',
-          url: 'https://example.com/similar_face4.jpg',
-          userId: 'user1',
+          url: 'https://example.com/similar2.jpg',
+          userId: 'user2',
+          detections: [],
         ),
       ];
-      emit(ListFaceLoaded(photos));
+      emit(ListFaceLoaded(faces));
     } catch (e) {
-      emit(ListFaceError("Failed to load similar photos."));
+      emit(ListFaceError("Error loading photos."));
     }
   }
 
   void _onAddSelfiePhoto(AddSelfiePhoto event, Emitter<ListFaceState> emit) {
     if (state is ListFaceLoaded) {
       final currentState = state as ListFaceLoaded;
-      final updatedPhotos = List<MatchedPhoto>.from(currentState.similarPhotos)
-        ..add(MatchedPhoto(
+      final updatedFaces = List<Face>.from(currentState.similarFaces)
+        ..add(Face(
           id: 'new_id',
           url: event.newPhotoPath,
-          userId: 'user1',
+          userId: 'new_user',
+          detections: [],
         ));
-      emit(ListFaceLoaded(updatedPhotos));
+      emit(ListFaceLoaded(updatedFaces));
     }
   }
 
   void _onClearListFace(ClearListFace event, Emitter<ListFaceState> emit) {
-    emit(ListFaceLoading()); // Reset ke loading atau initial state
+    emit(ListFaceLoading());
   }
 }

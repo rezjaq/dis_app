@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class DisHttpClient {
   static const String _baseUrl =
-      'https://aab8-114-6-25-184.ngrok-free.app/api'; // Change api.dis.com with your IP Address
+      '10.0.0.2/api'; // Change api.dis.com with your IP Address
 
   // GET request
   static Future<Map<String, dynamic>> get(String endpoint) async {
@@ -58,7 +58,7 @@ class DisHttpClient {
     return request;
   }
 
-  // NEW: FindMe request for searching faces
+  // NEW: FindMe request
   static Future<Map<String, dynamic>> findMe(String userId) async {
     final endpoint = 'face/findme/$userId';
     return await get(endpoint);

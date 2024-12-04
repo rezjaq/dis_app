@@ -29,7 +29,7 @@ class DisplayPhotoScreen extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => ListFaceScreen(
                   imagePath: state.savedPath,
-                  matchedPhotos: [],
+                  matchedFaces: [],
                 ),
               ),
             );
@@ -110,7 +110,7 @@ class DisplayPhotoScreen extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) => ListFaceScreen(
                             imagePath: imagePath,
-                            matchedPhotos: [],
+                            matchedFaces: [],
                           ),
                         ),
                       );

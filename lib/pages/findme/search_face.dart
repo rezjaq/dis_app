@@ -1,9 +1,9 @@
 import 'package:camera/camera.dart';
+import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
 import 'package:dis_app/blocs/searchFace/searchFace_state.dart';
-import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
 import 'package:dis_app/pages/findme/DisplayPhotoScreen.dart';
 import 'package:dis_app/pages/findme/ListFaceScreen.dart';
 import 'package:dis_app/utils/constants/colors.dart';
@@ -20,11 +20,29 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
   void initState() {
     super.initState();
     _bloc = BlocProvider.of<SearchFaceBloc>(context);
-    _bloc.add(InitializeCameraEvent());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _bloc.add(InitializeCameraEvent());
+    });
+  }
+
+  @override
+  void dispose() {
+    _bloc.add(CloseCameraEvent());
+    super.dispose();
   }
 
   void _capturePhoto() {
-    _bloc.add(CapturePhotoEvent());
+    if (_bloc != null) {
+      _bloc.add(CapturePhotoEvent());
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Bloc is not initialized")),
+      );
+    }
+  }
+
+  void _uploadPhoto(String userId, String filePath) {
+    _bloc.add(UploadFaceEvent(userId: userId, filePath: filePath));
   }
 
   void _searchMatchedPhotos(String userId) {
@@ -58,24 +76,9 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
                     DisplayPhotoScreen(imagePath: state.imagePath),
               ),
             );
-
             if (result != null) {
-              _searchMatchedPhotos('userIdHere');
+              _uploadPhoto('userIdHere', state.imagePath);
             }
-          } else if (state is SearchFaceMatchedPhotosLoaded) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ListFaceScreen(
-                  matchedPhotos: state.matchedPhotos,
-                  imagePath: '',
-                ),
-              ),
-            );
-          } else if (state is SearchFaceNoMatchFound) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Tidak ada kecocokan ditemukan.")),
-            );
           } else if (state is SearchFaceError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text("Error: ${state.message}")),
@@ -89,10 +92,7 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
             return Stack(
               children: [
                 Positioned.fill(
-                  child: Transform(
-                    transform: Matrix4.rotationY(0), // Nonaktifkan efek mirror
-                    child: CameraPreview(state.controller),
-                  ),
+                  child: CameraPreview(state.controller),
                 ),
                 Positioned(
                   bottom: 40,
@@ -118,20 +118,16 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Error: ${state.message}"),
-                  SizedBox(height: 20),
+                  Text(state.message),
                   ElevatedButton(
-                    onPressed: () {
-                      _bloc.add(InitializeCameraEvent());
-                    },
+                    onPressed: () => _bloc.add(InitializeCameraEvent()),
                     child: Text("Coba Lagi"),
                   ),
                 ],
               ),
             );
-          } else {
-            return Center(child: Text("Tidak ada kamera yang tersedia"));
           }
+          return Container();
         },
       ),
     );

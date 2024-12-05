@@ -132,7 +132,7 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
         final responseCollections = await photoController.collectionPhoto(CollectionPhotoRequest());
         emit(FindmeSuccess(all: responseAll, collections: responseCollections));
       } catch (e) {
-        emit(PhotoFailure(message: e.toString()));
+        emit(FindmeFailure(messageAll: e.toString(), messageCollections: e.toString()));
       }
     });
   }

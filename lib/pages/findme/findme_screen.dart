@@ -1,16 +1,15 @@
 import 'package:dis_app/blocs/photo/photo_bloc.dart';
-import 'package:dis_app/blocs/photo/photo_event.dart';
-import 'package:dis_app/blocs/photo/photo_state.dart';
 import 'package:dis_app/controllers/photo_controller.dart';
 import 'package:dis_app/models/photo_model.dart';
 import 'package:dis_app/pages/findme/ListFaceScreen.dart';
 import 'package:dis_app/pages/findme/chart_screen.dart';
 import 'package:dis_app/utils/constants/colors.dart';
-import 'package:dis_app/utils/constants/sizes.dart';
-import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import '../../blocs/photo/photo_event.dart';
+import '../../blocs/photo/photo_state.dart';
 
 class FindMeScreen extends StatefulWidget {
   const FindMeScreen({Key? key}) : super(key: key);
@@ -44,8 +43,8 @@ class _FindMeScreenState extends State<FindMeScreen> {
       _searchText = text;
       _filteredContents = text.isNotEmpty
           ? _allContents
-              .where((fileName) => fileName.contains(_searchText))
-              .toList()
+          .where((fileName) => fileName.contains(_searchText))
+          .toList()
           : [];
     });
   }
@@ -109,76 +108,78 @@ class _FindMeScreenState extends State<FindMeScreen> {
     return _isSearching
         ? _buildSearchBar()
         : Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Find Me',
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Find your photo here',
-                    style: const TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                ],
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Find Me',
+              style: const TextStyle(
+                  fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Find your photo here',
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.search, color: DisColors.primary),
+              onPressed: () {
+                setState(() {
+                  _isSearching = true;
+                });
+              },
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ShoppingCartScreen()),
+                );
+              },
+              icon: Icon(Icons.shopping_cart, color: DisColors.primary),
+            ),
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ListFaceScreen(
+                        imagePath: '',
+                        matchedFaces: [],
+                      )),
+                );
+              },
+              icon: SvgPicture.asset(
+                'assets/icons/robot_2.svg',
+                color: DisColors.primary,
+                width: 24,
+                height: 24,
               ),
-              Row(
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.search, color: DisColors.primary),
-                    onPressed: () {
-                      setState(() {
-                        _isSearching = true;
-                      });
-                    },
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ShoppingCartScreen()),
-                      );
-                    },
-                    icon: Icon(Icons.shopping_cart, color: DisColors.primary),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ListFaceScreen(
-                                  imagePath: '',
-                                  matchedFaces: [],
-                                )),
-                      );
-                    },
-                    icon: SvgPicture.asset(
-                      'assets/icons/robot_2.svg',
-                      color: DisColors.primary,
-                      width: 24,
-                      height: 24,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          );
+            ),
+          ],
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: DisColors.white,
-        body: SafeArea(
-          child: BlocProvider(
-            create: (context) => PhotoBloc(photoController: PhotoController()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => PhotoBloc(photoController: PhotoController())..add(FindmePhotoEvent())),
+      ],
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          backgroundColor: DisColors.white,
+          body: SafeArea(
             child: Column(
               children: [
                 Container(
@@ -202,9 +203,39 @@ class _FindMeScreenState extends State<FindMeScreen> {
                       ? _buildSearchResults(_filteredContents)
                       : TabBarView(
                     children: [
+                      BlocBuilder<PhotoBloc, PhotoState>(
+                        builder: (context, state) {
+                          if (state is PhotoLoading) {
+                            return const Center(child: CircularProgressIndicator());
+                          } else if (state is FindmeSuccess) {
+                            final photos = (state.all!['data'] as List)
+                                .map((photo) => SellPhoto.fromJson(photo))
+                                .toList();
+                            if (photos.isNotEmpty) {
+                              return _buildGridContent(photos);
+                            }
+                            return const Center(child: Text('No match photo found'));
+                          }
+                          return const Center(child: Text('Cannot load data'));
+                        },
+                      ),
                       _buildGridContent([]),
-                      _buildGridContent([]),
-                      _buildGridContent([]),
+                      BlocBuilder<PhotoBloc, PhotoState>(
+                        builder: (context, state) {
+                          if (state is PhotoLoading) {
+                            return const Center(child: CircularProgressIndicator());
+                          } else if (state is FindmeSuccess) {
+                            final photos = (state.collections!['data'] as List)
+                                .map((photo) => SellPhoto.fromJson(photo))
+                                .toList();
+                            if (photos.isNotEmpty) {
+                              return _buildGridContent(photos);
+                            }
+                            return const Center(child: Text('No collection found'));
+                          }
+                          return const Center(child: Text('Cannot load data'));
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -327,7 +358,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                         onPressed: () {
                           setState(() {
                             ShoppingCartScreen.selectedImage =
-                                'assets/images/dummies/$image';
+                            'assets/images/dummies/$image';
                           });
                           Navigator.pop(context);
                         },

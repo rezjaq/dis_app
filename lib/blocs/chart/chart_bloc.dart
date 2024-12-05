@@ -12,6 +12,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<SelectAllCartItems>(_onSelectAllCartItems);
     on<RemoveCartItem>(_onRemoveCartItem);
     on<AddCartItem>(_onAddCartItem);
+    on<ListCartItem>(_onListCartItem);
   }
 
   void _onLoadCartItems(LoadCartItems event, Emitter<CartState> emit) async {
@@ -59,5 +60,12 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
     emit(state.copyWith(
         cartItems: updatedCartItems, selectedItems: updatedSelectedItems));
+  }
+
+  void _onListCartItem(ListCartItem event, Emitter<CartState> emit) {
+    final listItem = List<CartItem>.from(state.cartItems)
+      ..addAll(event.cartItems);
+    final selectedItems = List<bool>.filled(listItem.length, false);
+    emit(CartState(cartItems: listItem, selectedItems: selectedItems));
   }
 }

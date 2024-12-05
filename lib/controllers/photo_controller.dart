@@ -119,7 +119,7 @@ class PhotoController {
 
   Future<Map<String, dynamic>> collectionPhoto(CollectionPhotoRequest request) async {
     try {
-      final response = await DisHttpClient.get('photo/collection/');
+      final response = await DisHttpClient.get('photo/sell/collection/');
       if (response['data'] == null) {
         throw response['errors'];
       } else {

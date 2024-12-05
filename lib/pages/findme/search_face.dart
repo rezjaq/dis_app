@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'dart:math' as math;
+
 class SearchFaceScreen extends StatefulWidget {
   @override
   _SearchFaceScreenState createState() => _SearchFaceScreenState();
@@ -16,6 +18,7 @@ class SearchFaceScreen extends StatefulWidget {
 class _SearchFaceScreenState extends State<SearchFaceScreen> {
   late CameraController _controller;
   bool _isCameraInitialized = false;
+  bool _isReloadingCamera = false;
   final ImagePicker _imagePicker = ImagePicker();
 
   @override
@@ -24,22 +27,41 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
     _initializeCamera();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isCameraInitialized) {
+      _initializeCamera();
+    }
+  }
+
   Future<void> _initializeCamera() async {
-    final cameras = await availableCameras();
-    final frontCamera = cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
-    );
-
-    _controller = CameraController(
-      frontCamera,
-      ResolutionPreset.high,
-      enableAudio: false,
-    );
-
-    await _controller.initialize();
     setState(() {
-      _isCameraInitialized = true;
+      _isReloadingCamera = true;
     });
+    try {
+      final cameras = await availableCameras();
+      final frontCamera = cameras.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.front,
+      );
+
+      _controller = CameraController(
+        frontCamera,
+        ResolutionPreset.high,
+        enableAudio: false,
+      );
+
+      await _controller.initialize();
+      setState(() {
+        _isCameraInitialized = true;
+        _isReloadingCamera = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isCameraInitialized = false;
+        _isReloadingCamera = false;
+      });
+    }
   }
 
   @override
@@ -65,7 +87,9 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
         MaterialPageRoute(
           builder: (context) => DisplayPhotoScreen(imagePath: imagePath),
         ),
-      );
+      ).then((_) {
+        _initializeCamera();
+      });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Gagal mengambil foto: ${e.toString()}")),
@@ -87,30 +111,38 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: _isCameraInitialized
-          ? Stack(
-              children: [
-                Positioned.fill(child: CameraPreview(_controller)),
-                Positioned(
-                  bottom: 40,
-                  left: (MediaQuery.of(context).size.width - 150) / 2,
-                  child: ElevatedButton(
-                    onPressed: () => _captureAndDetectFace(context),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: DisColors.white,
-                      backgroundColor: DisColors.primary,
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
+      body: _isReloadingCamera
+          ? Center(child: CircularProgressIndicator())
+          : _isCameraInitialized
+              ? Stack(
+                  children: [
+                    Positioned.fill(
+                      child: Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.rotationY(math.pi),
+                        child: CameraPreview(_controller),
                       ),
                     ),
-                    child: Text('Ambil Foto'),
-                  ),
-                ),
-              ],
-            )
-          : Center(child: CircularProgressIndicator()),
+                    Positioned(
+                      bottom: 40,
+                      left: (MediaQuery.of(context).size.width - 150) / 2,
+                      child: ElevatedButton(
+                        onPressed: () => _captureAndDetectFace(context),
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor: DisColors.white,
+                          backgroundColor: DisColors.primary,
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 40, vertical: 15),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: Text('Ambil Foto'),
+                      ),
+                    ),
+                  ],
+                )
+              : Center(child: CircularProgressIndicator()),
     );
   }
 }

@@ -119,7 +119,7 @@ class PhotoController {
 
   Future<Map<String, dynamic>> collectionPhoto(CollectionPhotoRequest request) async {
     try {
-      final response = await DisHttpClient.get('photo/collection/${request.buyerId}');
+      final response = await DisHttpClient.get('photo/collection/');
       if (response['data'] == null) {
         throw response['errors'];
       } else {
@@ -127,6 +127,19 @@ class PhotoController {
       }
     } catch (e) {
       throw Exception('Failed to collection photo: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> findmePhoto() async {
+    try {
+      final response = await DisHttpClient.get('photo/sell/findme');
+      if (response['data'] == null) {
+        throw response['errors'];
+      } else {
+        return response;
+      }
+    } catch (e) {
+      throw Exception('Failed to findme photo: $e');
     }
   }
 }

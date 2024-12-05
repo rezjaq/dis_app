@@ -130,25 +130,17 @@ class _AccountScreenState extends State<AccountScreen> {
               isSellSelected: isSellSelected,
               onToggle: _toggleSection,
             ),
-            MultiBlocProvider(
-                providers: [
-                  BlocProvider(
-                    create: (context) => PhotoBloc(photoController: PhotoController())..add(ListPhotoEvent(type: 'post')),
-                  ),
-                  BlocProvider(
-                    create: (context) => PhotoBloc(photoController: PhotoController())..add(ListPhotoEvent(type: 'sell')),
-                  ),
-                ],
+            BlocProvider(
+                create: (context) => PhotoBloc(photoController: PhotoController())..add(ListPhotoEvent()),
                 child: BlocBuilder<PhotoBloc, PhotoState>(
                   builder: (context, state) {
                     if (state is PhotoLoading) {
                       return const Center(child: CircularProgressIndicator());
-                    } else if (state is PhotoSuccess) {
-                      print(state.data);
-                      final postImages = (state.data!['data'] as List)
+                    } else if (state is PhotoByAccountSuccess) {
+                      final postImages = (state.post['data'] as List)
                           .where((element) => element['type'] == "post")
                           .toList();
-                      final sellImages = (state.data!['data'] as List)
+                      final sellImages = (state.sell['data'] as List)
                           .where((element) => element['type'] == "sell")
                           .toList();
                       return isSellSelected

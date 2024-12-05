@@ -273,12 +273,10 @@ class LikePhotoPostRequest {
 }
 
 class CollectionPhotoRequest {
-  final String buyerId;
   final int? page;
   final int? size;
 
   CollectionPhotoRequest({
-    required this.buyerId,
     this.page,
     this.size,
   });

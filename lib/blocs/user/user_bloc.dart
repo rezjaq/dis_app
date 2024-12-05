@@ -57,8 +57,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         if (response['data'] != true) {
           throw response['errors'];
         } else {
-          DisLocalStorage().removeData('access_token');
-          emit(UserSuccess(message: response['data']));
+          emit(UserSuccess(message: "Logged out successfully", data: response));
         }
       } catch (e) {
         emit(UserFailure(message: e.toString()));

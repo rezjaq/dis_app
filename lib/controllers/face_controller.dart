@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dis_app/models/face_model.dart';
 import 'package:dis_app/utils/http/http_client.dart';
@@ -51,6 +52,18 @@ class FaceController {
       }
     } catch (e) {
       throw Exception('Error deleting face: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> faceDetection(FaceDetectionRequest request) async {
+    try {
+      final multipartRequest = await DisHttpClient.multipartRequest('face/detect', 'POST');
+      multipartRequest.files.add(await http.MultipartFile.fromPath('file', request.file.path));
+      final response = await multipartRequest.send();
+      final responseData = await response.stream.bytesToString();
+      return json.decode(responseData);
+    } catch (e) {
+      throw Exception('Error detecting face: $e');
     }
   }
 }

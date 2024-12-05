@@ -55,18 +55,16 @@ class GetPhotoEvent extends PhotoEvent {
 }
 
 class ListPhotoEvent extends PhotoEvent {
-  final String? type;
   final int? page;
   final int? size;
 
   const ListPhotoEvent({
-    this.type,
     this.page,
     this.size,
   });
 
   @override
-  List<Object?> get props => [type, page, size];
+  List<Object?> get props => [page, size];
 }
 
 class UpdateSellPhotoEvent extends PhotoEvent {
@@ -133,4 +131,17 @@ class CollectionPhotoEvent extends PhotoEvent {
 
   @override
   List<Object?> get props => [buyerId, page, size];
+}
+
+class FindmePhotoEvent extends PhotoEvent {
+  final int? page;
+  final int? size;
+
+  const FindmePhotoEvent({
+    this.page,
+    this.size,
+  });
+
+  @override
+  List<Object?> get props => [page, size];
 }

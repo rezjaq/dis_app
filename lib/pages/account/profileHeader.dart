@@ -50,7 +50,7 @@ class ProfileHeader extends StatelessWidget {
                   DisHelperFunctions.screenWidth(context) * 0.3),
               child: user.photo != null
                   ? Image.network(user.photo!, fit: BoxFit.cover)
-                  : const AssetImage("assets/images/no_profile.jpeg") as Widget,
+                  : Image.asset("assets/images/no_profile.jpeg"),
             ),
           ),
           Container(

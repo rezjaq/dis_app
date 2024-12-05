@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:image_picker/image_picker.dart';
+
 class BoundBox {
   final double x;
   final double y;
@@ -63,4 +67,12 @@ class Face {
       'detections': detections.map((e) => e.toJson()).toList(),
     };
   }
+}
+
+class FaceDetectionRequest {
+  final XFile file;
+
+  FaceDetectionRequest({
+    required this.file,
+  });
 }

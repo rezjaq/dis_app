@@ -27,6 +27,7 @@ class AuthController {
       } else {
         final accessToken = response['data']['access_token'];
         await DisLocalStorage().saveData('access_token', accessToken);
+        await DisLocalStorage().saveData('refresh_token', response['data']['refresh_token']);
         final token = await DisLocalStorage().readData('access_token');
         print("Access Token: $accessToken");
         print('token: $token');

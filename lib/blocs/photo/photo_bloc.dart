@@ -53,14 +53,19 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
     on<ListPhotoEvent>((event, emit) async {
       emit(PhotoLoading());
       try {
-        final response = await photoController.list(ListPhotoRequest(
-            type: event.type,
+        final responseSell = await photoController.list(ListPhotoRequest(
+            type: "sell",
             page: event.page,
             size: event.size
         ));
-        emit(PhotoSuccess(data: response));
+        final responsePost = await photoController.list(ListPhotoRequest(
+            type: "post",
+            page: event.page,
+            size: event.size
+        ));
+        emit(PhotoByAccountSuccess(sell: responseSell, post: responsePost));
       } catch (e) {
-        emit(PhotoFailure(message: e.toString()));
+        emit(PhotoByAccountFailure(messageSell: e.toString(), messagePost: e.toString()));
       }
     });
 
@@ -115,6 +120,17 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
       try {
         final response = await photoController.samplePost();
         emit(PhotoSuccess(data: response));
+      } catch (e) {
+        emit(PhotoFailure(message: e.toString()));
+      }
+    });
+
+    on<FindmePhotoEvent>((event, emit) async {
+      emit(PhotoLoading());
+      try {
+        final responseAll = await photoController.findmePhoto();
+        final responseCollections = await photoController.collectionPhoto(CollectionPhotoRequest());
+        emit(FindmeSuccess(all: responseAll, collections: responseCollections));
       } catch (e) {
         emit(PhotoFailure(message: e.toString()));
       }

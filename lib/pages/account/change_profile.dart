@@ -4,6 +4,7 @@ import 'package:dis_app/blocs/user/user_state.dart';
 import 'package:dis_app/controllers/user_controller.dart';
 import 'package:dis_app/models/user_model.dart';
 import 'package:dis_app/utils/constants/colors.dart';
+import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -76,9 +77,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       body: BlocConsumer<UserBloc, UserState>(
         listener: (context, state) {
           if (state is UserSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message ?? 'Success')),
-            );
+            if (state.data!['data'] == true) {
+              DisHelperFunctions.navigateToRoute(context, '/login');
+            }
+            else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.message ?? 'Success')),
+              );
+            }
           } else if (state is UserFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),

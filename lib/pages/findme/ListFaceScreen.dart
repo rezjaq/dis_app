@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'package:dis_app/blocs/face/face_bloc.dart';
 import 'package:dis_app/blocs/listFace/listFace_bloc.dart';
 import 'package:dis_app/blocs/listFace/listFace_event.dart';
 import 'package:dis_app/blocs/listFace/listFace_state.dart';
 import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
 import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
+import 'package:dis_app/controllers/face_controller.dart';
 import 'package:dis_app/models/face_model.dart';
 import 'package:dis_app/pages/findme/search_face.dart';
 import 'package:dis_app/utils/constants/colors.dart';
@@ -35,7 +37,10 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SearchFaceScreen(),
+        builder: (context) => BlocProvider(
+          create: (context) => FaceBloc(faceController: FaceController()),
+          child: SearchFaceScreen(),
+        ),
       ),
     );
   }

@@ -1,12 +1,12 @@
 import 'package:camera/camera.dart';
-import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
+import 'package:dis_app/blocs/face/face_bloc.dart';
+import 'package:dis_app/blocs/face/face_event.dart';
+import 'package:dis_app/blocs/face/face_state.dart';
+import 'package:dis_app/pages/findme/DisplayPhotoScreen.dart';
+import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
-import 'package:dis_app/blocs/searchFace/searchFace_state.dart';
-import 'package:dis_app/pages/findme/DisplayPhotoScreen.dart';
-import 'package:dis_app/pages/findme/ListFaceScreen.dart';
-import 'package:dis_app/utils/constants/colors.dart';
+import 'package:image_picker/image_picker.dart';
 
 class SearchFaceScreen extends StatefulWidget {
   @override
@@ -14,39 +14,63 @@ class SearchFaceScreen extends StatefulWidget {
 }
 
 class _SearchFaceScreenState extends State<SearchFaceScreen> {
-  late SearchFaceBloc _bloc;
+  late CameraController _controller;
+  bool _isCameraInitialized = false;
+  final ImagePicker _imagePicker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
-    _bloc = BlocProvider.of<SearchFaceBloc>(context);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _bloc.add(InitializeCameraEvent());
+    _initializeCamera();
+  }
+
+  Future<void> _initializeCamera() async {
+    final cameras = await availableCameras();
+    final frontCamera = cameras.firstWhere(
+      (camera) => camera.lensDirection == CameraLensDirection.front,
+    );
+
+    _controller = CameraController(
+      frontCamera,
+      ResolutionPreset.high,
+      enableAudio: false,
+    );
+
+    await _controller.initialize();
+    setState(() {
+      _isCameraInitialized = true;
     });
   }
 
   @override
   void dispose() {
-    _bloc.add(CloseCameraEvent());
+    if (_isCameraInitialized) {
+      _controller.dispose();
+    }
     super.dispose();
   }
 
-  void _capturePhoto() {
-    if (_bloc != null) {
-      _bloc.add(CapturePhotoEvent());
-    } else {
+  void _captureAndDetectFace(BuildContext context) async {
+    try {
+      if (!_controller.value.isInitialized) return;
+
+      final XFile photo = await _controller.takePicture();
+      final imagePath = photo.path;
+
+      final FaceBloc faceBloc = BlocProvider.of<FaceBloc>(context);
+      faceBloc.add(FaceDetectionEvent(file: photo));
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DisplayPhotoScreen(imagePath: imagePath),
+        ),
+      );
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Bloc is not initialized")),
+        SnackBar(content: Text("Gagal mengambil foto: ${e.toString()}")),
       );
     }
-  }
-
-  void _uploadPhoto(String userId, String filePath) {
-    _bloc.add(UploadFaceEvent(userId: userId, filePath: filePath));
-  }
-
-  void _searchMatchedPhotos(String userId) {
-    _bloc.add(SearchMatchedPhotosEvent(userId: userId));
   }
 
   @override
@@ -54,51 +78,24 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Tambah Selfie',
+          'Deteksi Wajah',
           style: TextStyle(color: DisColors.white),
         ),
         backgroundColor: DisColors.primary,
-        elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: DisColors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: BlocConsumer<SearchFaceBloc, SearchFaceState>(
-        listener: (context, state) async {
-          if (state is SearchFacePhotoCaptured) {
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    DisplayPhotoScreen(imagePath: state.imagePath),
-              ),
-            );
-            if (result != null) {
-              _uploadPhoto('userIdHere', state.imagePath);
-            }
-          } else if (state is SearchFaceError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text("Error: ${state.message}")),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state is SearchFaceLoading) {
-            return Center(child: CircularProgressIndicator());
-          } else if (state is SearchFaceLoaded) {
-            return Stack(
+      body: _isCameraInitialized
+          ? Stack(
               children: [
-                Positioned.fill(
-                  child: CameraPreview(state.controller),
-                ),
+                Positioned.fill(child: CameraPreview(_controller)),
                 Positioned(
                   bottom: 40,
                   left: (MediaQuery.of(context).size.width - 150) / 2,
                   child: ElevatedButton(
-                    onPressed: _capturePhoto,
+                    onPressed: () => _captureAndDetectFace(context),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: DisColors.white,
                       backgroundColor: DisColors.primary,
@@ -112,24 +109,8 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
                   ),
                 ),
               ],
-            );
-          } else if (state is SearchFaceError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(state.message),
-                  ElevatedButton(
-                    onPressed: () => _bloc.add(InitializeCameraEvent()),
-                    child: Text("Coba Lagi"),
-                  ),
-                ],
-              ),
-            );
-          }
-          return Container();
-        },
-      ),
+            )
+          : Center(child: CircularProgressIndicator()),
     );
   }
 }

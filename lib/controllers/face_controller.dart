@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:dis_app/models/face_model.dart';
 import 'package:dis_app/utils/http/http_client.dart';
-import 'package:http/http.dart' as http; // Needed for multipart
+import 'package:http/http.dart' as http;
 
 class FaceController {
   Future<Face> addFace(String userId, String filePath) async {
@@ -55,10 +55,13 @@ class FaceController {
     }
   }
 
-  Future<Map<String, dynamic>> faceDetection(FaceDetectionRequest request) async {
+  Future<Map<String, dynamic>> faceDetection(
+      FaceDetectionRequest request) async {
     try {
-      final multipartRequest = await DisHttpClient.multipartRequest('face/detect', 'POST');
-      multipartRequest.files.add(await http.MultipartFile.fromPath('file', request.file.path));
+      final multipartRequest =
+          await DisHttpClient.multipartRequest('face/detect', 'POST');
+      multipartRequest.files
+          .add(await http.MultipartFile.fromPath('file', request.file.path));
       final response = await multipartRequest.send();
       final responseData = await response.stream.bytesToString();
       return json.decode(responseData);

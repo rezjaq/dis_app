@@ -46,3 +46,12 @@ class AddCartItem extends CartEvent {
   @override
   List<Object> get props => [cartItem];
 }
+
+class ListCartItem extends CartEvent {
+  final List<CartItem> cartItems;
+
+  const ListCartItem(this.cartItems);
+
+  @override
+  List<Object> get props => [cartItems];
+}

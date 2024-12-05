@@ -36,29 +36,26 @@ class PhotoFailure extends PhotoState {
 class FindmeSuccess extends PhotoState {
   final String? message;
   final Map<String, dynamic>? all;
-  final Map<String, dynamic>? favourites;
   final Map<String, dynamic>? collections;
 
-  const FindmeSuccess({this.message, this.all, this.favourites, this.collections});
+  const FindmeSuccess({this.message, this.all, this.collections});
 
   @override
   List<Object> get props => [
     message ?? '',
     all ?? {},
-    favourites ?? {},
     collections ?? {},
   ];
 }
 
 class FindmeFailure extends PhotoState {
   final String messageAll;
-  final String messageFavourites;
   final String messageCollections;
 
-  const FindmeFailure({required this.messageAll, required this.messageFavourites, required this.messageCollections});
+  const FindmeFailure({required this.messageAll, required this.messageCollections});
 
   @override
-  List<Object> get props => [messageAll, messageFavourites, messageCollections];
+  List<Object> get props => [messageAll, messageCollections];
 }
 
 class PhotoByAccountSuccess extends PhotoState {

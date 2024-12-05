@@ -49,13 +49,10 @@ Future<void> main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => UserBloc(userController: UserController())),
-        BlocProvider(
-            create: (_) => PhotoBloc(photoController: PhotoController())),
+        BlocProvider(create: (_) => PhotoBloc(photoController: PhotoController())),
         BlocProvider(create: (_) => CartBloc()),
         BlocProvider(create: (context) => ListFaceBloc()),
-        BlocProvider(
-            create: (context) =>
-                SearchFaceBloc(faceController)..add(InitializeCameraEvent())),
+        BlocProvider(create: (context) => SearchFaceBloc(faceController)..add(InitializeCameraEvent())),
         BlocProvider(create: (_) => DisplayPhotoBloc()),
       ],
       child: MyApp(),

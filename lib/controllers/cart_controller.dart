@@ -32,7 +32,7 @@ class CartController {
       final queryParams = request.toQueryParams();
       final response = await DisHttpClient.get('cart?$queryParams');
       if (response['data'] == null) {
-        throw Exception(response['errors'] ?? 'Unknown error occurred');
+        throw Exception(response['errors']);
       }
       return response;
     } catch (e) {

@@ -1,9 +1,15 @@
+import 'package:dis_app/blocs/photo/photo_bloc.dart';
+import 'package:dis_app/blocs/photo/photo_event.dart';
+import 'package:dis_app/blocs/photo/photo_state.dart';
+import 'package:dis_app/controllers/photo_controller.dart';
+import 'package:dis_app/models/photo_model.dart';
 import 'package:dis_app/pages/findme/ListFaceScreen.dart';
 import 'package:dis_app/pages/findme/chart_screen.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class FindMeScreen extends StatefulWidget {
@@ -23,8 +29,6 @@ class _FindMeScreenState extends State<FindMeScreen> {
     'dummy_2.jpg'
   ];
   List<String> _filteredContents = [];
-  List<String> _favorites = [];
-  List<String> _collection = [];
   final List<String> _selectedImagesForCart = [];
 
   get imagePath => null;
@@ -173,36 +177,39 @@ class _FindMeScreenState extends State<FindMeScreen> {
       child: Scaffold(
         backgroundColor: DisColors.white,
         body: SafeArea(
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(16.0),
-                color: DisColors.white,
-                child: _buildHeader(),
-              ),
-              if (!_isSearching)
-                TabBar(
-                  labelColor: DisColors.primary,
-                  unselectedLabelColor: Colors.grey,
-                  indicatorColor: DisColors.primary,
-                  tabs: const [
-                    Tab(text: 'All'),
-                    Tab(text: 'Favorite'),
-                    Tab(text: 'Collection'),
-                  ],
+          child: BlocProvider(
+            create: (context) => PhotoBloc(photoController: PhotoController()),
+            child: Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  color: DisColors.white,
+                  child: _buildHeader(),
                 ),
-              Expanded(
-                child: _isSearching
-                    ? _buildSearchResults(_filteredContents)
-                    : TabBarView(
-                        children: [
-                          _buildGridContent(_allContents),
-                          _buildGridContent(_favorites),
-                          _buildGridContent(_collection),
-                        ],
-                      ),
-              ),
-            ],
+                if (!_isSearching)
+                  TabBar(
+                    labelColor: DisColors.primary,
+                    unselectedLabelColor: Colors.grey,
+                    indicatorColor: DisColors.primary,
+                    tabs: const [
+                      Tab(text: 'All'),
+                      Tab(text: 'Favorite'),
+                      Tab(text: 'Collection'),
+                    ],
+                  ),
+                Expanded(
+                  child: _isSearching
+                      ? _buildSearchResults(_filteredContents)
+                      : TabBarView(
+                    children: [
+                      _buildGridContent([]),
+                      _buildGridContent([]),
+                      _buildGridContent([]),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -246,7 +253,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
     );
   }
 
-  Widget _buildGridContent(List<String> contents) {
+  Widget _buildGridContent(List<SellPhoto> contents) {
     return GridView.builder(
       padding: const EdgeInsets.all(8.0),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -259,12 +266,12 @@ class _FindMeScreenState extends State<FindMeScreen> {
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
-            _showFullImage(context, contents[index]);
+            _showFullImage(context, contents[index].url);
           },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
-            child: Image.asset(
-              'assets/images/dummies/${contents[index]}',
+            child: Image.network(
+              contents[index].url,
               fit: BoxFit.cover,
             ),
           ),
@@ -300,9 +307,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                       ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            if (!_favorites.contains(image)) {
-                              _favorites.add(image);
-                            }
+                            // Add to favorites
                           });
                           Navigator.pop(context);
                         },
@@ -311,7 +316,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                       ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            _collection.remove(image);
+                            // List photo buyer
                           });
                           Navigator.pop(context);
                         },
@@ -321,9 +326,6 @@ class _FindMeScreenState extends State<FindMeScreen> {
                         icon: Icon(Icons.shopping_cart, color: DisColors.white),
                         onPressed: () {
                           setState(() {
-                            if (!_favorites.contains(image)) {
-                              _favorites.add(image);
-                            }
                             ShoppingCartScreen.selectedImage =
                                 'assets/images/dummies/$image';
                           });

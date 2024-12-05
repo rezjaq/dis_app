@@ -33,12 +33,14 @@ class UserController {
 
   Future<Map<String, dynamic>> logout() async {
     try {
-      final response = await DisHttpClient.post('user/logout', {});
+      final response = await DisHttpClient.delete('user/logout');
+      print(response);
       if (response['data'] == null) {
         throw response['errors'];
       } else {
         await DisLocalStorage().removeData('access_token');
-        return response['data'];
+        await DisLocalStorage().removeData('refresh_token');
+        return response;
       }
     } catch (e) {
       throw Exception('Failed to logout user: $e');

@@ -1,5 +1,8 @@
 import 'dart:async';
+import 'package:dis_app/controllers/auth_controller.dart';
+import 'package:dis_app/controllers/user_controller.dart';
 import 'package:dis_app/pages/welcome_screen.dart';
+import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 
@@ -77,9 +80,21 @@ class _FindMeSplashScreenState extends State<FindMeSplashScreen>
           _startWaveAnimation = true; // Start wave animation
         });
 
-        Timer(Duration(seconds: 3), () {
-          Navigator.pushReplacementNamed(context, '/welcome');
-        });
+        Timer(Duration(seconds: 3), () async {
+          try {
+            final response = await UserController().get();
+            if (response['_id'] != null) {
+              DisHelperFunctions.navigateToRoute(context, '/home');
+            } else {
+              DisHelperFunctions.navigateToRoute(context, '/welcome');
+            }
+          } catch (e) {
+            DisHelperFunctions.navigateToRoute(context, '/welcome');
+          }
+        }); // If you using api
+        /*Timer(Duration(seconds: 3), () {
+          DisHelperFunctions.navigateToRoute(context, '/welcome');
+        });*/ // If you not using api
       });
     });
   }

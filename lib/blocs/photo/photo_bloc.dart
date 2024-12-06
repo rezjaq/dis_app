@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
   final PhotoController photoController;
+  // List<String> _favorites = [];
 
   PhotoBloc({required this.photoController}) : super(PhotoInitial()) {
     on<AddSellPhotoEvent>((event, emit) async {
@@ -16,8 +17,7 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
             basePrice: event.basePrice.toString(),
             sellPrice: event.sellPrice.toString(),
             description: event.description,
-            file: event.file
-        ));
+            file: event.file));
         emit(PhotoSuccess(data: response));
       } catch (e) {
         emit(PhotoFailure(message: e.toString()));
@@ -30,8 +30,7 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
         final response = await photoController.addPostPhoto(AddPostPhotoRequest(
             name: event.name,
             description: event.description,
-            file: event.file
-        ));
+            file: event.file));
         emit(PhotoSuccess(data: response));
       } catch (e) {
         emit(PhotoFailure(message: e.toString()));
@@ -41,9 +40,8 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
     on<GetPhotoEvent>((event, emit) async {
       emit(PhotoLoading());
       try {
-        final response = await photoController.get(GetPhotoRequest(
-            id: event.id
-        ));
+        final response =
+            await photoController.get(GetPhotoRequest(id: event.id));
         emit(PhotoSuccess(data: response));
       } catch (e) {
         emit(PhotoFailure(message: e.toString()));
@@ -53,31 +51,27 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
     on<ListPhotoEvent>((event, emit) async {
       emit(PhotoLoading());
       try {
-        final responseSell = await photoController.list(ListPhotoRequest(
-            type: "sell",
-            page: event.page,
-            size: event.size
-        ));
-        final responsePost = await photoController.list(ListPhotoRequest(
-            type: "post",
-            page: event.page,
-            size: event.size
-        ));
+        final responseSell = await photoController.list(
+            ListPhotoRequest(type: "sell", page: event.page, size: event.size));
+        final responsePost = await photoController.list(
+            ListPhotoRequest(type: "post", page: event.page, size: event.size));
         emit(PhotoByAccountSuccess(sell: responseSell, post: responsePost));
       } catch (e) {
-        emit(PhotoByAccountFailure(messageSell: e.toString(), messagePost: e.toString()));
+        emit(PhotoByAccountFailure(
+            messageSell: e.toString(), messagePost: e.toString()));
       }
     });
 
     on<UpdateSellPhotoEvent>((event, emit) async {
       emit(PhotoLoading());
       try {
-        final response = await photoController.updateSell(UpdateSellPhotoRequest(
-            id: event.id,
-            name: event.name,
-            basePrice: event.basePrice.toString(),
-            sellPrice: event.sellPrice.toString(),
-            description: event.description,
+        final response =
+            await photoController.updateSell(UpdateSellPhotoRequest(
+          id: event.id,
+          name: event.name,
+          basePrice: event.basePrice.toString(),
+          sellPrice: event.sellPrice.toString(),
+          description: event.description,
         ));
         emit(PhotoSuccess(data: response));
       } catch (e) {
@@ -88,10 +82,11 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
     on<UpdatePostPhotoEvent>((event, emit) async {
       emit(PhotoLoading());
       try {
-        final response = await photoController.updatePost(UpdatePostPhotoRequest(
-            id: event.id,
-            name: event.name,
-            description: event.description,
+        final response =
+            await photoController.updatePost(UpdatePostPhotoRequest(
+          id: event.id,
+          name: event.name,
+          description: event.description,
         ));
         emit(PhotoSuccess(data: response));
       } catch (e) {
@@ -104,11 +99,11 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
       try {
         await photoController.likePost(LikePhotoPostRequest(
             id: event.id,
-            liked: event.liked // true or false, You can change this value on icon button love
-        ));
-        final updatedPhoto = await photoController.get(GetPhotoRequest(
-            id: event.id
-        ));
+            liked: event
+                .liked // true or false, You can change this value on icon button love
+            ));
+        final updatedPhoto =
+            await photoController.get(GetPhotoRequest(id: event.id));
         emit(PhotoSuccess(data: updatedPhoto));
       } catch (e) {
         emit(PhotoFailure(message: e.toString()));
@@ -129,10 +124,35 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
       emit(PhotoLoading());
       try {
         final responseAll = await photoController.findmePhoto();
-        final responseCollections = await photoController.collectionPhoto(CollectionPhotoRequest());
-        emit(FindmeSuccess(all: responseAll, collections: responseCollections));
+        final responseCollections =
+            await photoController.collectionPhoto(CollectionPhotoRequest());
+        final favorites = <dynamic>[];
+
+        emit(FindmeSuccess(
+          all: responseAll,
+          collections: responseCollections,
+          favorites: favorites,
+        ));
       } catch (e) {
-        emit(FindmeFailure(messageAll: e.toString(), messageCollections: e.toString()));
+        emit(FindmeFailure(
+            messageAll: e.toString(), messageCollections: e.toString()));
+      }
+    });
+
+    on<AddToFavoritesEvent>((event, emit) {
+      if (state is FindmeSuccess) {
+        final currentState = state as FindmeSuccess;
+        final updatedFavorites =
+            List<dynamic>.from(currentState.favorites ?? [])
+              ..add(event.imageUrl);
+        final updatedAll = Map<String, dynamic>.from(currentState.all ?? {})
+          ..remove(event.imageUrl);
+
+        emit(FindmeSuccess(
+          all: updatedAll,
+          collections: currentState.collections,
+          favorites: updatedFavorites,
+        ));
       }
     });
   }

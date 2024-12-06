@@ -43,8 +43,8 @@ class _FindMeScreenState extends State<FindMeScreen> {
       _searchText = text;
       _filteredContents = text.isNotEmpty
           ? _allContents
-          .where((fileName) => fileName.contains(_searchText))
-          .toList()
+              .where((fileName) => fileName.contains(_searchText))
+              .toList()
           : [];
     });
   }
@@ -108,72 +108,74 @@ class _FindMeScreenState extends State<FindMeScreen> {
     return _isSearching
         ? _buildSearchBar()
         : Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Find Me',
-              style: const TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Find your photo here',
-              style: const TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-          ],
-        ),
-        Row(
-          children: [
-            IconButton(
-              icon: Icon(Icons.search, color: DisColors.primary),
-              onPressed: () {
-                setState(() {
-                  _isSearching = true;
-                });
-              },
-            ),
-            IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ShoppingCartScreen()),
-                );
-              },
-              icon: Icon(Icons.shopping_cart, color: DisColors.primary),
-            ),
-            IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ListFaceScreen(
-                        imagePath: '',
-                        matchedFaces: [],
-                      )),
-                );
-              },
-              icon: SvgPicture.asset(
-                'assets/icons/robot_2.svg',
-                color: DisColors.primary,
-                width: 24,
-                height: 24,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Find Me',
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Find your photo here',
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  ),
+                ],
               ),
-            ),
-          ],
-        ),
-      ],
-    );
+              Row(
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.search, color: DisColors.primary),
+                    onPressed: () {
+                      setState(() {
+                        _isSearching = true;
+                      });
+                    },
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ShoppingCartScreen()),
+                      );
+                    },
+                    icon: Icon(Icons.shopping_cart, color: DisColors.primary),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ListFaceScreen(
+                                  imagePath: '',
+                                  matchedFaces: [],
+                                )),
+                      );
+                    },
+                    icon: SvgPicture.asset(
+                      'assets/icons/robot_2.svg',
+                      color: DisColors.primary,
+                      width: 24,
+                      height: 24,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => PhotoBloc(photoController: PhotoController())..add(FindmePhotoEvent())),
+        BlocProvider(
+            create: (context) => PhotoBloc(photoController: PhotoController())
+              ..add(FindmePhotoEvent())),
       ],
       child: DefaultTabController(
         length: 3,
@@ -202,43 +204,71 @@ class _FindMeScreenState extends State<FindMeScreen> {
                   child: _isSearching
                       ? _buildSearchResults(_filteredContents)
                       : TabBarView(
-                    children: [
-                      BlocBuilder<PhotoBloc, PhotoState>(
-                        builder: (context, state) {
-                          if (state is PhotoLoading) {
-                            return const Center(child: CircularProgressIndicator());
-                          } else if (state is FindmeSuccess) {
-                            final photos = (state.all!['data'] as List)
-                                .map((photo) => SellPhoto.fromJson(photo))
-                                .toList();
-                            if (photos.isNotEmpty) {
-                              return _buildGridContent(photos);
-                            }
-                            return const Center(child: Text('No match photo found'));
-                          }
-                          return const Center(child: Text('Cannot load data'));
-                        },
-                      ),
-                      _buildGridContent([]),
-                      BlocBuilder<PhotoBloc, PhotoState>(
-                        builder: (context, state) {
-                          if (state is PhotoLoading) {
-                            return const Center(child: CircularProgressIndicator());
-                          } else if (state is FindmeSuccess) {
-                            final photos = (state.collections!['data'] as List)
-                                .map((photo) => SellPhoto.fromJson(photo))
-                                .toList();
-                            if (photos.isNotEmpty) {
-                              return _buildGridContent(photos);
-                            }
-                            return const Center(child: Text('No collection found'));
-                          }
-                          return const Center(child: Text('Cannot load data'));
-                        },
-                      ),
-                    ],
-                  ),
-                ),
+                          children: [
+                            // Tab "All"
+                            BlocBuilder<PhotoBloc, PhotoState>(
+                              builder: (context, state) {
+                                if (state is PhotoLoading) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                } else if (state is FindmeSuccess) {
+                                  final photos = (state.all!['data'] as List)
+                                      .map((photo) => SellPhoto.fromJson(photo))
+                                      .toList();
+                                  if (photos.isNotEmpty) {
+                                    return _buildGridContent(photos);
+                                  }
+                                  return const Center(
+                                      child: Text('No match photo found'));
+                                }
+                                return const Center(
+                                    child: Text('Cannot load data'));
+                              },
+                            ),
+                            // Tab "Favorite"
+                            BlocBuilder<PhotoBloc, PhotoState>(
+                              builder: (context, state) {
+                                if (state is PhotoLoading) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                } else if (state is FindmeSuccess) {
+                                  final favoritePhotos = state.favorites!
+                                      .map((photo) => SellPhoto.fromJson(photo))
+                                      .toList();
+                                  if (favoritePhotos.isNotEmpty) {
+                                    return _buildGridContent(favoritePhotos);
+                                  }
+                                  return const Center(
+                                      child: Text('No favorite photo found'));
+                                }
+                                return const Center(
+                                    child: Text('Cannot load data'));
+                              },
+                            ),
+                            // Tab "Collection"
+                            BlocBuilder<PhotoBloc, PhotoState>(
+                              builder: (context, state) {
+                                if (state is PhotoLoading) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                } else if (state is FindmeSuccess) {
+                                  final collectionPhotos = (state
+                                          .collections!['data'] as List)
+                                      .map((photo) => SellPhoto.fromJson(photo))
+                                      .toList();
+                                  if (collectionPhotos.isNotEmpty) {
+                                    return _buildGridContent(collectionPhotos);
+                                  }
+                                  return const Center(
+                                      child: Text('No collection found'));
+                                }
+                                return const Center(
+                                    child: Text('Cannot load data'));
+                              },
+                            ),
+                          ],
+                        ),
+                )
               ],
             ),
           ),
@@ -247,6 +277,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
     );
   }
 
+  // ini buat search
   Widget _buildSearchResults(List<String> contents) {
     if (contents.isEmpty) {
       return const Center(
@@ -271,7 +302,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
               style: TextStyle(fontWeight: FontWeight.bold)),
           subtitle: const Row(
             children: [
-              Icon(Icons.location_on, color: Colors.green, size: 16),
+              Icon(Icons.location_on, color: DisColors.success, size: 16),
               SizedBox(width: 4),
               Text('FotoTree'),
             ],
@@ -311,7 +342,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
     );
   }
 
-  void _showFullImage(BuildContext context, String image) {
+  void _showFullImage(BuildContext context, String imageUrl) {
     showDialog(
       context: context,
       builder: (context) {
@@ -319,8 +350,8 @@ class _FindMeScreenState extends State<FindMeScreen> {
           child: Stack(
             children: [
               Center(
-                child: Image.asset(
-                  'assets/images/dummies/$image',
+                child: Image.network(
+                  imageUrl,
                   fit: BoxFit.cover,
                   width: double.infinity,
                   height: double.infinity,
@@ -337,28 +368,25 @@ class _FindMeScreenState extends State<FindMeScreen> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          setState(() {
-                            // Add to favorites
-                          });
+                          context
+                              .read<PhotoBloc>()
+                              .add(AddToFavoritesEvent(imageUrl: imageUrl));
                           Navigator.pop(context);
                         },
                         child: const Text("Iya"),
                       ),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            // List photo buyer
-                          });
-                          Navigator.pop(context);
-                        },
-                        child: const Text("Bukan"),
-                      ),
+                      // ElevatedButton(
+                      //   onPressed: () {
+                      //     // Action for "Bukan"
+                      //     Navigator.pop(context);
+                      //   },
+                      //   child: const Text("Bukan"),
+                      // ),
                       IconButton(
                         icon: Icon(Icons.shopping_cart, color: DisColors.white),
                         onPressed: () {
                           setState(() {
-                            ShoppingCartScreen.selectedImage =
-                            'assets/images/dummies/$image';
+                            ShoppingCartScreen.selectedImage = imageUrl;
                           });
                           Navigator.pop(context);
                         },

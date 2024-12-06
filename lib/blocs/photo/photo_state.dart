@@ -19,9 +19,9 @@ class PhotoSuccess extends PhotoState {
 
   @override
   List<Object> get props => [
-    message ?? '',
-    data ?? {},
-  ];
+        message ?? '',
+        data ?? {},
+      ];
 }
 
 class PhotoFailure extends PhotoState {
@@ -37,22 +37,22 @@ class FindmeSuccess extends PhotoState {
   final String? message;
   final Map<String, dynamic>? all;
   final Map<String, dynamic>? collections;
+  final List<dynamic>? favorites;
 
-  const FindmeSuccess({this.message, this.all, this.collections});
+  const FindmeSuccess(
+      {this.message, this.all, this.collections, this.favorites});
 
   @override
-  List<Object> get props => [
-    message ?? '',
-    all ?? {},
-    collections ?? {},
-  ];
+  List<Object> get props =>
+      [message ?? '', all ?? {}, collections ?? {}, favorites ?? []];
 }
 
 class FindmeFailure extends PhotoState {
   final String messageAll;
   final String messageCollections;
 
-  const FindmeFailure({required this.messageAll, required this.messageCollections});
+  const FindmeFailure(
+      {required this.messageAll, required this.messageCollections});
 
   @override
   List<Object> get props => [messageAll, messageCollections];
@@ -63,21 +63,23 @@ class PhotoByAccountSuccess extends PhotoState {
   final Map<String, dynamic> sell;
   final Map<String, dynamic> post;
 
-  const PhotoByAccountSuccess({this.message, required this.sell, required this.post});
+  const PhotoByAccountSuccess(
+      {this.message, required this.sell, required this.post});
 
   @override
   List<Object> get props => [
-    message ?? '',
-    sell,
-    post,
-  ];
+        message ?? '',
+        sell,
+        post,
+      ];
 }
 
 class PhotoByAccountFailure extends PhotoState {
   final String messageSell;
   final String messagePost;
 
-  const PhotoByAccountFailure({required this.messageSell, required this.messagePost});
+  const PhotoByAccountFailure(
+      {required this.messageSell, required this.messagePost});
 
   @override
   List<Object> get props => [messageSell, messagePost];

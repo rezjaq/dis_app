@@ -34,7 +34,7 @@ class _CameraScreenState extends State<CameraScreen> {
   void startCamera(int camera) async {
     setState(() {
       isCameraChanging = true;
-      _opacity = 0.0; // Set opacity to 0 for fading out
+      _opacity = 0.0;
     });
 
     cameraController = CameraController(
@@ -48,9 +48,8 @@ class _CameraScreenState extends State<CameraScreen> {
     await cameraValue;
     cameraController.setFlashMode(flashMode);
 
-    // Set opacity back to 1 after the camera is initialized
     setState(() {
-      _opacity = 1.0; // Fade back in
+      _opacity = 1.0;
       isCameraChanging = false;
     });
   }

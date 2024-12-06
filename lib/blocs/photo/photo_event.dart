@@ -145,3 +145,12 @@ class FindmePhotoEvent extends PhotoEvent {
   @override
   List<Object?> get props => [page, size];
 }
+
+class AddToFavoritesEvent extends PhotoEvent {
+  final String imageUrl;
+
+  const AddToFavoritesEvent({required this.imageUrl});
+
+  @override
+  List<Object> get props => [imageUrl];
+}

@@ -1,19 +1,19 @@
-import 'package:dis_app/utils/constants/sizes.dart';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dis_app/utils/constants/colors.dart';
-import 'dart:io';
+import 'package:dis_app/blocs/photo/photo_bloc.dart';
+import 'package:dis_app/blocs/photo/photo_event.dart';
+import 'package:dis_app/blocs/photo/photo_state.dart';
 
 class UploadContentPage extends StatefulWidget {
-  final Function(String) onUpload;
   final String imagePath;
 
-  UploadContentPage({
-    required this.onUpload,
+  const UploadContentPage({
+    Key? key,
     required this.imagePath,
-  });
+  }) : super(key: key);
 
   @override
   _UploadContentPageState createState() => _UploadContentPageState();
@@ -22,16 +22,18 @@ class UploadContentPage extends StatefulWidget {
 class _UploadContentPageState extends State<UploadContentPage> {
   final TextEditingController _hargaDasarController = TextEditingController();
   final TextEditingController _hargaJualController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _fileNameController = TextEditingController();
+
   String _pendapatan = 'IDR 0';
-  DateTime? _selectedDate;
-  TimeOfDay? _selectedTime;
-  String? _imagePath; // Menyimpan path gambar yang dipilih
+  String? _imagePath;
 
   @override
   void initState() {
     super.initState();
-    _imagePath = widget
-        .imagePath; // Inisialisasi _imagePath dengan imagePath yang diterima
+    _imagePath = widget.imagePath;
+    _fileNameController.text =
+        _imagePath?.split('/').last ?? 'Belum ada gambar dipilih';
   }
 
   void _updateHargaJual() {
@@ -43,11 +45,9 @@ class _UploadContentPageState extends State<UploadContentPage> {
         _pendapatan = 'IDR ${income.toStringAsFixed(0)}';
       });
     } else {
-      // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text('Harga jual harus 10.000 atau kurang'),
-          duration: Duration(seconds: 2),
         ),
       );
       _hargaDasarController.clear();
@@ -58,243 +58,198 @@ class _UploadContentPageState extends State<UploadContentPage> {
     }
   }
 
-  Future<void> _selectImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      setState(() {
-        _imagePath = image.path; // Simpan path gambar yang dipilih
-      });
+  void _uploadPhoto() {
+    if (_imagePath == null || _hargaDasarController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Lengkapi semua data sebelum mengunggah.'),
+        ),
+      );
+      return;
     }
-  }
 
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
-
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: _selectedTime ?? TimeOfDay.now(),
-    );
-    if (picked != null && picked != _selectedTime) {
-      setState(() {
-        _selectedTime = picked;
-      });
-    }
+    context.read<PhotoBloc>().add(AddSellPhotoEvent(
+          name: _fileNameController.text,
+          basePrice: double.parse(_hargaDasarController.text),
+          sellPrice: double.parse(_hargaJualController.text),
+          description: _descriptionController.text,
+          file: File(_imagePath!),
+        ));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Unggah Konten"),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.upload),
-            onPressed: _selectImage,
+    return BlocListener<PhotoBloc, PhotoState>(
+      listener: (context, state) {
+        if (state is PhotoSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Foto berhasil diunggah!')),
+          );
+          Navigator.pop(context);
+        } else if (state is PhotoFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Gagal mengunggah foto: ${state.message}')),
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Form Sell"),
+          backgroundColor: DisColors.primary,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(DisSizes.md),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Image Preview Section
-              Center(
-                child: Column(
-                  children: [
-                    _imagePath != null
-                        ? Image.file(
-                            File(_imagePath!),
-                            height: 300,
-                            fit: BoxFit.cover,
-                          )
-                        : Text('Silakan pilih gambar'),
-                    SizedBox(height: 10),
-                    Text(
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Image Preview Section
+                Center(
+                  child: Column(
+                    children: [
                       _imagePath != null
-                          ? '${File(_imagePath!).lengthSync()} bytes'
-                          : 'Ukuran gambar akan ditampilkan di sini',
-                      style: TextStyle(color: DisColors.grey),
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              child: Image.file(
+                                File(_imagePath!),
+                                height: 250,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : const Text('Silakan pilih gambar'),
+                      const SizedBox(height: 10),
+                      Text(
+                        _imagePath != null
+                            ? '${File(_imagePath!).lengthSync()} bytes'
+                            : 'Ukuran gambar akan ditampilkan di sini',
+                        style: const TextStyle(color: DisColors.grey),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+
+                // File Name Section
+                const Text('File Name',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8.0),
+                TextFormField(
+                  controller: _fileNameController,
+                  readOnly: true,
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.insert_drive_file),
+                    border: OutlineInputBorder(),
+                    labelText: 'File Name',
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+
+                // Currency and Price Section
+                const Text('Currency and Price',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8.0),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Currency',
+                        ),
+                        items: ['IDR'].map((currency) {
+                          return DropdownMenuItem(
+                            value: currency,
+                            child: Text(currency),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          // Handle currency change
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: TextFormField(
+                        controller: _hargaDasarController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Basic Price',
+                        ),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                        onChanged: (value) {
+                          _updateHargaJual();
+                        },
+                      ),
                     ),
                   ],
                 ),
-              ),
-              // File Name
-              Text('Nama File'),
-              TextFormField(
-                initialValue: _imagePath != null
-                    ? _imagePath!.split('/').last
-                    : 'Belum ada gambar dipilih',
-                readOnly: true,
-              ),
-              SizedBox(height: DisSizes.ll),
+                const SizedBox(height: 16.0),
 
-              // Currency and Price
-              Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField(
-                      decoration: InputDecoration(labelText: 'Mata Uang'),
-                      items: ['IDR'].map((currency) {
-                        return DropdownMenuItem(
-                          value: currency,
-                          child: Text(currency),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        // Handle currency change
-                      },
-                    ),
+                // Sale Price (Read-Only)
+                const Text('Selling Price',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8.0),
+                TextFormField(
+                  controller: _hargaJualController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Selling Price',
                   ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _hargaDasarController,
-                      decoration: InputDecoration(labelText: 'Harga Dasar'),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly
-                      ],
-                      onChanged: (value) {
-                        _updateHargaJual();
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: DisSizes.ll),
-
-              // Sale Price (Read-Only)
-              TextFormField(
-                controller: _hargaJualController,
-                decoration: InputDecoration(labelText: 'Harga Jual'),
-                readOnly: true,
-              ),
-              Text(
-                'Pendapatan kamu: $_pendapatan',
-                style: TextStyle(color: DisColors.grey),
-              ),
-              SizedBox(height: DisSizes.ll),
-
-              // Location (Optional)
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Lokasi (Opsional)'),
-                onTap: () {
-                  // Implement Google Maps location picker
-                },
-              ),
-              SizedBox(height: DisSizes.ll),
-
-              // Date and Time
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      decoration:
-                          InputDecoration(labelText: 'Tanggal (Opsional)'),
-                      readOnly: true,
-                      onTap: () => _selectDate(context),
-                      controller: TextEditingController(
-                        text: _selectedDate == null
-                            ? ''
-                            : DateFormat('dd/MM/yyyy').format(_selectedDate!),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: TextFormField(
-                      decoration:
-                          InputDecoration(labelText: 'Waktu (Opsional)'),
-                      readOnly: true,
-                      onTap: () => _selectTime(context),
-                      controller: TextEditingController(
-                        text: _selectedTime == null
-                            ? ''
-                            : _selectedTime!.format(context),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: DisSizes.ll),
-
-              // Description
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: 'Deskripsi (Opsional)',
+                  readOnly: true,
                 ),
-                maxLines: 3,
-              ),
-              SizedBox(height: DisSizes.ll),
+                const SizedBox(height: 4.0),
+                Text(
+                  'Your earnings: $_pendapatan',
+                  style: const TextStyle(color: DisColors.darkerGrey),
+                ),
+                const SizedBox(height: 16.0),
 
-              // FotoTree (Optional)
-              TextFormField(
-                decoration: InputDecoration(labelText: 'FotoTree (Opsional)'),
-              ),
-              SizedBox(height: DisSizes.ll),
-
-              // Tag Nickname User (Optional)
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        labelText: 'Tag Nickname User (Opsional)',
-                      ),
-                    ),
+                // Description
+                const Text('Description',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8.0),
+                TextFormField(
+                  controller: _descriptionController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Description (Optional)',
                   ),
-                  SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Handle add nickname action
-                    },
-                    child: Text('Tambah'),
-                  ),
-                ],
-              ),
-              SizedBox(height: DisSizes.ll),
+                  maxLines: 3,
+                ),
+                const SizedBox(height: 16.0),
 
-              // Upload Button
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Pastikan path gambar sudah ada
-                    if (_imagePath != null) {
-                      widget.onUpload(_imagePath!); // Panggil callback
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content:
-                              Text('Silakan pilih gambar sebelum mengunggah.'),
+                Center(
+                  child: SizedBox(
+                    width: double.infinity, // Membuat tombol selebar layar
+                    child: ElevatedButton(
+                      onPressed: _uploadPhoto,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: DisColors.primary,
+                        foregroundColor: DisColors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
                         ),
-                      );
-                    }
-                  },
-                  child: Text('Unggah'),
-                ),
-              ),
-            ],
+                      ),
+                      child: const Text(
+                        'Upload',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),

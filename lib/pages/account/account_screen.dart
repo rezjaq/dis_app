@@ -76,12 +76,6 @@ class _AccountScreenState extends State<AccountScreen> {
                   MaterialPageRoute(
                     builder: (context) => UploadContentPage(
                       imagePath: imagePath,
-                      onUpload: (uploadedImagePath) {
-                        setState(() {
-                          sellImagePaths.add(uploadedImagePath);
-                        });
-                        Navigator.pop(context);
-                      },
                     ),
                   ),
                 );
@@ -145,6 +139,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         .where((element) => element['type'] == "sell")
                         .toList();
 
+
                     if (isSellSelected) {
                       return sellImages.isEmpty
                           ? DisBlankSell(
@@ -168,6 +163,7 @@ class _AccountScreenState extends State<AccountScreen> {
                                   .toList(),
                             );
                     }
+
                   }
                   return const Center(child: Text("Photos not available"));
                 },

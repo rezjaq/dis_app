@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:camera/camera.dart';
 
 abstract class SearchFaceState extends Equatable {
   @override
@@ -10,14 +9,7 @@ class SearchFaceInitial extends SearchFaceState {}
 
 class SearchFaceLoading extends SearchFaceState {}
 
-class SearchFaceLoaded extends SearchFaceState {
-  final CameraController controller;
-
-  SearchFaceLoaded({required this.controller});
-
-  @override
-  List<Object?> get props => [controller];
-}
+class SearchFaceCameraInitialized extends SearchFaceState {}
 
 class SearchFacePhotoCaptured extends SearchFaceState {
   final String imagePath;
@@ -35,8 +27,6 @@ class SearchFaceMatchedPhotosLoaded extends SearchFaceState {
 
   @override
   List<Object?> get props => [matchedPhotos];
-
-  get similarFaces => null;
 }
 
 class SearchFaceNoMatchFound extends SearchFaceState {}
@@ -52,4 +42,20 @@ class SearchFaceError extends SearchFaceState {
   List<Object?> get props => [message];
 }
 
-class SearchFaceNoFaceDetected extends SearchFaceState {}
+class SearchFaceNoFaceDetected extends SearchFaceState {
+  final String message;
+
+  SearchFaceNoFaceDetected({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class SearchFaceNoPhotoFound extends SearchFaceState {
+  final String message;
+
+  SearchFaceNoPhotoFound({required this.message});
+
+  @override
+  List<Object?> get props => [message];
+}

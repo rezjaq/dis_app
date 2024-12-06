@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 abstract class SearchFaceEvent extends Equatable {
   const SearchFaceEvent();
@@ -7,9 +8,14 @@ abstract class SearchFaceEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class InitializeCameraEvent extends SearchFaceEvent {}
+class CapturePhotoEvent extends SearchFaceEvent {
+  final BuildContext context;
 
-class CapturePhotoEvent extends SearchFaceEvent {}
+  const CapturePhotoEvent({required this.context});
+
+  @override
+  List<Object> get props => [context];
+}
 
 class UploadFaceEvent extends SearchFaceEvent {
   final String userId;
@@ -31,3 +37,5 @@ class SearchMatchedPhotosEvent extends SearchFaceEvent {
 }
 
 class CloseCameraEvent extends SearchFaceEvent {}
+
+class InitializeCameraEvent extends SearchFaceEvent {}

@@ -195,17 +195,17 @@ class _LoginScreenState extends State<LoginScreen> {
                             DisButton(
                               label: "Login",
                               onTap: () {
-                                // DisHelperFunctions.navigateToRoute(
-                                //     context, '/home');
-                                if (_formKey.currentState!.validate()) {
-                                  BlocProvider.of<AuthBloc>(context).add(
-                                    AuthLoginEvent(
-                                      emailOrPhone:
-                                          _emailOrPhoneController.text,
-                                      password: _passwordController.text,
-                                    ),
-                                  );
-                                }
+                                DisHelperFunctions.navigateToRoute(
+                                    context, '/home');
+                                // if (_formKey.currentState!.validate()) {
+                                //   BlocProvider.of<AuthBloc>(context).add(
+                                //     AuthLoginEvent(
+                                //       emailOrPhone:
+                                //           _emailOrPhoneController.text,
+                                //       password: _passwordController.text,
+                                //     ),
+                                //   );
+                                // }
                               },
                               backgroundColor: DisColors.primary,
                               textColor: DisColors.black,

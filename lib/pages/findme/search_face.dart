@@ -1,13 +1,10 @@
-import 'package:camera/camera.dart';
-import 'package:dis_app/blocs/face/face_bloc.dart';
-import 'package:dis_app/blocs/face/face_event.dart';
-import 'package:dis_app/blocs/face/face_state.dart';
-import 'package:dis_app/pages/findme/DisplayPhotoScreen.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
-
+import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
+import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
+import 'package:dis_app/blocs/searchFace/searchFace_state.dart';
+import 'package:camera/camera.dart';
 import 'dart:math' as math;
 
 class SearchFaceScreen extends StatefulWidget {
@@ -16,85 +13,19 @@ class SearchFaceScreen extends StatefulWidget {
 }
 
 class _SearchFaceScreenState extends State<SearchFaceScreen> {
-  late CameraController _controller;
   bool _isCameraInitialized = false;
   bool _isReloadingCamera = false;
-  final ImagePicker _imagePicker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_isCameraInitialized) {
-      _initializeCamera();
-    }
-  }
-
-  Future<void> _initializeCamera() async {
-    setState(() {
-      _isReloadingCamera = true;
-    });
-    try {
-      final cameras = await availableCameras();
-      final frontCamera = cameras.firstWhere(
-        (camera) => camera.lensDirection == CameraLensDirection.front,
-      );
-
-      _controller = CameraController(
-        frontCamera,
-        ResolutionPreset.high,
-        enableAudio: false,
-      );
-
-      await _controller.initialize();
-      setState(() {
-        _isCameraInitialized = true;
-        _isReloadingCamera = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isCameraInitialized = false;
-        _isReloadingCamera = false;
-      });
-    }
+    BlocProvider.of<SearchFaceBloc>(context).add(InitializeCameraEvent());
   }
 
   @override
   void dispose() {
-    if (_isCameraInitialized) {
-      _controller.dispose();
-    }
+    BlocProvider.of<SearchFaceBloc>(context).add(CloseCameraEvent());
     super.dispose();
-  }
-
-  void _captureAndDetectFace(BuildContext context) async {
-    try {
-      if (!_controller.value.isInitialized) return;
-
-      final XFile photo = await _controller.takePicture();
-      final imagePath = photo.path;
-
-      final FaceBloc faceBloc = BlocProvider.of<FaceBloc>(context);
-      faceBloc.add(FaceDetectionEvent(file: photo));
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => DisplayPhotoScreen(imagePath: imagePath),
-        ),
-      ).then((_) {
-        _initializeCamera();
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Gagal mengambil foto: ${e.toString()}")),
-      );
-    }
   }
 
   @override
@@ -113,36 +44,63 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
       ),
       body: _isReloadingCamera
           ? Center(child: CircularProgressIndicator())
-          : _isCameraInitialized
-              ? Stack(
-                  children: [
-                    Positioned.fill(
-                      child: Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.rotationY(math.pi),
-                        child: CameraPreview(_controller),
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 40,
-                      left: (MediaQuery.of(context).size.width - 150) / 2,
-                      child: ElevatedButton(
-                        onPressed: () => _captureAndDetectFace(context),
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: DisColors.white,
-                          backgroundColor: DisColors.primary,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+          : BlocBuilder<SearchFaceBloc, SearchFaceState>(
+              builder: (context, state) {
+                if (state is SearchFaceLoading) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (state is SearchFaceCameraInitialized) {
+                  return Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.rotationY(math.pi),
+                          child: CameraPreview(
+                            BlocProvider.of<SearchFaceBloc>(context).controller,
                           ),
                         ),
-                        child: Text('Ambil Foto'),
                       ),
+                      Positioned(
+                        bottom: 40,
+                        left: (MediaQuery.of(context).size.width - 150) / 2,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            BlocProvider.of<SearchFaceBloc>(context)
+                                .add(CapturePhotoEvent(context: context));
+                          },
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: DisColors.white,
+                            backgroundColor: DisColors.primary,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 40, vertical: 15),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: Text('Ambil Foto'),
+                        ),
+                      ),
+                    ],
+                  );
+                } else if (state is SearchFaceNoFaceDetected) {
+                  return Center(
+                    child: Text(
+                      state.message,
+                      style: TextStyle(color: DisColors.error),
                     ),
-                  ],
-                )
-              : Center(child: CircularProgressIndicator()),
+                  );
+                } else if (state is SearchFaceNoPhotoFound) {
+                  return Center(
+                    child: Text(
+                      state.message,
+                      style: TextStyle(color: DisColors.error),
+                    ),
+                  );
+                } else {
+                  return Center(child: CircularProgressIndicator());
+                }
+              },
+            ),
     );
   }
 }

@@ -23,7 +23,6 @@ class DisplayPhotoScreen extends StatelessWidget {
       body: BlocConsumer<DisplayPhotoBloc, DisplayPhotoState>(
         listener: (context, state) {
           if (state is DisplayPhotoSavedState) {
-            // After saving the photo, navigate to ListFaceScreen
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -41,7 +40,6 @@ class DisplayPhotoScreen extends StatelessWidget {
         },
         builder: (context, state) {
           if (state is DisplayPhotoSavingState) {
-            // Show loading indicator when saving photo
             return Center(child: CircularProgressIndicator());
           }
 
@@ -71,18 +69,12 @@ class DisplayPhotoScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  // Button to retake the photo
                   ElevatedButton(
                     onPressed: () {
-                      // Trigger the retake photo event
                       context.read<DisplayPhotoBloc>().add(RetakePhotoEvent());
-
-                      // Inisialisasi ulang kamera sebelum kembali
                       context
                           .read<SearchFaceBloc>()
                           .add(InitializeCameraEvent());
-
-                      // Go back to the previous screen to retake the photo
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
@@ -96,15 +88,11 @@ class DisplayPhotoScreen extends StatelessWidget {
                     ),
                     child: Text('Ambil Ulang'),
                   ),
-                  // Button to save the photo
                   ElevatedButton(
                     onPressed: () {
-                      // Trigger the save photo event
                       context
                           .read<DisplayPhotoBloc>()
                           .add(SavePhotoEvent(photoPath: imagePath));
-
-                      // Navigate to ListFaceScreen after the photo is saved
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

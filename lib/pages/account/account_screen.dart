@@ -76,12 +76,6 @@ class _AccountScreenState extends State<AccountScreen> {
                   MaterialPageRoute(
                     builder: (context) => UploadContentPage(
                       imagePath: imagePath,
-                      onUpload: (uploadedImagePath) {
-                        setState(() {
-                          sellImagePaths.add(uploadedImagePath);
-                        });
-                        Navigator.pop(context);
-                      },
                     ),
                   ),
                 );
@@ -113,7 +107,8 @@ class _AccountScreenState extends State<AccountScreen> {
         child: Column(
           children: [
             BlocProvider(
-              create: (context) => UserBloc(userController: UserController())..add(UserGetEvent()),
+              create: (context) => UserBloc(userController: UserController())
+                ..add(UserGetEvent()),
               child: BlocBuilder<UserBloc, UserState>(
                 builder: (context, state) {
                   if (state is UserSuccess) {
@@ -131,31 +126,36 @@ class _AccountScreenState extends State<AccountScreen> {
               onToggle: _toggleSection,
             ),
             BlocProvider(
-                create: (context) => PhotoBloc(photoController: PhotoController())..add(ListPhotoEvent()),
-                child: BlocBuilder<PhotoBloc, PhotoState>(
-                  builder: (context, state) {
-                    if (state is PhotoLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state is PhotoByAccountSuccess) {
-                      final postImages = (state.post['data'] as List)
-                          .where((element) => element['type'] == "post")
-                          .toList();
-                      final sellImages = (state.sell['data'] as List)
-                          .where((element) => element['type'] == "sell")
-                          .toList();
-                      return isSellSelected
-                          ? SellSection(
-                        sellPhotos: sellImages.map((image) => SellPhoto.fromJson(image)).toList(),
-                        selectedFilter: selectedFilter,
-                        onFilterSelect: _selectFilter,
-                      )
-                          : PostSection(
-                        postPhotos: postImages.map((image) => PostPhoto.fromJson(image)).toList(),
-                      );
-                    }
-                    return const Center(child: Text("Photos not available"));
-                  },
-                ),
+              create: (context) => PhotoBloc(photoController: PhotoController())
+                ..add(ListPhotoEvent()),
+              child: BlocBuilder<PhotoBloc, PhotoState>(
+                builder: (context, state) {
+                  if (state is PhotoLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (state is PhotoByAccountSuccess) {
+                    final postImages = (state.post['data'] as List)
+                        .where((element) => element['type'] == "post")
+                        .toList();
+                    final sellImages = (state.sell['data'] as List)
+                        .where((element) => element['type'] == "sell")
+                        .toList();
+                    return isSellSelected
+                        ? SellSection(
+                            sellPhotos: sellImages
+                                .map((image) => SellPhoto.fromJson(image))
+                                .toList(),
+                            selectedFilter: selectedFilter,
+                            onFilterSelect: _selectFilter,
+                          )
+                        : PostSection(
+                            postPhotos: postImages
+                                .map((image) => PostPhoto.fromJson(image))
+                                .toList(),
+                          );
+                  }
+                  return const Center(child: Text("Photos not available"));
+                },
+              ),
             ),
           ],
         ),

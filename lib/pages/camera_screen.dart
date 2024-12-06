@@ -1,10 +1,13 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:dis_app/blocs/photo/photo_bloc.dart';
+import 'package:dis_app/controllers/photo_controller.dart';
 import 'package:dis_app/pages/account/photo_desc.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as img;
@@ -103,12 +106,9 @@ class _CameraScreenState extends State<CameraScreen> {
     img.Image? image = img.decodeImage(await originalImage.readAsBytes());
 
     if (image != null) {
-      // Cek apakah kamera depan, dan jika ya, balikkan gambar secara horizontal
       if (!isRearCamera) {
         image = img.flipHorizontal(image);
       }
-
-      // Simpan gambar yang telah dibalik atau gambar aslinya
       File savedImage = await File(path).writeAsBytes(img.encodeJpg(image));
       print('Image saved to: $path');
     } else {
@@ -264,11 +264,16 @@ class _CameraScreenState extends State<CameraScreen> {
                         icon: const Icon(Icons.check, color: DisColors.white),
                         iconSize: DisSizes.xl,
                         onPressed: () {
+                          // Create and provide the PhotoBloc to the PostFormPhotoScreen
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  PostFormPhotoScreen(imageFile: _imageFile),
+                              builder: (context) => BlocProvider(
+                                create: (context) => PhotoBloc(
+                                    photoController: PhotoController()),
+                                child:
+                                    PostFormPhotoScreen(imageFile: _imageFile),
+                              ),
                             ),
                           );
                         },

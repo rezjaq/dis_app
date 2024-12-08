@@ -7,6 +7,8 @@ import 'package:dis_app/blocs/user/user_state.dart';
 import 'package:dis_app/controllers/user_controller.dart';
 import 'package:dis_app/models/photo_model.dart';
 import 'package:dis_app/models/user_model.dart';
+import 'package:dis_app/utils/constants/blank_post.dart';
+import 'package:dis_app/utils/constants/blank_sell.dart';
 import 'package:dis_app/pages/account/form_sell.dart';
 import 'package:dis_app/pages/account/postSection.dart';
 import 'package:dis_app/pages/account/profileHeader.dart';
@@ -17,8 +19,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../controllers/photo_controller.dart';
 import '../../utils/constants/colors.dart';
-import '../../utils/constants/sizes.dart';
-import '../../utils/helpers/helper_functions.dart';
 
 enum SellFilter { all, available, sold }
 
@@ -82,7 +82,6 @@ class _AccountScreenState extends State<AccountScreen> {
               },
               child: const Text("Sell"),
             ),
-            // Button to post image to "Post"
             TextButton(
               onPressed: () {
                 setState(() {
@@ -139,19 +138,32 @@ class _AccountScreenState extends State<AccountScreen> {
                     final sellImages = (state.sell['data'] as List)
                         .where((element) => element['type'] == "sell")
                         .toList();
-                    return isSellSelected
-                        ? SellSection(
-                            sellPhotos: sellImages
-                                .map((image) => SellPhoto.fromJson(image))
-                                .toList(),
-                            selectedFilter: selectedFilter,
-                            onFilterSelect: _selectFilter,
-                          )
-                        : PostSection(
-                            postPhotos: postImages
-                                .map((image) => PostPhoto.fromJson(image))
-                                .toList(),
-                          );
+
+
+                    if (isSellSelected) {
+                      return sellImages.isEmpty
+                          ? DisBlankSell(
+                              onUpload: _pickImage,
+                            )
+                          : SellSection(
+                              sellPhotos: sellImages
+                                  .map((image) => SellPhoto.fromJson(image))
+                                  .toList(),
+                              selectedFilter: selectedFilter,
+                              onFilterSelect: _selectFilter,
+                            );
+                    } else {
+                      return postImages.isEmpty
+                          ? DisBlankPost(
+                              onUpload: _pickImage,
+                            )
+                          : PostSection(
+                              postPhotos: postImages
+                                  .map((image) => PostPhoto.fromJson(image))
+                                  .toList(),
+                            );
+                    }
+
                   }
                   return const Center(child: Text("Photos not available"));
                 },

@@ -4,9 +4,11 @@ import 'package:dis_app/blocs/photo/photo_bloc.dart';
 import 'package:dis_app/blocs/photo/photo_event.dart';
 import 'package:dis_app/blocs/photo/photo_state.dart';
 import 'package:dis_app/common/widgets/svgIcon.dart';
+import 'package:dis_app/controllers/photo_controller.dart';
 import 'package:dis_app/pages/account/NotLoggedInScreen.dart';
 import 'package:dis_app/pages/account/account_screen.dart';
 import 'package:dis_app/pages/account/form_sell.dart';
+import 'package:dis_app/pages/account/photo_desc.dart';
 import 'package:dis_app/pages/camera_screen.dart';
 import 'package:dis_app/pages/findme/findme_screen.dart';
 import 'package:dis_app/models/photo_model.dart';
@@ -33,18 +35,7 @@ class BaseScreen extends StatefulWidget {
 
 class _BaseScreenState extends State<BaseScreen> {
   int _selectedIndex = 0;
-  //if you use API for login
-  // List<Widget> get _widgetOptions => <Widget>[
-  //       HomeScreen(
-  //         cameras: widget.cameras,
-  //       ),
-  //       FindMeScreen(),
-  //       Container(),
-  //       TransactionScreen(),
-  //       _isLoggedIn ? AccountScreen() : NotLoggedInScreen(),
-  //     ];
 
-  // if not use this code
   List<Widget> get _widgetOptions => <Widget>[
         HomeScreen(
           cameras: widget.cameras,
@@ -55,7 +46,6 @@ class _BaseScreenState extends State<BaseScreen> {
         AccountScreen(),
       ];
 
-  // Handles bottom navigation item selection
   void _onItemTapped(int index) async {
     if (index == 2) {
       await _pickImage();
@@ -66,17 +56,15 @@ class _BaseScreenState extends State<BaseScreen> {
     }
   }
 
-  // Picks an image from the gallery
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      _showUploadOptions(image.path);
+      _showUploadOptions(image);
     }
   }
 
-  // Shows dialog with upload options after selecting an image
-  void _showUploadOptions(String imagePath) {
+  void _showUploadOptions(XFile imageFile) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -91,7 +79,7 @@ class _BaseScreenState extends State<BaseScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => UploadContentPage(
-                      imagePath: imagePath,
+                      imagePath: imageFile.path,
                     ),
                   ),
                 );
@@ -100,10 +88,20 @@ class _BaseScreenState extends State<BaseScreen> {
             ),
             TextButton(
               onPressed: () {
-                setState(() {
-                  // Handle post image
-                });
                 Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider(
+                      create: (context) =>
+                          PhotoBloc(photoController: PhotoController()),
+                      child: PostFormPhotoScreen(
+                        imageFile: imageFile,
+                        isFromCamera: false, // Dari BaseScreen
+                      ),
+                    ),
+                  ),
+                );
               },
               child: const Text("Post"),
             ),

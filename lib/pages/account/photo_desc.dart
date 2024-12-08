@@ -11,9 +11,13 @@ import 'package:dis_app/utils/constants/show_confirmation.dart';
 
 class PostFormPhotoScreen extends StatefulWidget {
   final XFile? imageFile;
+  final bool isFromCamera; // Menambahkan parameter opsional
 
-  const PostFormPhotoScreen({Key? key, required this.imageFile})
-      : super(key: key);
+  const PostFormPhotoScreen({
+    Key? key,
+    required this.imageFile,
+    this.isFromCamera = false, // Default-nya false
+  }) : super(key: key);
 
   @override
   _PostFormPhotoScreenState createState() => _PostFormPhotoScreenState();
@@ -111,7 +115,7 @@ class _PostFormPhotoScreenState extends State<PostFormPhotoScreen> {
       builder: (BuildContext context) {
         return DisShowConfirmation(
           onConfirm: () {
-            Navigator.pop(context); // Kembali ke layar sebelumnya
+            Navigator.pop(context);
           },
         );
       },

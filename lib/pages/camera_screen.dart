@@ -263,16 +263,18 @@ class _CameraScreenState extends State<CameraScreen> {
                       child: IconButton(
                         icon: const Icon(Icons.check, color: DisColors.white),
                         iconSize: DisSizes.xl,
+                        //camera
                         onPressed: () {
-                          // Create and provide the PhotoBloc to the PostFormPhotoScreen
                           Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => BlocProvider(
                                 create: (context) => PhotoBloc(
                                     photoController: PhotoController()),
-                                child:
-                                    PostFormPhotoScreen(imageFile: _imageFile),
+                                child: PostFormPhotoScreen(
+                                  imageFile: _imageFile,
+                                  isFromCamera: true, // Dari Kamera
+                                ),
                               ),
                             ),
                           );

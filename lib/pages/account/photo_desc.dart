@@ -1,13 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
-import 'package:dis_app/blocs/photo/photo_bloc.dart';
-import 'package:dis_app/blocs/photo/photo_event.dart';
-import 'package:dis_app/blocs/photo/photo_state.dart';
-import 'package:dis_app/utils/constants/colors.dart';
+import 'package:dis_app/models/photo_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as path;
-import 'package:dis_app/utils/constants/show_confirmation.dart';
+import 'package:dis_app/utils/constants/show_confirmation.dart'; 
 
 class PostFormPhotoScreen extends StatefulWidget {
   final XFile? imageFile;
@@ -25,88 +24,140 @@ class PostFormPhotoScreen extends StatefulWidget {
 
 class _PostFormPhotoScreenState extends State<PostFormPhotoScreen> {
   final TextEditingController _captionController = TextEditingController();
+  final Uuid uuid = Uuid();
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<PhotoBloc, PhotoState>(
-      listener: (context, state) {
-        if (state is PhotoSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Konten berhasil disimpan!')),
-          );
-          Navigator.pushReplacementNamed(context, '/home');
-        } else if (state is PhotoFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Gagal menyimpan konten: ${state.message}')),
-          );
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Info Konten"),
-          backgroundColor: DisColors.primary,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              _showConfirmationDialog(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Info Konten"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            _showConfirmationDialog(context);
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.check),
+            onPressed: () async {
+              if (widget.imageFile != null) {
+                await _savePost(widget.imageFile!, _captionController.text);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Konten berhasil disimpan!')),
+                );
+              }
+              Navigator.pushReplacementNamed(context, '/home');
             },
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.check),
-              onPressed: () {
-                if (widget.imageFile != null) {
-                  _savePost(widget.imageFile!, _captionController.text);
-                }
-              },
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (widget.imageFile != null)
+              Center(
+                child: Image.file(
+                  File(widget.imageFile!.path),
+                  width: 150,
+                  height: 150,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            const SizedBox(height: 20),
+            const Text(
+              'Caption',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _captionController,
+              decoration: const InputDecoration(
+                hintText: 'Tambahkan caption disini (Maks. 500 karakter)',
+                border: OutlineInputBorder(),
+              ),
+              maxLength: 500,
+              maxLines: 5,
             ),
           ],
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (widget.imageFile != null)
-                Center(
-                  child: Image.file(
-                    File(widget.imageFile!.path),
-                    width: 150,
-                    height: 150,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              const SizedBox(height: 20),
-              const Text(
-                'Caption',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: _captionController,
-                decoration: const InputDecoration(
-                  hintText: 'Tambahkan caption disini (Maks. 500 karakter)',
-                  border: OutlineInputBorder(),
-                ),
-                maxLength: 500,
-                maxLines: 5,
-              ),
-            ],
-          ),
         ),
       ),
     );
   }
 
-  void _savePost(XFile imageFile, String description) {
-    final file = File(imageFile.path);
-    final name = path.basename(imageFile.path);
+  Future<void> clearDummiesData() async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final imagesDir = Directory(path.join(dir.path, 'assets/images/dummies'));
+      final jsonFile = File(path.join(dir.path, 'dummies.json'));
 
-    context.read<PhotoBloc>().add(AddPostPhotoEvent(
-          name: name,
-          description: description,
-          file: file,
-        ));
+      // Delete all files in the images directory
+      if (await imagesDir.exists()) {
+        final files = imagesDir.listSync();
+        for (var file in files) {
+          if (file is File) {
+            await file.delete();
+          }
+        }
+        print('All images deleted from ${imagesDir.path}');
+      } else {
+        print('Images directory does not exist');
+      }
+
+      // Overwrite the JSON file with an empty structure
+      if (await jsonFile.exists()) {
+        final emptyJson = jsonEncode({"post": []});
+        await jsonFile.writeAsString(emptyJson);
+        print('All data cleared from dummies.json');
+      } else {
+        print('dummies.json does not exist');
+      }
+    } catch (e) {
+      print('Error clearing dummies data: $e');
+    }
+  }
+
+  Future<void> _savePost(XFile image, String desc) async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final saveDir = Directory(path.join(dir.path, 'assets/images/dummies'));
+      if (!await saveDir.exists()) {
+        await saveDir.create(recursive: true);
+      }
+
+      final fileName = path.basename(image.path);
+      final saveImage = await File(image.path).copy(path.join(saveDir.path, fileName));
+      print('Image saved to: ${saveImage.path}');
+
+      final postPhoto = PostPhoto(
+        id: uuid.v4(),
+        url: "${saveImage.path}",
+        name: fileName,
+        description: desc,
+        type: 'post',
+        likes: 0,
+        liked: false,
+        userId: '1',
+      );
+
+      final jsonFile = File(path.join(dir.path, 'dummies.json'));
+      if (await jsonFile.exists()) {
+        final jsonString = await jsonFile.readAsString();
+        final jsonData = jsonDecode(jsonString) as Map<String, dynamic>;
+        jsonData['post'].add(postPhoto.toJson());
+        print(jsonData);
+        await jsonFile.writeAsString(jsonEncode(jsonData));
+      } else {
+        final jsonData = {
+          "post": [postPhoto.toJson()]
+        };
+        await jsonFile.writeAsString(jsonEncode(jsonData));
+      }
+    } catch (e) {
+      print('Error saving post: $e');
+    }
   }
 
   void _showConfirmationDialog(BuildContext context) {

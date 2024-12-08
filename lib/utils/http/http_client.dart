@@ -3,7 +3,7 @@ import 'package:dis_app/utils/local_storage/local_storage.dart';
 import 'package:http/http.dart' as http;
 
 class DisHttpClient {
-  static const String _baseUrl = 'http://10.0.2.2:8000/api'; // Change api.dis.com with your IP Address
+  static const String _baseUrl = 'http://10.0.2.2:8000/api'; // Change http://10.0.2.2/api to your API URL
 
   // GET request
   static Future<Map<String, dynamic>> get(String endpoint) async {

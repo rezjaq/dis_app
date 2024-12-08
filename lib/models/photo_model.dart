@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:image_picker/image_picker.dart';
+
 class PostPhoto {
   final String id;
   final String url;
@@ -10,6 +12,9 @@ class PostPhoto {
   final List comments;
   final bool liked;
   final String userId;
+  final String? userName;
+  final String? userPhoto;
+  final bool? userFollowing;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
@@ -24,6 +29,9 @@ class PostPhoto {
     this.comments = const [],
     this.liked = false,
     required this.userId,
+    this.userName,
+    this.userPhoto,
+    this.userFollowing,
     DateTime? createdAt,
     DateTime? updatedAt,
     this.deletedAt,
@@ -41,6 +49,9 @@ class PostPhoto {
       comments: json['comments'] ?? [],
       liked: json['liked'] ?? false,
       userId: json['user_id'] ?? '',
+      userName: json['user_name'],
+      userPhoto: json['user_photo'],
+      userFollowing: json['user_following'],
       createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
       updatedAt: DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
       deletedAt: json['deleted_at'] != null ? DateTime.tryParse(json['deleted_at']) : null,
@@ -134,12 +145,35 @@ class SellPhoto {
   }
 }
 
+class PhotoHistory {
+  final String id;
+  final String name;
+  final String url;
+  final double price;
+
+  PhotoHistory({
+    required this.id,
+    required this.name,
+    required this.url,
+    required this.price,
+  });
+
+  factory PhotoHistory.fromJson(Map<String, dynamic> json) {
+    return PhotoHistory(
+      id: json['_id'] ?? '',
+      name: json['name'] ?? '',
+      url: json['url'] ?? '',
+      price: json['price'] ?? 0.0,
+    );
+  }
+}
+
 class AddSellPhotoRequest {
   String name;
   String basePrice;
   String sellPrice;
   String description;
-  File file;
+  XFile file;
 
   AddSellPhotoRequest({
     required this.name,
@@ -162,7 +196,7 @@ class AddSellPhotoRequest {
 class AddPostPhotoRequest {
   String description;
   String name;
-  File file;
+  XFile file;
 
   AddPostPhotoRequest({
     required this.description,

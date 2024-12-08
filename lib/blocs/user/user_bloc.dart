@@ -118,7 +118,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       emit(UserLoading());
       try {
         final response = await userController.deleteAccount(DeleteAccountRequest(id: event.id));
-        emit(UserSuccess(message: "Bank account deleted successfully", data: response));
+        emit(UserSuccess(message: "Bank account deleted successfully", data: response["data"]));
       } catch (e) {
         emit(UserFailure(message: e.toString()));
       }

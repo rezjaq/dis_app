@@ -9,7 +9,7 @@ class DisCardHistory extends StatelessWidget {
   final String amount;
   final String username;
   final String date;
-  final bool isIncome;
+  final bool isIncome = true;
 
   const DisCardHistory({
     Key? key,
@@ -18,7 +18,6 @@ class DisCardHistory extends StatelessWidget {
     required this.amount,
     required this.username,
     required this.date,
-    required this.isIncome,
   }) : super(key: key);
 
   @override
@@ -34,7 +33,7 @@ class DisCardHistory extends StatelessWidget {
               color: DisColors.grey,
               borderRadius: BorderRadius.circular(8.0),
               image: DecorationImage(
-                image: AssetImage(url),
+                image: NetworkImage(url),
                 fit: BoxFit.cover,
               ),
             ),

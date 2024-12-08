@@ -174,15 +174,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      BlocProvider.of<AuthBloc>(context).add(
-                                        AuthLoginEvent(
-                                          emailOrPhone:
-                                              _emailOrPhoneController.text,
-                                          password: _passwordController.text,
-                                        ),
-                                      );
-                                    }
                                   },
                                   child: const Text(
                                     "Forgot Password?",

@@ -1,34 +1,13 @@
+import 'package:dis_app/models/transaction_model.dart';
+import 'package:dis_app/utils/constants/colors.dart';
+import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class TransactionHistoryScreen extends StatelessWidget {
-  final List<Transaction> transactions = [
-    Transaction(
-      imageUrl: 'assets/images/dummies/content.jpg',
-      filename: 'img_1239.JPG',
-      username: 'anggi202',
-      date: '11 Nov 2024 09:20',
-      amount: 15000,
-      isCredit: true,
-    ),
-    Transaction(
-      imageUrl: 'assets/images/dummies/dummy_1.jpg',
-      filename: 'dsc76543.JPG',
-      username: 'photographer_jatim',
-      date: '09 Nov 2024 09:00',
-      amount: 1500,
-      isCredit: false,
-    ),
-    Transaction(
-      imageUrl: 'assets/images/dummies/dummy_2.jpg',
-      filename: 'dsc22466.JPG',
-      username: 'lidya123',
-      date: '08 Nov 2024 07:20',
-      amount: 2500000,
-      isCredit: true,
-    ),
-    // Add more transactions as needed
-  ];
+  final List<TransactionHistorySeller> transactions;
+
+  TransactionHistoryScreen({Key? key, required this.transactions}) : super(key: key);
 
   final NumberFormat currencyFormat = NumberFormat('#,###', 'id');
 
@@ -53,7 +32,7 @@ class TransactionHistoryScreen extends StatelessWidget {
       ),
       body: ListView.separated(
         padding: EdgeInsets.all(16),
-        itemCount: transactions.length * 10,
+        itemCount: transactions.length,
         separatorBuilder: (context, index) =>
             Divider(height: 1, color: Colors.grey[300]),
         itemBuilder: (context, index) {
@@ -62,31 +41,13 @@ class TransactionHistoryScreen extends StatelessWidget {
               transaction: transaction, currencyFormat: currencyFormat);
         },
       ),
-      backgroundColor: Color(0xFFF8F8F8),
+      backgroundColor: DisColors.white,
     );
   }
 }
 
-class Transaction {
-  final String imageUrl;
-  final String filename;
-  final String username;
-  final String date;
-  final int amount;
-  final bool isCredit;
-
-  Transaction({
-    required this.imageUrl,
-    required this.filename,
-    required this.username,
-    required this.date,
-    required this.amount,
-    required this.isCredit,
-  });
-}
-
 class TransactionTile extends StatelessWidget {
-  final Transaction transaction;
+  final TransactionHistorySeller transaction;
   final NumberFormat currencyFormat;
 
   const TransactionTile(
@@ -101,8 +62,8 @@ class TransactionTile extends StatelessWidget {
         onTap: () {},
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child: Image.asset(
-            transaction.imageUrl,
+          child: Image.network(
+            transaction.photoUrl,
             width: 80,
             height: 80,
             fit: BoxFit.cover,
@@ -110,7 +71,7 @@ class TransactionTile extends StatelessWidget {
         ),
       ),
       title: Text(
-        transaction.filename,
+        transaction.photoName,
         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
       ),
       subtitle: Column(
@@ -119,14 +80,14 @@ class TransactionTile extends StatelessWidget {
           Text(transaction.username,
               style: TextStyle(fontSize: 12, color: Colors.grey[600])),
           SizedBox(height: 4),
-          Text(transaction.date,
+          Text(DisHelperFunctions.getFormattedDate(transaction.date),
               style: TextStyle(fontSize: 10, color: Colors.grey[500])),
         ],
       ),
       trailing: Text(
-        '${transaction.isCredit ? '+' : '-'}IDR ${currencyFormat.format(transaction.amount)}', // Use the currency formatter
+        '+IDR ${currencyFormat.format(transaction.price)}', // Use the currency formatter
         style: TextStyle(
-          color: transaction.isCredit ? Colors.green : Colors.red,
+          color: DisColors.success,
           fontWeight: FontWeight.bold,
           fontSize: 14,
         ),

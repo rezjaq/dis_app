@@ -1,7 +1,18 @@
+import 'package:dis_app/blocs/transaction/transaction_event.dart';
+import 'package:dis_app/blocs/transaction/transaction_state.dart';
+import 'package:dis_app/models/photo_model.dart';
+import 'package:dis_app/models/transaction_model.dart';
+import 'package:dis_app/pages/findme/findme_screen.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
+
+import '../../blocs/transaction/transaction_bloc.dart';
+import '../../controllers/transaction_controller.dart';
 
 class TransactionScreen extends StatefulWidget {
   @override
@@ -9,37 +20,109 @@ class TransactionScreen extends StatefulWidget {
 }
 
 class _TransactionScreenState extends State<TransactionScreen> {
+  Map<String, dynamic> data = {
+    "pending": {
+      "text": "Waiting for payment",
+      "color": DisColors.warning,
+    },
+    "paid": {
+      "text": "Completed",
+      "color": DisColors.success,
+    },
+    "failed": {
+      "text": "Cancelled",
+      "color": DisColors.error,
+    },
+    "expired": {
+      "text": "Cancelled",
+      "color": DisColors.error,
+    },
+    "cancelled": {
+      "text": "Cancelled",
+      "color": DisColors.error,
+    },
+  };
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DisColors.white,
-      appBar: AppBar(
+    return BlocProvider(
+      create: (context) => TransactionBloc(transactionController: TransactionController())..add(TransactionListByBuyerEvent()),
+      child: Scaffold(
         backgroundColor: DisColors.white,
-        automaticallyImplyLeading: false,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Text("Transaction", style: TextStyle(color: DisColors.black)),
-            IconButton(onPressed: () {
-              DisHelperFunctions.navigateToRoute(context, "/balance");
-            }, icon: Icon(Icons.account_balance_wallet_rounded, color: DisColors.black,)),
-          ],
+        appBar: AppBar(
+          backgroundColor: DisColors.white,
+          automaticallyImplyLeading: false,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text("Transaction", style: TextStyle(color: DisColors.black)),
+              IconButton(onPressed: () {
+                DisHelperFunctions.navigateToRoute(context, "/balance");
+              }, icon: Icon(Icons.account_balance_wallet_rounded, color: DisColors.black,)),
+            ],
+          ),
         ),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          children: List.generate(5, (index) => Container(
-            margin: EdgeInsets.only(bottom: 12.0),
-            child: _cardTransaction(),
-          )),
+        body: BlocBuilder<TransactionBloc, TransactionState>(
+            builder: (context, state) {
+              if (state is TransactionSuccess) {
+                final transactions = (state.data!['data'] as List).map((e) => TransactionHistory.fromJson(e)).toList();
+                return transactions.isNotEmpty ? SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    children: List.generate(transactions.length, (index) => Container(
+                      margin: EdgeInsets.only(bottom: 12.0),
+                      child: _cardTransaction(transactions[index]),
+                    )),
+                  )
+                ) : Center(child: _blankTransactionHistory(),);
+              }
+              if (state is TransactionLoading) {
+                return Center(child: CircularProgressIndicator());
+              }
+              return Center(child: _blankTransactionHistory());
+            }
         ),
       ),
     );
   }
 
-  Container _cardTransaction() {
+  Widget _blankTransactionHistory() {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        children: [
+          Image.asset(
+            "assets/images/no_purchase_history.jpg",
+            width: DisHelperFunctions.screenWidth(context) * 0.75,
+            height: DisHelperFunctions.screenWidth(context) * 0.75,
+          ),
+          const SizedBox(height: 16.0),
+          Text("No Transaction History", style: TextStyle(color: DisColors.black, fontSize: DisSizes.fontSizeLg, fontWeight: FontWeight.bold),),
+          SizedBox(height: 8.0),
+          Text("You haven't made any purchases yet. Find your picture and start shopping", style: TextStyle(color: DisColors.darkGrey, fontSize: DisSizes.fontSizeMd), textAlign: TextAlign.center,),
+          const SizedBox(height: 24.0),
+          GestureDetector(
+            onTap: () {
+              DisHelperFunctions.navigateToRoute(context, '/home');
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+              decoration: BoxDecoration(
+                color: DisColors.primary,
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Text("Start Buy", style: TextStyle(color: DisColors.black, fontSize: DisSizes.fontSizeMd, fontWeight: FontWeight.w600),),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Container _cardTransaction(TransactionHistory transaction) {
+    final formatCurrency = NumberFormat.currency(locale: "id_ID", symbol: "IDR ", decimalDigits: 0);
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -70,24 +153,43 @@ class _TransactionScreenState extends State<TransactionScreen> {
                     Text("Photo", style: TextStyle(color: DisColors.black)),
                   ],
                 ),
-                Text("Completed", style: TextStyle(color: DisColors.success, fontWeight: FontWeight.w600, fontSize: DisSizes.fontSizeXs),),
+                Text(data[transaction.status]["text"], style: TextStyle(color: data[transaction.status]["color"], fontWeight: FontWeight.w600, fontSize: DisSizes.fontSizeXs),),
               ],
             ),
             SizedBox(height: 12.0),
             Column(
-              children: List.generate(5, (index) => Container(
-                margin: EdgeInsets.only(bottom: 12.0),
-                child: _transactionItem(),
-              )),
+              children: transaction.details.isNotEmpty ? transaction.details.map((detail) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.account_circle, color: DisColors.black,),
+                        SizedBox(width: 8.0),
+                        Text(detail.username, style: TextStyle(color: DisColors.black, fontWeight: FontWeight.w600, fontSize: DisSizes.fontSizeMd)),
+                      ],
+                    ),
+                    SizedBox(height: 8.0),
+                    Column(
+                      children: detail.photos.isNotEmpty ? detail.photos.map((photo) {
+                        return Container(
+                          margin: EdgeInsets.only(bottom: 12.0),
+                          child: _transactionItem(photo),
+                        );
+                      }).toList() : [Text("No photos available")],
+                    ),
+                  ],
+                );
+              }).toList() : [Text("No details available")],
             ),
             SizedBox(height: 12.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text("11 Nov 2024 09:19", style: TextStyle(fontSize: DisSizes.fontSizeXs, fontWeight: FontWeight.w500, color: DisColors.darkGrey),),
+                Text(DisHelperFunctions.getFormattedDate(transaction.date), style: TextStyle(fontSize: DisSizes.fontSizeXs, fontWeight: FontWeight.w500, color: DisColors.darkGrey),),
                 const SizedBox(width: 4.0),
-                Text("Total 100 Item: IDR 2.500.000.000", style: TextStyle(color: DisColors.black, fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.w500),),
+                Text("Total: ${formatCurrency.format(transaction.total)}", style: TextStyle(color: DisColors.black, fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.w500),),
               ],
             ),
           ],
@@ -96,7 +198,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
     );
   }
 
-  Row _transactionItem() {
+  Row _transactionItem(PhotoHistory photo) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -107,11 +209,16 @@ class _TransactionScreenState extends State<TransactionScreen> {
           decoration: BoxDecoration(
             color: DisColors.grey,
             borderRadius: BorderRadius.all(Radius.circular(8.0)),
-            image: DecorationImage(
-              image: AssetImage("assets/images/dummies/content.jpg"),
+            image: photo.url != null && photo.url.isNotEmpty
+                ? DecorationImage(
+              image: NetworkImage(photo.url),
               fit: BoxFit.cover,
-            ),
+            )
+                : null,
           ),
+          child: photo.url == null || photo.url.isEmpty
+              ? Icon(Icons.broken_image, color: DisColors.darkerGrey)
+              : null,
         ),
         SizedBox(width: 20.0),
         Container(
@@ -119,9 +226,9 @@ class _TransactionScreenState extends State<TransactionScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(DisHelperFunctions.truncateText("HSDN1312_DAJDWQJ21_DAWQ1.jpg", 20), style: TextStyle(color: DisColors.black, fontWeight: FontWeight.w600, fontSize: DisSizes.fontSizeMd),),
+              Text(DisHelperFunctions.truncateText(photo.name, 20), style: TextStyle(color: DisColors.black, fontWeight: FontWeight.w600, fontSize: DisSizes.fontSizeMd),),
               SizedBox(height: 4.0),
-              Text("IDR 2.500.000", style: TextStyle(color: DisColors.darkerGrey, fontSize: DisSizes.fontSizeXs),),
+              Text("IDR ${photo.price}", style: TextStyle(color: DisColors.darkerGrey, fontSize: DisSizes.fontSizeXs),),
             ],
           ),
         ),

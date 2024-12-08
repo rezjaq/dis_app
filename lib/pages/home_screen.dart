@@ -85,19 +85,19 @@ class _BaseScreenState extends State<BaseScreen> {
           content: const Text("Where do you want to upload this image?"),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UploadContentPage(
-                      imagePath: imagePath,
-                    ),
-                  ),
-                );
-              },
-              child: const Text("Sell"),
+            onPressed: () {
+          Navigator.of(context).pop();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => UploadContentPage(
+                imagePath: imagePath,
+              ),
             ),
+          );
+        },
+        child: const Text("Sell"),
+        ),
             TextButton(
               onPressed: () {
                 setState(() {
@@ -226,139 +226,140 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: DisColors.black,
       body: Stack(
         children: [
-          BlocBuilder<PhotoBloc, PhotoState>(builder: (context, state) {
-            if (state is PhotoLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            if (state is PhotoSuccess) {
-              _samplePosts = (state.data!['data'] as List)
-                  .map((e) => PostPhoto.fromJson(e))
-                  .toList();
-            }
-            return PageView.builder(
-              scrollDirection: Axis.vertical,
-              itemCount: _samplePosts.length,
-              itemBuilder: (context, index) {
-                final photo = _samplePosts[index];
-                return Container(
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        top: MediaQuery.of(context).size.height * 0.125,
-                        child: Container(
-                          width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.height * 0.74,
-                          child: Image.network(
-                            photo.url,
-                            fit: BoxFit.cover,
+          BlocBuilder<PhotoBloc, PhotoState>(
+              builder: (context, state) {
+                if (state is PhotoLoading) {
+                  return const Center(child: CircularProgressIndicator(),);
+                }
+                if (state is PhotoSuccess) {
+                  _samplePosts = (state.data!['data'] as List)
+                      .map((e) => PostPhoto.fromJson(e))
+                      .toList();
+                }
+                return PageView.builder(
+                  scrollDirection: Axis.vertical,
+                  itemCount: _samplePosts.length,
+                  itemBuilder: (context, index) {
+                    final photo = _samplePosts[index];
+                    return Container(
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: MediaQuery.of(context).size.height * 0.125,
+                            child: Container(
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height * 0.74,
+                              child: Image.network(
+                                photo.url,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      Positioned(
-                        left: DisSizes.md,
-                        bottom: DisSizes.md,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
+                          Positioned(
+                            left: DisSizes.md,
+                            bottom: DisSizes.md,
+                            child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  width: 48,
-                                  height: 48,
-                                  decoration: BoxDecoration(
-                                    color: DisColors.white,
-                                    borderRadius: BorderRadius.circular(36),
-                                  ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      width: 48,
+                                      height: 48,
+                                      decoration: BoxDecoration(
+                                        color: DisColors.white,
+                                        borderRadius: BorderRadius.circular(36),
+                                        image: DecorationImage(
+                                          image: photo.userPhoto != null
+                                              ? NetworkImage(photo.userPhoto!)
+                                              : AssetImage(
+                                                  'assets/images/no_profile.jpeg'),
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(photo.userName!,
+                                        style: TextStyle(
+                                            color: DisColors.white,
+                                            fontSize: DisSizes.fontSizeSm,
+                                            fontWeight: FontWeight.bold)),
+                                    const SizedBox(width: 12),
+                                    GestureDetector(
+                                      onTap: () {},
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: DisColors.white, width: 1),
+                                          borderRadius: BorderRadius.circular(
+                                              DisSizes.xs),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: DisSizes.md,
+                                              vertical: DisSizes.xs),
+                                          child: Text("Follow",
+                                              style: TextStyle(
+                                                  color: DisColors.white,
+                                                  fontSize:
+                                                  DisSizes.fontSizeXs)),
+                                        ),
+                                      ),
+                                    )
+                                  ],
                                 ),
-                                const SizedBox(width: 12),
-                                Text("Steve Jobs",
+                                const SizedBox(height: 8),
+                                Text(photo.description,
                                     style: TextStyle(
                                         color: DisColors.white,
-                                        fontSize: DisSizes.fontSizeSm,
-                                        fontWeight: FontWeight.bold)),
-                                const SizedBox(width: 12),
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: DisColors.white, width: 1),
-                                      borderRadius:
-                                          BorderRadius.circular(DisSizes.xs),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: DisSizes.md,
-                                          vertical: DisSizes.xs),
-                                      child: Text("Follow",
-                                          style: TextStyle(
-                                              color: DisColors.white,
-                                              fontSize: DisSizes.fontSizeXs)),
-                                    ),
-                                  ),
-                                )
+                                        fontSize: DisSizes.fontSizeSm)),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Icon(Icons.location_on,
+                                        color: DisColors.white,
+                                        size: DisSizes.md),
+                                    const SizedBox(width: 4),
+                                    Text("Malang, Indonesia",
+                                        style: TextStyle(
+                                            color: DisColors.white,
+                                            fontSize: DisSizes.fontSizeXs)),
+                                  ],
+                                ),
                               ],
                             ),
-                            const SizedBox(height: 8),
-                            Text(photo.description,
-                                style: TextStyle(
-                                    color: DisColors.white,
-                                    fontSize: DisSizes.fontSizeSm)),
-                            const SizedBox(height: 8),
-                            Row(
+                          ),
+                          Positioned(
+                            right: DisSizes.md,
+                            bottom: 72,
+                            child: Column(
                               children: [
-                                Icon(Icons.location_on,
-                                    color: DisColors.white, size: DisSizes.md),
-                                const SizedBox(width: 4),
-                                Text("Malang, Indonesia",
-                                    style: TextStyle(
-                                        color: DisColors.white,
-                                        fontSize: DisSizes.fontSizeXs)),
+                                _menuButton(Icons.favorite_border_rounded,
+                                    photo.likes.toString(), !photo.liked ? DisColors.white : DisColors.error, () {
+                                      context.read<PhotoBloc>().add(LikePhotoEvent(
+                                          id: photo.id, liked: !photo.liked));
+                                    }),
+                                const SizedBox(height: 8),
+                                _menuButton(Icons.chat_bubble_outline_rounded,
+                                    photo.comments.length.toString(), DisColors.white, () {}),
+                                const SizedBox(height: 8),
+                                _menuButton(Icons.more_horiz_rounded, '',
+                                    DisColors.white, () {
+                                      _showDialog(context);
+                                    }),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                      Positioned(
-                        right: DisSizes.md,
-                        bottom: 72,
-                        child: Column(
-                          children: [
-                            _menuButton(
-                                Icons.favorite_border_rounded,
-                                photo.likes.toString(),
-                                !photo.liked
-                                    ? DisColors.white
-                                    : DisColors.error, () {
-                              context.read<PhotoBloc>().add(LikePhotoEvent(
-                                  id: photo.id, liked: !photo.liked));
-                            }),
-                            const SizedBox(height: 8),
-                            _menuButton(
-                                Icons.chat_bubble_outline_rounded,
-                                photo.comments.length.toString(),
-                                DisColors.white,
-                                () {}),
-                            const SizedBox(height: 8),
-                            _menuButton(
-                                Icons.more_horiz_rounded, '', DisColors.white,
-                                () {
-                              _showDialog(context);
-                            }),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 );
-              },
-            );
-          }),
+              }
+          ),
           Positioned(
             right: 0,
             top: MediaQuery.of(context).size.height * 0.05,

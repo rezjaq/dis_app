@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:equatable/equatable.dart';
+import 'package:image_picker/image_picker.dart';
 
 abstract class PhotoEvent extends Equatable {
   const PhotoEvent();
@@ -14,7 +15,7 @@ class AddSellPhotoEvent extends PhotoEvent {
   final double basePrice;
   final double sellPrice;
   final String description;
-  final File file;
+  final XFile file;
 
   const AddSellPhotoEvent({
     required this.name,
@@ -31,7 +32,7 @@ class AddSellPhotoEvent extends PhotoEvent {
 class AddPostPhotoEvent extends PhotoEvent {
   final String name;
   final String description;
-  final File file;
+  final XFile file;
 
   const AddPostPhotoEvent({
     required this.name,

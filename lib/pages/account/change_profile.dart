@@ -272,7 +272,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 context.read<UserBloc>().add(UserLogoutEvent());
                 Navigator.pop(context);
               },
-              child: const Text('Logout', style: TextStyle(color: DisColors.textPrimary)),
+              child: const Text('Logout', style: TextStyle(color: DisColors.error)),
             ),
           ],
         );

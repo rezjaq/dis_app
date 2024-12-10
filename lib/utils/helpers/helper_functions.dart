@@ -61,7 +61,7 @@ class DisHelperFunctions {
     return MediaQuery.of(context).size.width;
   }
 
-  static String getFormattedDate(DateTime dateTime, {String format = 'dd MMM yyyy'}) {
+  static String getFormattedDate(DateTime dateTime, {String format = 'dd MMM yyyy HH:mm'}) {
     return DateFormat(format).format(dateTime);
   }
 

@@ -32,10 +32,24 @@ class TransactionController {
   }
 
   // List Transactions
-  Future<Map<String, dynamic>> listTransactions(ListTransactionRequest request) async {
+  Future<Map<String, dynamic>> listByBuyer(ListTransactionRequest request) async {
     try {
       final queryParams = request.toQueryParams();
-      final response = await DisHttpClient.get('transaction?$queryParams');
+      final response = await DisHttpClient.get('transaction/buyer?$queryParams');
+      if (response['data'] == null) {
+        throw response['errors'];
+      } else {
+        return response;
+      }
+    } catch (e) {
+      throw Exception('Failed to list transactions: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> listBySeller(ListTransactionRequest request) async {
+    try {
+      final queryParams = request.toQueryParams();
+      final response = await DisHttpClient.get('transaction/seller?$queryParams');
       if (response['data'] == null) {
         throw response['errors'];
       } else {
@@ -53,7 +67,7 @@ class TransactionController {
       if (response['data'] == null) {
         throw response['errors'];
       } else {
-        return response['data'];
+        return response;
       }
     } catch (e) {
       throw Exception('Failed to update transaction: $e');

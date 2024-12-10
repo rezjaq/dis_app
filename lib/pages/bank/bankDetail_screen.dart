@@ -10,8 +10,9 @@ import 'package:dis_app/blocs/user/user_state.dart';
 
 class BankAccountDetailScreen extends StatelessWidget {
   final String id;
+  bool _isChange = false;
 
-  const BankAccountDetailScreen({
+  BankAccountDetailScreen({
     Key? key,
     required this.id,
   }) : super(key: key);
@@ -27,7 +28,7 @@ class BankAccountDetailScreen extends StatelessWidget {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(context, _isChange);
             },
           ),
         ),
@@ -66,18 +67,20 @@ class BankAccountDetailScreen extends StatelessWidget {
                                     Icons.edit,
                                     color: DisColors.success,
                                   ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => EditBankAccountScreen(
+                                  onPressed: () async {
+                                    final result = await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => EditBankAccountScreen(
                                           id: id,
                                           accountName: account['name'],
                                           accountNumber: account['number'],
                                           bankName: account['bank'],
-                                        ),
-                                      ),
+                                        ),)
                                     );
+                                    if (result == true) {
+                                      BlocProvider.of<UserBloc>(context).add(GetBankEvent(id: id));
+                                      _isChange = true;
+                                    }
                                   },
                                 ),
                                 IconButton(
@@ -175,7 +178,7 @@ class BankAccountDetailScreen extends StatelessWidget {
               },
               child: const Text(
                 'Cancel',
-                style: TextStyle(color: DisColors.primary),
+                style: TextStyle(color: DisColors.black),
               ),
             ),
             TextButton(

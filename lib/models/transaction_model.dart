@@ -1,3 +1,5 @@
+import 'package:dis_app/models/photo_model.dart';
+
 class Detail {
   final String sellerId;
   final List<String> photoIds;
@@ -8,6 +10,14 @@ class Detail {
     required this.photoIds,
     required this.total,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'seller_id': sellerId,
+      'photo_id': photoIds,
+      'total': total,
+    };
+  }
 }
 
 class Payment {
@@ -91,40 +101,124 @@ class Transaction {
   }
 }
 
+class DetailHistory {
+  final String username;
+  final List<PhotoHistory> photos;
+  final double total;
+
+  DetailHistory({
+    required this.username,
+    required this.photos,
+    required this.total,
+  });
+
+  factory DetailHistory.fromJson(Map<String, dynamic> json) {
+    return DetailHistory(
+      username: json['username'] ?? '',
+      photos: (json['photos'] as List)
+          .map((e) => PhotoHistory.fromJson(e))
+          .toList(),
+      total: json['total'],
+    );
+  }
+}
+
+class TransactionHistory {
+  final String id;
+  final String status;
+  final DateTime date;
+  final List<DetailHistory> details;
+  final double total;
+
+  TransactionHistory({
+    required this.id,
+    required this.status,
+    required this.date,
+    required this.details,
+    required this.total,
+  });
+
+  factory TransactionHistory.fromJson(Map<String, dynamic> json) {
+    return TransactionHistory(
+      id: json['_id'] ?? '',
+      status: json['status'] ?? '',
+      date: DateTime.parse(json['date']),
+      details: (json['details'] as List)
+          .map((e) => DetailHistory.fromJson(e))
+          .toList(),
+      total: json['total'],
+    );
+  }
+}
+
+class TransactionHistorySeller {
+  final String photoName;
+  final String photoUrl;
+  final DateTime date;
+  final String username;
+  final double price;
+
+  TransactionHistorySeller({
+    required this.photoName,
+    required this.photoUrl,
+    required this.date,
+    required this.username,
+    required this.price,
+  });
+
+  factory TransactionHistorySeller.fromJson(Map<String, dynamic> json) {
+    return TransactionHistorySeller(
+      photoName: json['photo_name'] ?? '',
+      photoUrl: json['photo_url'] ?? '',
+      date: DateTime.parse(json['date']),
+      username: json['username'] ?? '',
+      price: json['price'],
+    );
+  }
+}
+
 class CreateTransactionRequest {
-  final String userId;
-  final double amount;
-  final String description;
+  final List<Detail> details;
+  final double total;
 
   CreateTransactionRequest({
-    required this.userId,
-    required this.amount,
-    required this.description,
+    required this.details,
+    required this.total,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'user_id': userId,
-      'amount': amount,
-      'description': description,
+      'details': details.map((e) => e.toJson()).toList(),
+      'total': total,
     };
   }
 }
 
 class GetTransactionRequest {
   final String id;
-
   GetTransactionRequest({required this.id});
 }
 
 class ListTransactionRequest {
-  final int page;
-  final int limit;
+  int? page;
+  int? size;
 
-  ListTransactionRequest({required this.page, required this.limit});
+  ListTransactionRequest({
+    this.page,
+    this.size,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'page': page,
+      'size': size,
+    };
+  }
 
   String toQueryParams() {
-    return 'page=$page&limit=$limit';
+    final params = toJson();
+    params.removeWhere((key, value) => value == null);
+    return params.entries.map((e) => '${e.key}=${e.value}').join('&');
   }
 }
 

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -69,12 +70,12 @@ class _UploadContentPageState extends State<UploadContentPage> {
     }
 
     context.read<PhotoBloc>().add(AddSellPhotoEvent(
-          name: _fileNameController.text,
-          basePrice: double.parse(_hargaDasarController.text),
-          sellPrice: double.parse(_hargaJualController.text),
-          description: _descriptionController.text,
-          file: File(_imagePath!),
-        ));
+      name: _fileNameController.text,
+      basePrice: double.parse(_hargaDasarController.text),
+      sellPrice: double.parse(_hargaJualController.text),
+      description: _descriptionController.text,
+      file: XFile(_imagePath!),
+    ));
   }
 
   @override
@@ -115,14 +116,14 @@ class _UploadContentPageState extends State<UploadContentPage> {
                     children: [
                       _imagePath != null
                           ? ClipRRect(
-                              borderRadius: BorderRadius.circular(10.0),
-                              child: Image.file(
-                                File(_imagePath!),
-                                height: 250,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                            )
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: Image.file(
+                          File(_imagePath!),
+                          height: 250,
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                      )
                           : const Text('Silakan pilih gambar'),
                       const SizedBox(height: 10),
                       Text(

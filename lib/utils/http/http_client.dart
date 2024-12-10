@@ -3,7 +3,8 @@ import 'package:dis_app/utils/local_storage/local_storage.dart';
 import 'package:http/http.dart' as http;
 
 class DisHttpClient {
-  static const String _baseUrl = 'http://10.0.2.2:8000/api'; // Change api.dis.com with your IP Address
+  // Change api.dis.com with your IP Address
+  static const String _baseUrl = 'https://findme.my.id/api';
 
   // GET request
   static Future<Map<String, dynamic>> get(String endpoint) async {
@@ -66,7 +67,8 @@ class DisHttpClient {
   // Get Headers
   static Future<Map<String, String>> _getHeaders() async {
     final token = await DisLocalStorage().readData<String>('access_token');
-    final refreshToken = await DisLocalStorage().readData<String>('refresh_token');
+    final refreshToken =
+        await DisLocalStorage().readData<String>('refresh_token');
     return {
       'Content-Type': 'application/json',
       if (token != null) 'Authorization': 'Bearer $token',

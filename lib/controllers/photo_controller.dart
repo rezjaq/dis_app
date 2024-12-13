@@ -6,15 +6,29 @@ import 'package:dis_app/utils/http/http_client.dart';
 class PhotoController {
   Future<Map<String, dynamic>> addSellPhoto(AddSellPhotoRequest request) async {
     try {
-      final multipartRequest = await DisHttpClient.multipartRequest('photo/sell', 'POST');
+      final multipartRequest =
+          await DisHttpClient.multipartRequest('photo/sell', 'POST');
       multipartRequest.fields['name'] = request.name;
-      multipartRequest.fields['basePrice'] = request.basePrice.toString();
-      multipartRequest.fields['sellPrice'] = request.sellPrice.toString();
+      multipartRequest.fields['base_price'] = request.basePrice;
+      multipartRequest.fields['sell_price'] = request.sellPrice;
       multipartRequest.fields['description'] = request.description;
-      multipartRequest.files.add(await http.MultipartFile.fromPath('file', request.file.path));
+      multipartRequest.files.add(
+        await http.MultipartFile.fromPath('file', request.file.path),
+      );
+
       final response = await multipartRequest.send();
       final responseData = await response.stream.bytesToString();
-      return json.decode(responseData);
+      final jsonResponse = json.decode(responseData);
+
+      if (jsonResponse is Map<String, dynamic>) {
+        return jsonResponse;
+      } else if (jsonResponse is List) {
+        throw Exception(
+          'Unexpected response type: List<dynamic>. Expected Map<String, dynamic>.',
+        );
+      } else {
+        throw Exception('Unexpected response format.');
+      }
     } catch (e) {
       throw Exception('Failed to add sell photo: $e');
     }
@@ -22,12 +36,17 @@ class PhotoController {
 
   Future<Map<String, dynamic>> addPostPhoto(AddPostPhotoRequest request) async {
     try {
-      final multipartRequest = await DisHttpClient.multipartRequest('photo/post', 'POST');
+      final multipartRequest =
+          await DisHttpClient.multipartRequest('photo/post', 'POST');
       multipartRequest.fields['description'] = request.description;
-      multipartRequest.files.add(await http.MultipartFile.fromPath('file', request.file.path));
+      multipartRequest.fields['name'] = request.name;
+      multipartRequest.files
+          .add(await http.MultipartFile.fromPath('file', request.file.path));
       final response = await multipartRequest.send();
+
       final responseData = await response.stream.bytesToString();
       final data = json.decode(responseData);
+      print(data);
       if (data['data'] == null) {
         throw data['errors'];
       } else {
@@ -55,6 +74,7 @@ class PhotoController {
     try {
       final queryParams = request.toQueryParams();
       final response = await DisHttpClient.get('photo?$queryParams');
+
       if (response['data'] == null) {
         throw response['errors'];
       } else {
@@ -65,9 +85,11 @@ class PhotoController {
     }
   }
 
-  Future<Map<String, dynamic>> updateSell(UpdateSellPhotoRequest request) async {
+  Future<Map<String, dynamic>> updateSell(
+      UpdateSellPhotoRequest request) async {
     try {
-      final response = await DisHttpClient.patch('photo/sell/${request.id}', request.toJson());
+      final response = await DisHttpClient.patch(
+          'photo/sell/${request.id}', request.toJson());
       if (response['data'] == null) {
         throw response['errors'];
       } else {
@@ -78,9 +100,11 @@ class PhotoController {
     }
   }
 
-  Future<Map<String, dynamic>> updatePost(UpdatePostPhotoRequest request) async {
+  Future<Map<String, dynamic>> updatePost(
+      UpdatePostPhotoRequest request) async {
     try {
-      final response = await DisHttpClient.patch('photo/post/${request.id}', request.toJson());
+      final response = await DisHttpClient.patch(
+          'photo/post/${request.id}', request.toJson());
       if (response['data'] == null) {
         throw response['errors'];
       } else {
@@ -93,7 +117,8 @@ class PhotoController {
 
   Future<Map<String, dynamic>> likePost(LikePhotoPostRequest request) async {
     try {
-      final response = await DisHttpClient.post('photo/like/${request.id}', request.toJson());
+      final response = await DisHttpClient.post(
+          'photo/like/${request.id}', request.toJson());
       if (response['data'] == null) {
         throw response['errors'];
       } else {
@@ -117,7 +142,8 @@ class PhotoController {
     }
   }
 
-  Future<Map<String, dynamic>> collectionPhoto(CollectionPhotoRequest request) async {
+  Future<Map<String, dynamic>> collectionPhoto(
+      CollectionPhotoRequest request) async {
     try {
       final response = await DisHttpClient.get('photo/sell/collection/');
       if (response['data'] == null) {

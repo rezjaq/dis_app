@@ -1,16 +1,19 @@
-import 'dart:convert';
 import 'dart:io';
-import 'package:dis_app/models/photo_model.dart';
+import 'package:dis_app/blocs/photo/photo_bloc.dart';
+import 'package:dis_app/blocs/photo/photo_event.dart';
+import 'package:dis_app/blocs/photo/photo_state.dart';
+import 'package:dis_app/controllers/photo_controller.dart';
+import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path/path.dart' as path;
-import 'package:dis_app/utils/constants/show_confirmation.dart'; 
 
 class PostFormPhotoScreen extends StatefulWidget {
   final XFile? imageFile;
-  final bool isFromCamera; // Menambahkan parameter opsional
+  final bool
+      isFromCamera; // Paramter opsional soalnya ada 2 yang makek buat bedain
 
   const PostFormPhotoScreen({
     Key? key,
@@ -28,146 +31,114 @@ class _PostFormPhotoScreenState extends State<PostFormPhotoScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Info Konten"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            _showConfirmationDialog(context);
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: () async {
-              if (widget.imageFile != null) {
-                await _savePost(widget.imageFile!, _captionController.text);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Konten berhasil disimpan!')),
-                );
-              }
-              Navigator.pushReplacementNamed(context, '/home');
+    return BlocProvider(
+      create: (context) => PhotoBloc(photoController: PhotoController()),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Info Konten"),
+          backgroundColor: DisColors.primary,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              _showConfirmationDialog(context);
             },
           ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (widget.imageFile != null)
-              Center(
-                child: Image.file(
-                  File(widget.imageFile!.path),
-                  width: 150,
-                  height: 150,
-                  fit: BoxFit.cover,
-                ),
-              ),
-            const SizedBox(height: 20),
-            const Text(
-              'Caption',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _captionController,
-              decoration: const InputDecoration(
-                hintText: 'Tambahkan caption disini (Maks. 500 karakter)',
-                border: OutlineInputBorder(),
-              ),
-              maxLength: 500,
-              maxLines: 5,
+          actions: [
+            BlocBuilder<PhotoBloc, PhotoState>(
+              builder: (context, state) {
+                return IconButton(
+                  icon: const Icon(Icons.check),
+                  onPressed: () async {
+                    if (widget.imageFile != null) {
+                      final description = _captionController.text.trim();
+                      final name = path.basename(widget.imageFile!.path);
+                      final file = widget.imageFile!;
+
+                      context.read<PhotoBloc>().add(AddPostPhotoEvent(
+                            description: description,
+                            name: name,
+                            file: file,
+                          ));
+
+                      if (state is PhotoSuccess) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text('Konten berhasil disimpan!')),
+                        );
+                        Navigator.pushReplacementNamed(context, '/home');
+                      } else if (state is PhotoFailure) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text(
+                                  'Gagal menyimpan konten: ${state.message}')),
+                        );
+                      }
+                    }
+                  },
+                );
+              },
             ),
           ],
         ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (widget.imageFile != null)
+                Center(
+                  child: Image.file(
+                    File(widget.imageFile!.path),
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              const SizedBox(height: 20),
+              const Text(
+                'Caption',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _captionController,
+                decoration: const InputDecoration(
+                  hintText: 'Tambahkan caption disini (Maks. 500 karakter)',
+                  border: OutlineInputBorder(),
+                ),
+                maxLength: 500,
+                maxLines: 5,
+              ),
+            ],
+          ),
+        ),
       ),
     );
-  }
-
-  Future<void> clearDummiesData() async {
-    try {
-      final dir = await getApplicationDocumentsDirectory();
-      final imagesDir = Directory(path.join(dir.path, 'assets/images/dummies'));
-      final jsonFile = File(path.join(dir.path, 'dummies.json'));
-
-      // Delete all files in the images directory
-      if (await imagesDir.exists()) {
-        final files = imagesDir.listSync();
-        for (var file in files) {
-          if (file is File) {
-            await file.delete();
-          }
-        }
-        print('All images deleted from ${imagesDir.path}');
-      } else {
-        print('Images directory does not exist');
-      }
-
-      // Overwrite the JSON file with an empty structure
-      if (await jsonFile.exists()) {
-        final emptyJson = jsonEncode({"post": []});
-        await jsonFile.writeAsString(emptyJson);
-        print('All data cleared from dummies.json');
-      } else {
-        print('dummies.json does not exist');
-      }
-    } catch (e) {
-      print('Error clearing dummies data: $e');
-    }
-  }
-
-  Future<void> _savePost(XFile image, String desc) async {
-    try {
-      final dir = await getApplicationDocumentsDirectory();
-      final saveDir = Directory(path.join(dir.path, 'assets/images/dummies'));
-      if (!await saveDir.exists()) {
-        await saveDir.create(recursive: true);
-      }
-
-      final fileName = path.basename(image.path);
-      final saveImage = await File(image.path).copy(path.join(saveDir.path, fileName));
-      print('Image saved to: ${saveImage.path}');
-
-      final postPhoto = PostPhoto(
-        id: uuid.v4(),
-        url: "${saveImage.path}",
-        name: fileName,
-        description: desc,
-        type: 'post',
-        likes: 0,
-        liked: false,
-        userId: '1',
-      );
-
-      final jsonFile = File(path.join(dir.path, 'dummies.json'));
-      if (await jsonFile.exists()) {
-        final jsonString = await jsonFile.readAsString();
-        final jsonData = jsonDecode(jsonString) as Map<String, dynamic>;
-        jsonData['post'].add(postPhoto.toJson());
-        print(jsonData);
-        await jsonFile.writeAsString(jsonEncode(jsonData));
-      } else {
-        final jsonData = {
-          "post": [postPhoto.toJson()]
-        };
-        await jsonFile.writeAsString(jsonEncode(jsonData));
-      }
-    } catch (e) {
-      print('Error saving post: $e');
-    }
   }
 
   void _showConfirmationDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return DisShowConfirmation(
-          onConfirm: () {
-            Navigator.pop(context);
-          },
+        return AlertDialog(
+          title: const Text('Konfirmasi'),
+          content:
+              const Text('Apakah Anda yakin ingin kembali tanpa menyimpan?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              child: const Text('Ya'),
+            ),
+          ],
         );
       },
     );

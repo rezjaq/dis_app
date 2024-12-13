@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SearchFaceBloc extends Bloc<SearchFaceEvent, SearchFaceState> {
   final FaceController _faceController;
@@ -24,33 +25,6 @@ class SearchFaceBloc extends Bloc<SearchFaceEvent, SearchFaceState> {
     on<CapturePhotoEvent>(_onCapturePhoto);
     on<SearchMatchedPhotosEvent>(_onSearchMatchedPhotos);
     on<UploadFaceEvent>(_onUploadFace);
-    on<CloseCameraEvent>(_onCloseCamera);
-    on<InitializeCameraEvent>(_onInitializeCamera);
-  }
-
-  Future<void> _onInitializeCamera(
-      InitializeCameraEvent event, Emitter<SearchFaceState> emit) async {
-    try {
-      emit(SearchFaceLoading());
-      final cameras = await availableCameras();
-      final frontCamera = cameras.firstWhere(
-        (camera) => camera.lensDirection == CameraLensDirection.front,
-      );
-
-      _controller = CameraController(
-        frontCamera,
-        ResolutionPreset.high,
-        enableAudio: false,
-      );
-
-      await _controller.initialize();
-      _isInitialized = true;
-      emit(SearchFaceCameraInitialized());
-    } catch (e) {
-      _isInitialized = false;
-      emit(SearchFaceError(
-          message: "Camera initialization failed: ${e.toString()}"));
-    }
   }
 
   Future<void> _onCapturePhoto(

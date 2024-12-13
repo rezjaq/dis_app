@@ -6,12 +6,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FaceBloc extends Bloc<FaceEvent, FaceState> {
   final FaceController faceController;
-  
+
   FaceBloc({required this.faceController}) : super(FaceInitial()) {
     on<FaceDetectionEvent>((event, emit) async {
       emit(FaceLoading());
       try {
-        final response = await faceController.faceDetection(FaceDetectionRequest(file: event.file));
+        final response = await faceController
+            .faceDetection(FaceDetectionRequest(file: event.file));
         emit(FaceSuccess(data: response));
       } catch (e) {
         emit(FaceFailure(message: e.toString()));

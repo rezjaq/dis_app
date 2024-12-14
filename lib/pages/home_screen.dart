@@ -231,10 +231,16 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             }
             if (state is PhotoSuccess) {
-              _samplePosts = (state.data! as List)
-                  .map((e) => PostPhoto.fromJson(e))
-                  .toList();
+              final rawData = state.data;
+              if (rawData is Map<String, dynamic>) {
+                final posts = rawData['posts'];
+                if (posts is List) {
+                  _samplePosts =
+                      posts.map((e) => PostPhoto.fromJson(e)).toList();
+                }
+              }
             }
+
             return PageView.builder(
               scrollDirection: Axis.vertical,
               itemCount: _samplePosts.length,

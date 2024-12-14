@@ -5,8 +5,11 @@ import 'package:dis_app/blocs/listFace/listFace_bloc.dart';
 import 'package:dis_app/blocs/photo/photo_bloc.dart';
 import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
 import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
+import 'package:dis_app/blocs/transaction/transaction_bloc.dart';
 import 'package:dis_app/blocs/user/user_bloc.dart';
+import 'package:dis_app/controllers/cart_controller.dart';
 import 'package:dis_app/controllers/face_controller.dart';
+import 'package:dis_app/controllers/transaction_controller.dart';
 import 'package:dis_app/controllers/user_controller.dart';
 import 'package:dis_app/models/user_model.dart';
 import 'package:dis_app/pages/auth/forgetPass_screen.dart';
@@ -50,10 +53,11 @@ Future<void> main() async {
       providers: [
         BlocProvider(create: (_) => UserBloc(userController: UserController())),
         BlocProvider(create: (_) => PhotoBloc(photoController: PhotoController())),
-        BlocProvider(create: (_) => CartBloc()),
+        BlocProvider(create: (_) => CartBloc(cartController: CartController())),
         BlocProvider(create: (context) => ListFaceBloc()),
         BlocProvider(create: (context) => SearchFaceBloc(faceController)..add(InitializeCameraEvent())),
         BlocProvider(create: (_) => DisplayPhotoBloc()),
+        BlocProvider(create: (context) => TransactionBloc(transactionController: TransactionController())),
       ],
       child: MyApp(),
     ),

@@ -1,65 +1,87 @@
 class Cart {
-  final String id;
-  final List<String> photos;
-  final String userId;
+  final String photoId;
+  final String sellerId;
+  final String url;
+  final String namePhoto;
+  final String nameSeller;
+  final double price;
 
-  Cart({required this.id, required this.photos, required this.userId});
+  Cart({
+    required this.photoId,
+    required this.sellerId,
+    required this.url,
+    required this.namePhoto,
+    required this.nameSeller,
+    required this.price,
+  });
 
   factory Cart.fromJson(Map<String, dynamic> json) {
     return Cart(
-      id: json['_id'],
-      photos: List<String>.from(json['photos']),
-      userId: json['user_id'],
+      photoId: json['photo_id'] ?? '',
+      sellerId: json['seller_id'] ?? '',
+      url: json['url'] ?? '',
+      namePhoto: json['name_photo'] ?? '',
+      nameSeller: json['name_seller'] ?? '',
+      price: json['price'] ?? 0.0,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'photos': photos,
-      'user_id': userId,
-    };
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (runtimeType != other.runtimeType) return false;
+    final Cart otherCart = other as Cart;
+    return photoId == otherCart.photoId;
   }
+
+  @override
+  int get hashCode => photoId.hashCode;
 }
 
 class AddItemRequest {
   final String photoId;
-  final String userId;
 
-  AddItemRequest({required this.photoId, required this.userId});
+  AddItemRequest({required this.photoId});
 
   Map<String, dynamic> toJson() {
     return {
       'photo_id': photoId,
-      'user_id': userId,
     };
   }
 }
 
 class RemoveItemRequest {
   final String photoId;
-  final String userId;
 
-  RemoveItemRequest({required this.photoId, required this.userId});
+  RemoveItemRequest({required this.photoId});
 
   Map<String, dynamic> toJson() {
     return {
       'photo_id': photoId,
-      'user_id': userId,
+    };
+  }
+}
+
+class SelectAllRequest {
+  final List<String> photoIds;
+
+  SelectAllRequest({required this.photoIds});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'photo_ids': photoIds,
     };
   }
 }
 
 class ListItemsRequest {
-  final String userId;
   int? page;
   int? size;
 
-  ListItemsRequest({required this.userId, this.page, this.size});
+  ListItemsRequest({this.page, this.size});
 
   Map<String, dynamic> toJson() {
     return {
-      'user_id': userId,
       'page': page,
       'size': size,
     };

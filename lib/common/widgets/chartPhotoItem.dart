@@ -30,7 +30,7 @@ class DisCartPhotoItem extends StatelessWidget {
     // Format price for IDR
     final formattedPrice = NumberFormat.currency(
       locale: 'id_ID',
-      symbol: 'Rp',
+      symbol: 'IDR ',
       decimalDigits: 0,
     ).format(price);
 
@@ -64,7 +64,7 @@ class DisCartPhotoItem extends StatelessWidget {
           // Image Path
           ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
-            child: Image.asset(
+            child: Image.network(
               imageAssetPath,
               width: 85,
               height: 85,

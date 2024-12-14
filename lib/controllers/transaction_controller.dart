@@ -6,7 +6,7 @@ class TransactionController {
   // Create Transaction
   Future<Map<String, dynamic>> createTransaction(CreateTransactionRequest request) async {
     try {
-      final response = await DisHttpClient.post('transaction', request.toJson());
+      final response = await DisHttpClient.post('transaction/', request.toJson());
       if (response['data'] == null) {
         throw response['errors'];
       } else {

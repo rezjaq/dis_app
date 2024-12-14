@@ -1,31 +1,39 @@
 import 'package:dis_app/models/cart_model.dart';
-import 'package:dis_app/models/chart_model.dart';
 import 'package:equatable/equatable.dart';
 
-class CartState extends Equatable {
-  final List<CartItem> cartItems;
-  final List<bool> selectedItems;
-
-  const CartState({required this.cartItems, required this.selectedItems});
-
-  CartState copyWith({
-    List<CartItem>? cartItems,
-    List<bool>? selectedItems,
-  }) {
-    return CartState(
-      cartItems: cartItems ?? this.cartItems,
-      selectedItems: selectedItems ?? this.selectedItems,
-    );
-  }
-
-  int get totalPrice {
-    int total = 0;
-    for (int i = 0; i < cartItems.length; i++) {
-      if (selectedItems[i]) total += cartItems[i].price;
-    }
-    return total;
-  }
+abstract class CartState extends Equatable {
+  const CartState();
 
   @override
-  List<Object> get props => [cartItems, selectedItems];
+  List<Object> get props => [];
+}
+
+class CartInitial extends CartState {}
+
+class CartLoading extends CartState {}
+
+class CartSuccess extends CartState {
+  final String? message;
+  final Map<String, dynamic>? data;
+  final Set<Cart> selectedItems;
+  final List<bool> isSelected;
+
+  const CartSuccess({this.message, this.data, this.selectedItems = const <Cart>{}, this.isSelected = const <bool>[]});
+
+  @override
+  List<Object> get props => [
+    message ?? '',
+    data ?? {},
+    selectedItems,
+    isSelected,
+  ];
+}
+
+class CartFailure extends CartState {
+  final String message;
+
+  const CartFailure({required this.message});
+
+  @override
+  List<Object> get props => [message];
 }

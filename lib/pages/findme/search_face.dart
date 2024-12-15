@@ -30,7 +30,7 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
   Future<void> _initializeCamera() async {
     final cameras = await availableCameras();
     final frontCamera = cameras.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.front,
+          (camera) => camera.lensDirection == CameraLensDirection.front,
     );
 
     _controller = CameraController(
@@ -96,14 +96,21 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
       body: BlocListener<FaceBloc, FaceState>(
         listener: (context, faceState) {
           if (faceState is FaceSuccess) {
+            print(faceState);
             final searchFaceBloc = BlocProvider.of<SearchFaceBloc>(context);
-            searchFaceBloc.add(
-                SearchMatchedPhotosEvent(userId: faceState.data?['userId']));
+            final userId = faceState.data?['user_id'] ?? '';
+            if (userId.isNotEmpty) {
+              searchFaceBloc.add(SearchMatchedPhotosEvent(userId: userId));
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("User ID tidak ditemukan")),
+              );
+            }
           } else if (faceState is FaceFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                   content:
-                      Text("Gagal mendeteksi wajah: ${faceState.message}")),
+                  Text(faceState.message)),
             );
           }
         },
@@ -129,37 +136,37 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
           },
           child: _isCameraInitialized
               ? Stack(
-                  children: [
-                    Positioned.fill(
-                      child: Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.rotationY(
-                            _controller.description.lensDirection ==
-                                    CameraLensDirection.front
-                                ? pi
-                                : 0),
-                        child: CameraPreview(_controller),
-                      ),
+            children: [
+              Positioned.fill(
+                child: Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.rotationY(
+                      _controller.description.lensDirection ==
+                          CameraLensDirection.front
+                          ? pi
+                          : 0),
+                  child: CameraPreview(_controller),
+                ),
+              ),
+              Positioned(
+                bottom: 40,
+                left: (MediaQuery.of(context).size.width - 150) / 2,
+                child: ElevatedButton(
+                  onPressed: () => _captureAndProcessFace(context),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: DisColors.white,
+                    backgroundColor: DisColors.primary,
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                    Positioned(
-                      bottom: 40,
-                      left: (MediaQuery.of(context).size.width - 150) / 2,
-                      child: ElevatedButton(
-                        onPressed: () => _captureAndProcessFace(context),
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: DisColors.white,
-                          backgroundColor: DisColors.primary,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 40, vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                        ),
-                        child: Text('Ambil Foto'),
-                      ),
-                    ),
-                  ],
-                )
+                  ),
+                  child: Text('Ambil Foto'),
+                ),
+              ),
+            ],
+          )
               : Center(child: CircularProgressIndicator()),
         ),
       ),

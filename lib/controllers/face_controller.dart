@@ -64,9 +64,14 @@ class FaceController {
           .add(await http.MultipartFile.fromPath('file', request.file.path));
       final response = await multipartRequest.send();
       final responseData = await response.stream.bytesToString();
-      return json.decode(responseData);
+      final jsonResponse = json.decode(responseData);
+      if (jsonResponse['data'] == null) {
+        throw jsonResponse['errors'];
+      } else {
+        return jsonResponse;
+      }
     } catch (e) {
-      throw Exception('Error detecting face: $e');
+      throw e.toString();
     }
   }
 }

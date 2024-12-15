@@ -32,3 +32,16 @@ class TransactionFailure extends TransactionState {
   @override
   List<Object> get props => [message];
 }
+
+class TransactionGetSuccess extends TransactionState {
+  final String? message;
+  final Map<String, dynamic>? data;
+
+  const TransactionGetSuccess({this.message, this.data});
+
+  @override
+  List<Object> get props => [
+    message ?? '',
+    data ?? {},
+  ];
+}

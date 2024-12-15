@@ -21,6 +21,18 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       }
     });
 
+    on<TransactionGetEvent>((event, emit) async {
+      emit(TransactionLoading());
+      try {
+        final response = await transactionController.getTransaction(GetTransactionRequest(
+            id: event.id
+        ));
+        emit(TransactionGetSuccess(data: response));
+      } catch (e) {
+        emit(TransactionFailure(message: e.toString()));
+      }
+    });
+
     on<TransactionListByBuyerEvent>((event, emit) async {
       emit(TransactionLoading());
       try {

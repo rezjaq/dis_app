@@ -55,13 +55,15 @@ Future<void> main() async {
         BlocProvider(create: (_) => UserBloc(userController: UserController())),
         BlocProvider(
             create: (_) => PhotoBloc(photoController: PhotoController())),
-        BlocProvider(create: (_) => CartBloc()),
+        BlocProvider(create: (_) => CartBloc(cartController: CartController())),
         BlocProvider(create: (context) => ListFaceBloc()),
         BlocProvider(
             create: (context) =>
                 SearchFaceBloc(faceController)..add(InitializeCameraEvent())),
         BlocProvider(create: (_) => DisplayPhotoBloc()),
-        BlocProvider(create: (context) => TransactionBloc(transactionController: TransactionController())),
+        BlocProvider(
+            create: (context) => TransactionBloc(
+                transactionController: TransactionController())),
       ],
       child: MyApp(),
     ),

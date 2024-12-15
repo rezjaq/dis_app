@@ -97,16 +97,22 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
     on<LikePhotoEvent>((event, emit) async {
       emit(PhotoLoading());
       try {
+        // Melakukan request like pada backend
         await photoController.likePost(LikePhotoPostRequest(
-            id: event.id,
-            liked: event
-                .liked // true or false, You can change this value on icon button love
-            ));
+          id: event.id,
+          liked: event.liked,
+        ));
+
+        // Mengambil data foto terbaru setelah like
         final updatedPhoto =
             await photoController.get(GetPhotoRequest(id: event.id));
-        emit(PhotoSuccess(data: updatedPhoto));
+
+        // Emit state dengan data terbaru
+        emit(PhotoSuccess(
+            data: updatedPhoto)); // State berhasil dengan data terbaru
       } catch (e) {
-        emit(PhotoFailure(message: e.toString()));
+        emit(PhotoFailure(
+            message: e.toString())); // Emit failure jika terjadi error
       }
     });
 

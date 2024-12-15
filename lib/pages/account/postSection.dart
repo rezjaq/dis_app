@@ -1,6 +1,5 @@
 import 'package:dis_app/models/photo_model.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
 
 class PostSection extends StatelessWidget {
   final List<PostPhoto> postPhotos;
@@ -26,7 +25,7 @@ class PostSection extends StatelessWidget {
         itemCount: postPhotos.length,
         itemBuilder: (context, index) {
           return GestureDetector(
-            onTap: () => _showImageDialog(context, postPhotos[index].url),
+            onTap: () => _showImageDialog(context, postPhotos[index]),
             child: Container(
               color: Colors.grey,
               child: ClipRRect(
@@ -34,6 +33,9 @@ class PostSection extends StatelessWidget {
                 child: Image.network(
                   postPhotos[index].url,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(child: Icon(Icons.error, size: 50));
+                  },
                 ),
               ),
             ),
@@ -43,17 +45,36 @@ class PostSection extends StatelessWidget {
     );
   }
 
-  void _showImageDialog(BuildContext context, String imagePath) {
+  void _showImageDialog(BuildContext context, PostPhoto photo) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          child: Container(
-            width: double.infinity,
-            child: Image.file(
-              File(imagePath),
-              fit: BoxFit.cover,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Expanded(
+                child: Image.network(
+                  photo.url,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(child: Icon(Icons.error, size: 50));
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  photo.description ?? 'No description available',
+                  style: const TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Close"),
+              ),
+            ],
           ),
         );
       },

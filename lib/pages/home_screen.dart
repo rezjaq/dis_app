@@ -231,14 +231,25 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             }
             if (state is PhotoSuccess) {
+              print('PhotoSuccess state triggered');
               final rawData = state.data;
               if (rawData is Map<String, dynamic>) {
-                final posts = rawData['posts'];
-                if (posts is List) {
+                print('Data is a Map<String, dynamic>');
+                if (rawData.containsKey('data') && rawData['data'] is List) {
+                  final posts = rawData['data'] as List;
+                  print('Posts is a List, count: ${posts.length}');
                   _samplePosts =
                       posts.map((e) => PostPhoto.fromJson(e)).toList();
+                  print('Posts processed, count: ${_samplePosts.length}');
+                } else {
+                  print(
+                      'The "data" key is missing or not a List. rawData: $rawData');
                 }
+              } else {
+                print('Data is not a Map<String, dynamic>. Data: $rawData');
               }
+            } else {
+              print('State is not PhotoSuccess, current state: $state');
             }
 
             return PageView.builder(
@@ -349,13 +360,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               context.read<PhotoBloc>().add(LikePhotoEvent(
                                   id: photo.id, liked: !photo.liked));
                             }),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 12),
                             _menuButton(
                                 Icons.chat_bubble_outline_rounded,
                                 photo.comments.length.toString(),
                                 DisColors.white,
                                 () {}),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 12),
                             _menuButton(
                                 Icons.more_horiz_rounded, '', DisColors.white,
                                 () {
@@ -400,9 +411,9 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: onTap,
           icon: Icon(icon, color: color, size: 32),
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 8),
         if (text.isNotEmpty)
-          Text(text, style: const TextStyle(color: Colors.white, fontSize: 12)),
+          Text(text, style: const TextStyle(color: Colors.white, fontSize: 14)),
       ],
     );
   }

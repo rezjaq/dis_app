@@ -100,7 +100,28 @@ class SellSection extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
                 child: Image.network(
-                  photos[index].url,
+                  photos[index]
+                      .url, // Use Image.network to load the image from URL
+                  loadingBuilder: (BuildContext context, Widget child,
+                      ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child;
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                  (loadingProgress.expectedTotalBytes ?? 1)
+                              : null,
+                        ),
+                      );
+                    }
+                  },
+                  errorBuilder: (BuildContext context, Object error,
+                      StackTrace? stackTrace) {
+                    return const Icon(Icons
+                        .error); // Display an error icon if the image fails to load
+                  },
                   fit: BoxFit.cover,
                 ),
               ),
@@ -118,8 +139,8 @@ class SellSection extends StatelessWidget {
         return Dialog(
           child: Container(
             width: double.infinity,
-            child: Image.file(
-              File(imagePath),
+            child: Image.network(
+              imagePath, // Use Image.network to display the image in the dialog
               fit: BoxFit.cover,
             ),
           ),

@@ -61,7 +61,9 @@ Future<void> main() async {
             create: (context) =>
                 SearchFaceBloc(faceController)..add(InitializeCameraEvent())),
         BlocProvider(create: (_) => DisplayPhotoBloc()),
-        BlocProvider(create: (context) => TransactionBloc(transactionController: TransactionController())),
+        BlocProvider(
+            create: (context) => TransactionBloc(
+                transactionController: TransactionController())),
       ],
       child: MyApp(),
     ),

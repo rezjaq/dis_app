@@ -1,57 +1,56 @@
-import 'package:dis_app/models/chart_model.dart';
+import 'package:dis_app/models/cart_model.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class CartEvent extends Equatable {
   const CartEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
-class LoadCartItems extends CartEvent {}
+class AddCartItemEvent extends CartEvent {
+  final String photoId;
 
-class SelectCartItem extends CartEvent {
-  final int index;
-  final bool isSelected;
-
-  const SelectCartItem(this.index, this.isSelected);
+  const AddCartItemEvent(this.photoId);
 
   @override
-  List<Object> get props => [index, isSelected];
-}
-
-class SelectAllCartItems extends CartEvent {
-  final bool selectAll;
-
-  const SelectAllCartItems(this.selectAll);
-
-  @override
-  List<Object> get props => [selectAll];
+  List<Object> get props => [photoId];
 }
 
 class RemoveCartItem extends CartEvent {
-  final int index;
+  final String photoId;
 
-  const RemoveCartItem(this.index);
-
-  @override
-  List<Object> get props => [index];
-}
-
-class AddCartItem extends CartEvent {
-  final CartItem cartItem;
-
-  const AddCartItem(this.cartItem);
+  const RemoveCartItem({required this.photoId});
 
   @override
-  List<Object> get props => [cartItem];
+  List<Object> get props => [photoId];
 }
 
 class ListCartItem extends CartEvent {
-  final List<CartItem> cartItems;
+  final int? page;
+  final int? size;
 
-  const ListCartItem(this.cartItems);
+  const ListCartItem({this.page, this.size});
 
   @override
-  List<Object> get props => [cartItems];
+  List<Object?> get props => [page, size];
+}
+
+class SelectCartItem extends CartEvent {
+  final Cart cart;
+  final bool isSelected;
+
+  const SelectCartItem({required this.cart, required this.isSelected});
+
+  @override
+  List<Object> get props => [cart, isSelected];
+}
+
+class SelectAllCartItem extends CartEvent {
+  final bool isSelected;
+
+  const SelectAllCartItem({required this.isSelected});
+
+  @override
+  List<Object> get props => [isSelected];
 }

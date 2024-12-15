@@ -1,11 +1,29 @@
+import 'package:dis_app/models/transaction_model.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class PaymentPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final transaction = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    final NumberFormat currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'IDR ', decimalDigits: 0);
+    final date = DateTime.parse(transaction['date']);
+
+    Stream<int> countdownStream(DateTime endTime) async* {
+      final int endTimeInSeconds = endTime.difference(DateTime.now()).inSeconds;
+      if (endTimeInSeconds <= 0) {
+        yield 0;
+        return;
+      }
+      for (int i = endTimeInSeconds; i >= 0; i--) {
+        await Future.delayed(Duration(seconds: 1));
+        yield i;
+      }
+    }
+
     return Scaffold(
       backgroundColor: DisColors.white,
       appBar: AppBar(
@@ -13,7 +31,7 @@ class PaymentPage extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            Navigator.pop(context);
+            DisHelperFunctions.navigateToRoute(context, '/home', initialIndex: 3);
           },
         ),
       ),
@@ -30,23 +48,29 @@ class PaymentPage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _itemDetailPayment("Total Payment", Text('IDR 100.000', style: TextStyle(fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.w700, color: DisColors.textPrimary))),
-                  _itemDetailPayment("Complete Payment Before", Text('7:12 PM 30 Oct 2024', style: TextStyle(fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.bold, color: DisColors.black))),
+                  _itemDetailPayment("Total Payment", Text(currencyFormat.format(transaction["total"]), style: TextStyle(fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.w700, color: DisColors.textPrimary))),
+                  _itemDetailPayment("Complete Payment Before", Text(DisHelperFunctions.getFormattedDate(date), style: TextStyle(fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.bold, color: DisColors.black))),
                   _itemDetailPayment(
-                    "Reference Number Expires In",
-                    Row(
-                      children: [
-                        _itemCounter(10),
-                        SizedBox(width: DisSizes.xs),
-                        Text(':', style: TextStyle(fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.bold, color: DisColors.black)),
-                        SizedBox(width: DisSizes.xs),
-                        _itemCounter(2),
-                        SizedBox(width: DisSizes.xs),
-                        Text(':', style: TextStyle(fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.bold, color: DisColors.black)),
-                        SizedBox(width: DisSizes.xs),
-                        _itemCounter(3),
-                      ],
-                    )
+                      "Reference Number Expires In",
+                      Row(
+                        children: [
+                          _itemCounter(10),
+                          SizedBox(width: DisSizes.xs),
+                          Text(':', style: TextStyle(
+                              fontSize: DisSizes.fontSizeSm,
+                              fontWeight: FontWeight.bold,
+                              color: DisColors.black)),
+                          SizedBox(width: DisSizes.xs),
+                          _itemCounter(10),
+                          SizedBox(width: DisSizes.xs),
+                          Text(':', style: TextStyle(
+                              fontSize: DisSizes.fontSizeSm,
+                              fontWeight: FontWeight.bold,
+                              color: DisColors.black)),
+                          SizedBox(width: DisSizes.xs),
+                          _itemCounter(10),
+                        ],
+                      )
                   ),
                 ],
               ),
@@ -65,7 +89,7 @@ class PaymentPage extends StatelessWidget {
                 ],
               ),
             ),
-            Image.asset('assets/images/qr-code 1.jpg', width: 280, height: 280),
+            Image.network(transaction["payment"]["url"], width: 280, height: 280),
             SizedBox(height: DisSizes.lg),
             GestureDetector(
               onTap: () {

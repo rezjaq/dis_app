@@ -1,71 +1,78 @@
-import 'package:dis_app/models/chart_model.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:dis_app/controllers/cart_controller.dart';
-import 'package:dis_app/models/cart_model.dart';
 import 'package:dis_app/blocs/chart/chart_event.dart';
 import 'package:dis_app/blocs/chart/chart_state.dart';
+import 'package:dis_app/controllers/cart_controller.dart';
+import 'package:dis_app/models/cart_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
-  CartBloc() : super(CartState(cartItems: [], selectedItems: [])) {
-    on<LoadCartItems>(_onLoadCartItems);
-    on<SelectCartItem>(_onSelectCartItem);
-    on<SelectAllCartItems>(_onSelectAllCartItems);
-    on<RemoveCartItem>(_onRemoveCartItem);
-    on<AddCartItem>(_onAddCartItem);
-    on<ListCartItem>(_onListCartItem);
-  }
+  final CartController cartController;
 
-  void _onLoadCartItems(LoadCartItems event, Emitter<CartState> emit) async {
-    try {
-      final cartItems = await CartController().getCartItemsFromFindMe();
-      final selectedItems = List<bool>.filled(cartItems.length, false);
-      emit(CartState(cartItems: cartItems, selectedItems: selectedItems));
-    } catch (e) {
-      print('Error loading cart items: $e');
-    }
-  }
+  CartBloc({required this.cartController}) : super(CartInitial()) {
+    on<AddCartItemEvent>((event, emit) async {
+      emit(CartLoading());
+      try {
+        final response = await cartController.addToCart(AddItemRequest(photoId: event.photoId));
+        emit(CartSuccess(data: response));
+      } catch (e) {
+        emit(CartFailure(message: e.toString()));
+      }
+    });
 
-  void _onAddCartItem(AddCartItem event, Emitter<CartState> emit) {
-    final updatedCartItems = List<CartItem>.from(state.cartItems)
-      ..add(event.cartItem);
-    final updatedSelectedItems = List<bool>.from(state.selectedItems)
-      ..add(false);
+    on<RemoveCartItem>((event, emit) async {
+      emit(CartLoading());
+      try {
+        final response = await cartController.removeFromCart(RemoveItemRequest(photoId: event.photoId));
+        if (response == true) {
+          final updatedResponse = await cartController.listCartItems(ListItemsRequest(size: 10, page: 1));
+          emit(CartSuccess(data: updatedResponse));
+        } else {
+          emit(CartFailure(message: "Failed to remove item"));
+        }
+      } catch (e) {
+        emit(CartFailure(message: e.toString()));
+      }
+    });
 
-    emit(state.copyWith(
-      cartItems: updatedCartItems,
-      selectedItems: updatedSelectedItems,
-    ));
-  }
+    on<ListCartItem>((event, emit) async {
+      emit(CartLoading());
+      try {
+        final response = await cartController.listCartItems(ListItemsRequest(
+          size: event.size,
+          page: event.page,
+        ));
+        emit(CartSuccess(data: response));
+      } catch (e) {
+        emit(CartFailure(message: e.toString()));
+      }
+    });
 
-  void _onSelectCartItem(SelectCartItem event, Emitter<CartState> emit) {
-    final updatedSelectedItems = List<bool>.from(state.selectedItems);
-    updatedSelectedItems[event.index] = event.isSelected;
+    on<SelectAllCartItem>((event, emit) async {
+      if (state is CartSuccess) {
+        final currentState = state as CartSuccess;
+        final selectedItems = event.isSelected
+            ? (currentState.data!["data"] as List).map((e) => Cart.fromJson(e)).toSet()
+            : <Cart>{};
+        emit(CartSuccess(
+          data: currentState.data,
+          selectedItems: selectedItems,
+        ));
+      }
+    });
 
-    emit(state.copyWith(selectedItems: updatedSelectedItems));
-  }
-
-  void _onSelectAllCartItems(
-      SelectAllCartItems event, Emitter<CartState> emit) {
-    final updatedSelectedItems =
-        List<bool>.filled(state.cartItems.length, event.selectAll);
-
-    emit(state.copyWith(selectedItems: updatedSelectedItems));
-  }
-
-  void _onRemoveCartItem(RemoveCartItem event, Emitter<CartState> emit) {
-    final updatedCartItems = List<CartItem>.from(state.cartItems)
-      ..removeAt(event.index);
-    final updatedSelectedItems = List<bool>.from(state.selectedItems)
-      ..removeAt(event.index);
-
-    emit(state.copyWith(
-        cartItems: updatedCartItems, selectedItems: updatedSelectedItems));
-  }
-
-  void _onListCartItem(ListCartItem event, Emitter<CartState> emit) {
-    final listItem = List<CartItem>.from(state.cartItems)
-      ..addAll(event.cartItems);
-    final selectedItems = List<bool>.filled(listItem.length, false);
-    emit(CartState(cartItems: listItem, selectedItems: selectedItems));
+    on<SelectCartItem>((event, emit) async {
+      if (state is CartSuccess) {
+        final currentState = state as CartSuccess;
+        final selectedItems = Set<Cart>.from(currentState.selectedItems);
+        if (event.isSelected) {
+          selectedItems.add(event.cart);
+        } else {
+          selectedItems.remove(event.cart);
+        }
+        emit(CartSuccess(
+          data: currentState.data,
+          selectedItems: selectedItems,
+        ));
+      }
+    });
   }
 }

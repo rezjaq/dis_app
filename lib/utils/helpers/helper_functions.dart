@@ -26,15 +26,23 @@ class DisHelperFunctions {
     );
   }
 
-  static void navigateToScreen(BuildContext context, Widget screen) {
+  static void navigateToScreen(BuildContext context, Widget screen, {Object? arguments}) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => screen),
+      MaterialPageRoute(
+          builder: (_) => screen,
+          settings: RouteSettings(
+            arguments: arguments,
+          )
+      ),
     );
   }
 
-  static void navigateToRoute(BuildContext context, String routeName) {
-    Navigator.pushNamed(context, routeName);
+  static void navigateToRoute(BuildContext context, String routeName, {Object? arguments, int initialIndex = 0}) {
+    Navigator.pushNamed(context, routeName, arguments: {
+      'initialIndex': initialIndex,
+      ...?arguments as Map<String, dynamic>?,
+    });
   }
 
   static String truncateText(String text, int maxLength) {

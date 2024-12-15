@@ -218,8 +218,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                   if (photos.isNotEmpty) {
                                     return _buildGridContent(photos);
                                   }
-                                  return const Center(
-                                      child: Text('No match photo found'));
+                                  return const Center(child: Text('No match photo found'));
                                 }
                                 return const Center(
                                     child: Text('Cannot load data'));
@@ -328,7 +327,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
-            _showFullImage(context, contents[index].url);
+            _showFullImage(context, contents[index]);
           },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
@@ -342,7 +341,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
     );
   }
 
-  void _showFullImage(BuildContext context, String imageUrl) {
+  void _showFullImage(BuildContext context, SellPhoto photo) {
     showDialog(
       context: context,
       builder: (context) {
@@ -351,7 +350,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
             children: [
               Center(
                 child: Image.network(
-                  imageUrl,
+                  photo.url,
                   fit: BoxFit.cover,
                   width: double.infinity,
                   height: double.infinity,
@@ -370,7 +369,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                         onPressed: () {
                           context
                               .read<PhotoBloc>()
-                              .add(AddToFavoritesEvent(imageUrl: imageUrl));
+                              .add(AddToFavoritesEvent(imageUrl: photo.url));
                           Navigator.pop(context);
                         },
                         child: const Text("Iya"),
@@ -386,7 +385,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                         icon: Icon(Icons.shopping_cart, color: DisColors.white),
                         onPressed: () {
                           setState(() {
-                            ShoppingCartScreen.selectedImage = imageUrl;
+                            ShoppingCartScreen();
                           });
                           Navigator.pop(context);
                         },

@@ -60,7 +60,7 @@ class Transaction {
       details: (json['details'] as List)
           .map((e) => Detail(
                 sellerId: e['seller_id'],
-                photoIds: (e['photo_ids'] as List).map((e) => e.toString()).toList(),
+                photoIds: (e['photo_id'] as List).map((e) => e.toString()).toList(),
                 total: e['total'],
               ))
           .toList(),
@@ -245,4 +245,17 @@ class DeleteTransactionRequest {
   final String id;
 
   DeleteTransactionRequest({required this.id});
+}
+
+class Countdown {
+  final DateTime targetDate;
+  Stream<Duration> _countdownStream;
+  Stream<Duration> get countdownStream => _countdownStream;
+  Countdown({required this.targetDate}) : _countdownStream = _createStream(targetDate);
+  static Stream<Duration> _createStream(DateTime targetDate) async* {
+    while (true) {
+      final Duration remaining = targetDate.difference(DateTime.now());
+      if (remaining.isNegative) break; yield remaining; await Future.delayed(Duration(seconds: 1));
+    }
+  }
 }

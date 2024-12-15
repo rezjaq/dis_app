@@ -89,6 +89,7 @@ class _FindMeSplashScreenState extends State<FindMeSplashScreen>
               DisHelperFunctions.navigateToRoute(context, '/welcome');
             }
           } catch (e) {
+            print("To Home");
             DisHelperFunctions.navigateToRoute(context, '/welcome');
           }
         }); // If you using api

@@ -22,3 +22,17 @@ class CartItem {
     );
   }
 }
+
+class AddItemCartRequest {
+  final String photoId;
+
+  AddItemCartRequest({
+    required this.photoId,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'photo_id': photoId,
+    };
+  }
+}

@@ -15,6 +15,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
             details: event.details, total: event.total
         ));
         emit(TransactionSuccess(data: response));
+        print("End of TransactionCreateEvent");
       } catch (e) {
         emit(TransactionFailure(message: e.toString()));
       }

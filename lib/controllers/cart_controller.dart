@@ -31,6 +31,7 @@ class CartController {
     try {
       final queryParams = request.toQueryParams();
       final response = await DisHttpClient.get('cart?$queryParams');
+      print(response);
       if (response['data'] == null) {
         throw Exception(response['errors']);
       }

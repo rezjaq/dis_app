@@ -46,3 +46,14 @@ class TransactionListBySellerEvent extends TransactionEvent {
   @override
   List<Object?> get props => [page, size];
 }
+
+class TransactionGetEvent extends TransactionEvent {
+  final String id;
+
+  const TransactionGetEvent({
+    required this.id,
+  });
+
+  @override
+  List<Object> get props => [id];
+}

@@ -80,7 +80,7 @@ class _FindMeSplashScreenState extends State<FindMeSplashScreen>
           _startWaveAnimation = true; // Start wave animation
         });
 
-        Timer(Duration(seconds: 3), () async {
+        Timer(Duration(seconds: 1), () async {
           try {
             final response = await UserController().get();
             if (response['_id'] != null) {
@@ -89,13 +89,12 @@ class _FindMeSplashScreenState extends State<FindMeSplashScreen>
               DisHelperFunctions.navigateToRoute(context, '/welcome');
             }
           } catch (e) {
-            print("To Home");
             DisHelperFunctions.navigateToRoute(context, '/welcome');
           }
         }); // If you using api
-        /*Timer(Duration(seconds: 3), () {
-          DisHelperFunctions.navigateToRoute(context, '/welcome');
-        });*/ // If you not using api
+        // Timer(Duration(seconds: 3), () {
+        //   DisHelperFunctions.navigateToRoute(context, '/welcome');
+        // }); // If you not using api
       });
     });
   }

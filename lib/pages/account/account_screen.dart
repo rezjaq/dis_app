@@ -135,10 +135,10 @@ class _AccountScreenState extends State<AccountScreen> {
                     final postImages = (state.post['data'] as List)
                         .where((element) => element['type'] == "post")
                         .toList();
+
                     final sellImages = (state.sell['data'] as List)
                         .where((element) => element['type'] == "sell")
                         .toList();
-
 
                     if (isSellSelected) {
                       return sellImages.isEmpty
@@ -163,7 +163,6 @@ class _AccountScreenState extends State<AccountScreen> {
                                   .toList(),
                             );
                     }
-
                   }
                   return const Center(child: Text("Photos not available"));
                 },

@@ -33,12 +33,18 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
   }
 
   void _navigateToSearchFace() {
-    context.read<SearchFaceBloc>().add(InitializeCameraEvent());
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => BlocProvider(
-          create: (context) => FaceBloc(faceController: FaceController()),
+        builder: (context) => MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => FaceBloc(faceController: FaceController()),
+            ),
+            BlocProvider(
+              create: (context) => SearchFaceBloc(FaceController()),
+            ),
+          ],
           child: SearchFaceScreen(),
         ),
       ),
@@ -207,7 +213,7 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             image: DecorationImage(
-              image: NetworkImage(faces[index].url), // Memuat gambar dari URL
+              image: NetworkImage(faces[index].url),
               fit: BoxFit.cover,
             ),
           ),

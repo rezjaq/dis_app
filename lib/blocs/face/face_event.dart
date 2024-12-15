@@ -11,9 +11,7 @@ abstract class FaceEvent extends Equatable {
 class FaceDetectionEvent extends FaceEvent {
   final XFile file;
 
-  const FaceDetectionEvent({
-    required this.file,
-  });
+  const FaceDetectionEvent({required this.file});
 
   @override
   List<Object> get props => [file];

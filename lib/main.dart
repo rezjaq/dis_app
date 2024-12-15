@@ -12,6 +12,7 @@ import 'package:dis_app/controllers/face_controller.dart';
 import 'package:dis_app/controllers/transaction_controller.dart';
 import 'package:dis_app/controllers/user_controller.dart';
 import 'package:dis_app/models/user_model.dart';
+import 'package:dis_app/pages/account/account_screen.dart';
 import 'package:dis_app/pages/auth/forgetPass_screen.dart';
 import 'package:dis_app/pages/auth/otp_screen.dart';
 import 'package:dis_app/pages/auth/register_screen.dart';
@@ -52,10 +53,13 @@ Future<void> main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => UserBloc(userController: UserController())),
-        BlocProvider(create: (_) => PhotoBloc(photoController: PhotoController())),
-        BlocProvider(create: (_) => CartBloc(cartController: CartController())),
+        BlocProvider(
+            create: (_) => PhotoBloc(photoController: PhotoController())),
+        BlocProvider(create: (_) => CartBloc()),
         BlocProvider(create: (context) => ListFaceBloc()),
-        BlocProvider(create: (context) => SearchFaceBloc(faceController)..add(InitializeCameraEvent())),
+        BlocProvider(
+            create: (context) =>
+                SearchFaceBloc(faceController)..add(InitializeCameraEvent())),
         BlocProvider(create: (_) => DisplayPhotoBloc()),
         BlocProvider(create: (context) => TransactionBloc(transactionController: TransactionController())),
       ],

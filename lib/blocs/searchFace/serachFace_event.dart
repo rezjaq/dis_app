@@ -1,3 +1,4 @@
+import 'package:camera/src/camera_controller.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -11,10 +12,13 @@ abstract class SearchFaceEvent extends Equatable {
 class CapturePhotoEvent extends SearchFaceEvent {
   final BuildContext context;
 
-  const CapturePhotoEvent({required this.context});
+  const CapturePhotoEvent(
+      {required this.context, required CameraController controller});
 
   @override
   List<Object> get props => [context];
+
+  get controller => null;
 }
 
 class UploadFaceEvent extends SearchFaceEvent {

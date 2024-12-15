@@ -19,9 +19,9 @@ class FaceSuccess extends FaceState {
 
   @override
   List<Object> get props => [
-    message ?? '',
-    data ?? {},
-  ];
+        message ?? '',
+        data ?? {},
+      ];
 }
 
 class FaceFailure extends FaceState {

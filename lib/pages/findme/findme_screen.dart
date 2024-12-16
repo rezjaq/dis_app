@@ -10,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../blocs/photo/photo_event.dart';
 import '../../blocs/photo/photo_state.dart';
+import '../../utils/constants/blank_findme.dart';
 
 class FindMeScreen extends StatefulWidget {
   const FindMeScreen({Key? key}) : super(key: key);
@@ -222,8 +223,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                   return const Center(
                                       child: Text('No match photo found'));
                                 }
-                                return const Center(
-                                    child: Text('Cannot load data'));
+                                return const Center(child: DisBlankFindMe());
                               },
                             ),
                             // Tab "Favorite"
@@ -242,8 +242,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                   return const Center(
                                       child: Text('No favorite photo found'));
                                 }
-                                return const Center(
-                                    child: Text('Cannot load data'));
+                                return const Center(child: DisBlankFindMe());
                               },
                             ),
                             // Tab "Collection"
@@ -263,8 +262,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                   return const Center(
                                       child: Text('No collection found'));
                                 }
-                                return const Center(
-                                    child: Text('Cannot load data'));
+                                return const Center(child: DisBlankFindMe());
                               },
                             ),
                           ],

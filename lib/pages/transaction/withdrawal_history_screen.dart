@@ -1,7 +1,15 @@
+import 'package:dis_app/blocs/withdraw/withdraw_bloc.dart';
+import 'package:dis_app/blocs/withdraw/withdraw_state.dart';
+import 'package:dis_app/controllers/withdraw_controller.dart';
+import 'package:dis_app/models/withdraw_model.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+
+import '../../blocs/withdraw/withdraw_event.dart';
 
 class WithdrawalHistoryScreen extends StatelessWidget {
   @override
@@ -13,15 +21,32 @@ class WithdrawalHistoryScreen extends StatelessWidget {
       body: Container(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            children: List.generate(10, (index) => _cardWithdrawalHistory(context)),
+          child: BlocProvider(
+              create: (context) => WithdrawBloc(withdrawController: WithdrawController())..add(ListWithdrawEvent(page: 1, size: 10)),
+            child: BlocBuilder<WithdrawBloc, WithdrawState>(
+              builder: (context, state) {
+                if (state is WithdrawListSuccess) {
+                  final withdrawals = state.data;
+                  return Column(
+                    children: List.generate(withdrawals.length, (index) => _cardWithdrawalHistory(context, withdrawals[index])),
+                  );
+                } else if (state is WithdrawFailure) {
+                  return Center(
+                    child: Text(state.message),
+                  );
+                }
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            ),
           ),
         ),
       ),
     );
   }
 
-  Container _cardWithdrawalHistory(BuildContext context) {
+  Container _cardWithdrawalHistory(BuildContext context, Withdraw withdrawal) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       decoration: BoxDecoration(
@@ -54,17 +79,22 @@ class WithdrawalHistoryScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("BNI", style: TextStyle(color: DisColors.black, fontSize: DisSizes.fontSizeMd, fontWeight: FontWeight.w600),),
-                    Text("-IDR 100.000", style: TextStyle(color: DisColors.error, fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.w500),),
+                    Text(withdrawal.bank!, style: TextStyle(color: DisColors.black, fontSize: DisSizes.fontSizeMd, fontWeight: FontWeight.w600),),
+                    Text("-${_formatCurrency(withdrawal.amount)}", style: TextStyle(color: DisColors.error, fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.w500),),
                   ],
                 ),
                 Text("Withdrawal", style: TextStyle(color: DisColors.black, fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.normal),),
-                Text("11 Nov 2024 09:20 ", style: TextStyle(color: DisColors.darkGrey, fontSize: DisSizes.fontSizeXs, fontWeight: FontWeight.normal),),
+                Text(DisHelperFunctions.getFormattedDate(withdrawal.createdAt), style: TextStyle(color: DisColors.darkGrey, fontSize: DisSizes.fontSizeXs, fontWeight: FontWeight.normal),),
               ],
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _formatCurrency(double amount) {
+    final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'IDR ', decimalDigits: 0);
+    return formatter.format(amount);
   }
 }

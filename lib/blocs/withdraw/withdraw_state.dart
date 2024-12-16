@@ -1,3 +1,4 @@
+import 'package:dis_app/models/withdraw_model.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class WithdrawState extends Equatable {
@@ -19,6 +20,16 @@ class WithdrawSuccess<T> extends WithdrawState {
 
   @override
   List<Object> get props => [message, if (data is Object) data as Object else data.toString()];
+}
+
+class WithdrawListSuccess extends WithdrawState {
+  final String message;
+  final List<Withdraw> data;
+
+  const WithdrawListSuccess({required this.message, required this.data});
+
+  @override
+  List<Object> get props => [message, data];
 }
 
 class WithdrawFailure extends WithdrawState {

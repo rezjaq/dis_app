@@ -2,11 +2,11 @@ class Withdraw {
   final String id;
   final String userId;
   final String bankId;
-  final String bank;
-  final String amount;
+  final String? bank;
+  final double amount;
   final String status;
-  final String receipt;
-  final String note;
+  final String? receipt;
+  final String? note;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? deletedAt;
@@ -15,11 +15,11 @@ class Withdraw {
     required this.id,
     required this.userId,
     required this.bankId,
-    required this.bank,
+    this.bank,
     required this.amount,
     required this.status,
-    required this.receipt,
-    required this.note,
+    this.receipt,
+    this.note,
     required this.createdAt,
     required this.updatedAt,
     this.deletedAt,
@@ -27,18 +27,18 @@ class Withdraw {
 
   factory Withdraw.fromJson(Map<String, dynamic> json) {
     return Withdraw(
-      id: json['id'],
+      id: json['_id'],
       userId: json['user_id'],
       bankId: json['account_id'],
-      bank: json['bank'] ?? '',
+      bank: json['bank'],
       amount: json['amount'],
       status: json['status'],
-      receipt: json['receipt'] ?? '',
-      note: json['note'] ?? '',
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
-      deletedAt: json['deletedAt'] != null
-          ? DateTime.parse(json['deletedAt'])
+      receipt: json['receipt'],
+      note: json['note'],
+      createdAt: DateTime.parse(json['created_at']),
+      updatedAt: DateTime.parse(json['updated_at']),
+      deletedAt: json['deleted_at'] != null
+          ? DateTime.parse(json['deleted_at'])
           : null,
     );
   }

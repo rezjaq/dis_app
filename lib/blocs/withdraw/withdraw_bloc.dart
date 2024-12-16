@@ -20,5 +20,18 @@ class WithdrawBloc extends Bloc<WithdrawEvent, WithdrawState> {
         emit(WithdrawFailure(message: e.toString()));
       }
     });
+
+    on<ListWithdrawEvent>((event, emit) async {
+      emit(WithdrawLoading());
+      try {
+        final response = await withdrawController.list(ListWithdrawRequest(
+          page: event.page,
+          size: event.size,
+        ));
+        emit(WithdrawListSuccess(message: "Withdrawals listed successfully", data: response));
+      } catch (e) {
+        emit(WithdrawFailure(message: e.toString()));
+      }
+    });
   }
 }

@@ -12,10 +12,12 @@ import '../../blocs/withdraw/withdraw_state.dart';
 class ConfirmTransactionScreen extends StatelessWidget {
   final String amount;
   final Map<String, dynamic> bankDetails;
+  final double balance;
 
   ConfirmTransactionScreen({
     required this.amount,
     required this.bankDetails,
+    required this.balance,
   });
 
   @override
@@ -117,14 +119,15 @@ class ConfirmTransactionScreen extends StatelessWidget {
                 },
                 child: ElevatedButton(
                   onPressed: () {
-                    final double withdrawAmount = double.tryParse(amount) ?? 0;
-                    final int availableBalance = bankDetails['balance'] ?? 0;
+                    final double withdrawAmount = double.tryParse(amount.replaceAll('.', '')) ?? 0;
+                    final int availableBalance = balance.toInt() ?? 0;
 
-                    if (withdrawAmount < 10000) {
+                    print(withdrawAmount);
+                    if (withdrawAmount < 1000) {
                       showDialog(
                         context: context,
                         builder: (context) => DisFailed(
-                          message: "Minimum withdrawal amount is IDR 10,000.",
+                          message: "Minimum withdrawal amount is IDR 1.000.",
                           onRetry: () => Navigator.pop(context),
                         ),
                       );
@@ -143,7 +146,7 @@ class ConfirmTransactionScreen extends StatelessWidget {
                     }
 
                     context.read<WithdrawBloc>().add(WithdrawCreateEvent(
-                          bankId: bankDetails['id'],
+                          bankId: bankDetails['_id'],
                           amount: withdrawAmount,
                     ));
                   },

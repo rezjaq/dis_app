@@ -3,7 +3,8 @@ import 'package:dis_app/utils/local_storage/local_storage.dart';
 import 'package:http/http.dart' as http;
 
 class DisHttpClient {
-  static const String _baseUrl = 'https://findme.my.id/api'; // Change http://10.0.2.2:8000/api to your API URL
+  static const String _baseUrl =
+      'https://findme.my.id/api'; // Change http://10.0.2.2:8000/api to your API URL
 
   // GET request
   static Future<Map<String, dynamic>> get(String endpoint) async {
@@ -59,7 +60,7 @@ class DisHttpClient {
 
   // NEW: FindMe request for searching faces
   static Future<Map<String, dynamic>> findMe(String userId) async {
-    final endpoint = 'face/findme/$userId';
+    final endpoint = 'face/$userId';
     return await get(endpoint);
   }
 

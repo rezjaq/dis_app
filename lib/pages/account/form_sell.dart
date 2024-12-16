@@ -40,8 +40,7 @@ class _UploadContentPageState extends State<UploadContentPage> {
   void _updateHargaJual() {
     double hargaDasar = double.tryParse(_hargaDasarController.text) ?? 0;
     if (hargaDasar <= 10000) {
-      _hargaJualController.text = hargaDasar.toStringAsFixed(0);
-      double income = hargaDasar - (hargaDasar * 0.05);
+      double income = hargaDasar - (hargaDasar * 0.1);
       setState(() {
         _pendapatan = 'IDR ${income.toStringAsFixed(0)}';
       });
@@ -52,7 +51,6 @@ class _UploadContentPageState extends State<UploadContentPage> {
         ),
       );
       _hargaDasarController.clear();
-      _hargaJualController.clear();
       setState(() {
         _pendapatan = 'IDR 0';
       });
@@ -72,7 +70,7 @@ class _UploadContentPageState extends State<UploadContentPage> {
     context.read<PhotoBloc>().add(AddSellPhotoEvent(
           name: _fileNameController.text,
           basePrice: double.parse(_hargaDasarController.text),
-          sellPrice: double.parse(_hargaJualController.text),
+          sellPrice: double.parse(_hargaDasarController.text),
           description: _descriptionController.text,
           file: XFile(_imagePath!),
         ));
@@ -181,7 +179,7 @@ class _UploadContentPageState extends State<UploadContentPage> {
                           controller: _hargaDasarController,
                           decoration: const InputDecoration(
                             border: OutlineInputBorder(),
-                            labelText: 'Basic Price',
+                            labelText: 'Selling Price',
                           ),
                           keyboardType: TextInputType.number,
                           inputFormatters: [
@@ -196,22 +194,17 @@ class _UploadContentPageState extends State<UploadContentPage> {
                   ),
                   const SizedBox(height: 16.0),
 
-                  // Sale Price (Read-Only)
-                  const Text('Selling Price',
+                  // Base Price (Read-Only)
+                  const Text('Base Price',
                       style: TextStyle(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8.0),
                   TextFormField(
-                    controller: _hargaJualController,
+                    controller: TextEditingController(text: _pendapatan),
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      labelText: 'Selling Price',
+                      labelText: 'Base Price',
                     ),
                     readOnly: true,
-                  ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    'Your earnings: $_pendapatan',
-                    style: const TextStyle(color: DisColors.darkerGrey),
                   ),
                   const SizedBox(height: 16.0),
 

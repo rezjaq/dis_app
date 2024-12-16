@@ -13,7 +13,9 @@ class CapturePhotoEvent extends SearchFaceEvent {
   final BuildContext context;
 
   const CapturePhotoEvent(
-      {required this.context, required CameraController controller});
+      {required this.context,
+      required CameraController controller,
+      required String filePath});
 
   @override
   List<Object> get props => [context];

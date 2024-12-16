@@ -5,15 +5,12 @@ abstract class ListFaceEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class LoadSimilarPhotos extends ListFaceEvent {}
-
-class AddSelfiePhoto extends ListFaceEvent {
-  final String newPhotoPath;
-
-  AddSelfiePhoto(this.newPhotoPath);
+class LoadSimilarPhotos extends ListFaceEvent {
+  final String userId;
+  LoadSimilarPhotos(this.userId);
 
   @override
-  List<Object?> get props => [newPhotoPath];
+  List<Object?> get props => [userId];
 }
 
 class ClearListFace extends ListFaceEvent {}

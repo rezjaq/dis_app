@@ -2,8 +2,7 @@ import 'dart:io';
 import 'package:dis_app/blocs/displayPhoto/displayPhoto_bloc.dart';
 import 'package:dis_app/blocs/displayPhoto/displayPhoto_event.dart';
 import 'package:dis_app/blocs/displayPhoto/displayPhoto_state.dart';
-import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
-import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
+import 'package:dis_app/models/face_model.dart';
 import 'package:dis_app/pages/findme/ListFaceScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,8 +10,12 @@ import 'package:dis_app/utils/constants/colors.dart';
 
 class DisplayPhotoScreen extends StatelessWidget {
   final String imagePath;
+  final List<Face> matchedFaces; // List wajah yang cocok
 
-  DisplayPhotoScreen({required this.imagePath});
+  DisplayPhotoScreen({
+    required this.imagePath,
+    required this.matchedFaces,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +31,8 @@ class DisplayPhotoScreen extends StatelessWidget {
               MaterialPageRoute(
                 builder: (context) => ListFaceScreen(
                   imagePath: state.savedPath,
-                  matchedFaces: [],
+                  matchedFaces: matchedFaces,
+                  userId: '',
                 ),
               ),
             );
@@ -72,9 +76,6 @@ class DisplayPhotoScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       context.read<DisplayPhotoBloc>().add(RetakePhotoEvent());
-                      context
-                          .read<SearchFaceBloc>()
-                          .add(InitializeCameraEvent());
                       Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
@@ -90,15 +91,16 @@ class DisplayPhotoScreen extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      context
-                          .read<DisplayPhotoBloc>()
-                          .add(SavePhotoEvent(photoPath: imagePath));
+                      context.read<DisplayPhotoBloc>().add(
+                            SavePhotoEvent(photoPath: imagePath),
+                          );
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ListFaceScreen(
                             imagePath: imagePath,
-                            matchedFaces: [],
+                            matchedFaces: matchedFaces,
+                            userId: '',
                           ),
                         ),
                       );

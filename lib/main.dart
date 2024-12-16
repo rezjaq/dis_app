@@ -7,10 +7,12 @@ import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
 import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
 import 'package:dis_app/blocs/transaction/transaction_bloc.dart';
 import 'package:dis_app/blocs/user/user_bloc.dart';
+import 'package:dis_app/blocs/withdraw/withdraw_bloc.dart';
 import 'package:dis_app/controllers/cart_controller.dart';
 import 'package:dis_app/controllers/face_controller.dart';
 import 'package:dis_app/controllers/transaction_controller.dart';
 import 'package:dis_app/controllers/user_controller.dart';
+import 'package:dis_app/controllers/withdraw_controller.dart';
 import 'package:dis_app/models/user_model.dart';
 import 'package:dis_app/pages/account/account_screen.dart';
 import 'package:dis_app/pages/auth/forgetPass_screen.dart';
@@ -33,6 +35,7 @@ import 'package:dis_app/pages/withdraw/withdraw_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'controllers/photo_controller.dart';
@@ -64,6 +67,7 @@ Future<void> main() async {
         BlocProvider(
             create: (context) => TransactionBloc(
                 transactionController: TransactionController())),
+        BlocProvider(create: (context) => WithdrawBloc(withdrawController: WithdrawController()))
       ],
       child: MyApp(),
     ),
@@ -99,7 +103,7 @@ class MyApp extends StatelessWidget {
         '/balance': (context) => BalanceScreen(),
         '/bank-account': (context) => BankScreen(),
         // '/BankAccountListScreen': (context) => BankAccountListScreen(),
-        '/withdraw': (context) => WithdrawScreen(),
+        '/withdraw': (context) => WithdrawScreen(balance: ModalRoute.of(context)!.settings.arguments as double),
         '/history-withdrawal': (context) => WithdrawalHistoryScreen(),
         '/payment': (context) => PaymentPage(),
       },

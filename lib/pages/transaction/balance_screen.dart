@@ -10,6 +10,7 @@ import 'package:dis_app/controllers/user_controller.dart';
 import 'package:dis_app/models/transaction_model.dart';
 import 'package:dis_app/pages/auth/register_screen.dart';
 import 'package:dis_app/pages/transaction/transaction_history.dart';
+import 'package:dis_app/pages/withdraw/withdraw_screen.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
@@ -25,6 +26,7 @@ class BalanceScreen extends StatefulWidget {
 }
 
 class _BalanceScreenState extends State<BalanceScreen> {
+  double balance = 0;
 
   @override
   void initState() {
@@ -86,8 +88,12 @@ class _BalanceScreenState extends State<BalanceScreen> {
                             child: BlocBuilder<UserBloc, UserState>(
                               builder: (context, state) {
                                 if (state is UserSuccess) {
+                                  balance = state.data!['balance'];
+                                  final balanceFormatted = NumberFormat.currency(
+                                      locale: 'id_ID', symbol: 'IDR ')
+                                      .format(balance);
                                   return Text(
-                                    "IDR " + state.data!['balance'].toString(),
+                                    balanceFormatted,
                                     style: TextStyle(
                                         color: DisColors.black,
                                         fontSize: DisSizes.fontSizeXl,
@@ -190,8 +196,7 @@ class _BalanceScreenState extends State<BalanceScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            DisHelperFunctions.navigateToRoute(
-                                context, '/withdraw');
+                            DisHelperFunctions.navigateToScreen(context, WithdrawScreen(balance: balance,));
                           },
                           child: Column(
                             children: [

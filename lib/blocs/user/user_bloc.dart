@@ -29,7 +29,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           email: event.email,
           phone: event.phone,
         ));
-        emit(UserSuccess(message: "Profile updated successfully", data: response['data']));
+        emit(UserSuccess(message: "Profile updated successfully", data: response));
       } catch (e) {
         emit(UserFailure(message: e.toString()));
       }

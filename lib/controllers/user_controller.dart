@@ -9,7 +9,6 @@ class UserController {
       if (response['data'] == null) {
         throw response['errors'];
       } else {
-        print(response['data']);
         return response['data'];
       }
     } catch (e) {

@@ -82,12 +82,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             }
             else {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message ?? 'Success')),
+                SnackBar(content: Text(state.message ?? 'Success'), backgroundColor: DisColors.success),
               );
             }
           } else if (state is UserFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
+              SnackBar(content: Text(state.message), backgroundColor: DisColors.error),
             );
           }
         },
@@ -296,12 +296,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
             TextButton(
             onPressed: () {
+                Navigator.pop(context);
                 context.read<UserBloc>().add(UserUpdateEvent(
                   name: _nameController.text,
                   email: _emailController.text,
                   phone: _phoneController.text,
                 ));
-                Navigator.pop(context);
               },
               child: Text('Save', style: TextStyle(color: DisColors.textPrimary)),
             ),

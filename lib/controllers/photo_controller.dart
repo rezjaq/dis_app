@@ -73,7 +73,7 @@ class PhotoController {
   Future<Map<String, dynamic>> list(ListPhotoRequest request) async {
     try {
       final queryParams = request.toQueryParams();
-      final response = await DisHttpClient.get('photo?$queryParams');
+      final response = await DisHttpClient.get('photo/?$queryParams');
 
       if (response['data'] == null) {
         throw response['errors'];
@@ -145,7 +145,7 @@ class PhotoController {
   Future<Map<String, dynamic>> collectionPhoto(
       CollectionPhotoRequest request) async {
     try {
-      final response = await DisHttpClient.get('photo/sell/collection/');
+      final response = await DisHttpClient.get('photo/sell/collection');
       if (response['data'] == null) {
         throw response['errors'];
       } else {

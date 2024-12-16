@@ -10,20 +10,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc({required this.authController}) : super(AuthInitial()) {
     on<AuthRegisterEvent>((event, emit) async {
-      print("Register event: {$event}");
       emit(AuthLoading());
       try {
-        print("Start register");
         final response = await authController.register(RegisterUserRequest(
           name: event.name,
           email: event.email,
           password: event.password,
           phone: event.phone,
         ));
-        print("Response: {$response}");
         emit(AuthSuccess(message: "User registered successfully"));
       } catch (e) {
-        print("Error: {$e}");
         emit(AuthFailure(message: e.toString()));
       }
     });
@@ -35,10 +31,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emailOrPhone: event.emailOrPhone,
           password: event.password,
         ));
-        print("Response: {$response}");
         emit(AuthSuccess(message: "Login successful"));
       } catch (e) {
-        print("Error: {$e}");
         emit(AuthFailure(message: e.toString()));
       }
     });

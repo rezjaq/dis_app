@@ -133,7 +133,6 @@ class _TransactionScreenState extends State<TransactionScreen> {
         await for (final state in transactionBloc.stream) {
           if (state is TransactionGetSuccess) {
             final transaction = state.data;
-            print("Transaction: $transaction");
             Navigator.push(
               context,
               MaterialPageRoute(

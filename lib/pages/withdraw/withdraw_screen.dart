@@ -1,59 +1,40 @@
+import 'package:dis_app/blocs/user/user_bloc.dart';
+import 'package:dis_app/blocs/user/user_event.dart';
+import 'package:dis_app/blocs/user/user_state.dart';
 import 'package:dis_app/pages/withdraw/withdrawal_amount.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 
 class WithdrawScreen extends StatefulWidget {
+  final double balance;
+
+  const WithdrawScreen({Key? key, required this.balance}) : super(key: key);
+
   @override
   _WithdrawScreenState createState() => _WithdrawScreenState();
 }
 
 class _WithdrawScreenState extends State<WithdrawScreen> {
-  final List<Map<String, dynamic>> bankAccounts = [
-    {
-      'accountNumber': '901803692999',
-      'name': 'KAMALA HARRIS',
-      'bank': 'SEABANK',
-      'balance': 150000,
-    },
-    {
-      'accountNumber': '202503692999',
-      'name': 'KAMALA HARRIS',
-      'bank': 'Bank Syariah Indonesia (BSI)',
-      'balance': 200000,
-    },
-    {
-      'accountNumber': '7651803692999',
-      'name': 'KAMALA HARRIS',
-      'bank': 'Bank Mandiri',
-      'balance': 300000,
-    },
-    {
-      'accountNumber': '901803692999',
-      'name': 'KAMALA HARRIS',
-      'bank': 'Bank Central Asia (BCA)',
-      'balance': 250000,
-    },
-    {
-      'accountNumber': '777803692999',
-      'name': 'KAMALA HARRIS',
-      'bank': 'Bank Rakyat Indonesia (BRI)',
-      'balance': 100000,
-    },
-  ];
-
   final TextEditingController _withdrawalController = TextEditingController();
   Map<String, dynamic>? selectedBank;
   String availableBalance = "IDR 0";
-  int currentBalance = 0;
+  double currentBalance = 0;
   bool showWarning = true;
+
+  @override
+  void initState() {
+    super.initState();
+    currentBalance = widget.balance;
+    availableBalance = 'IDR ${NumberFormat.decimalPattern("id").format(currentBalance)}';
+  }
 
   void selectBank(Map<String, dynamic> bank) {
     setState(() {
       selectedBank = bank;
-      currentBalance = bank['balance'] ?? 0; // Ambil saldo dari bank
-      availableBalance =
-          'IDR ${NumberFormat.decimalPattern("id").format(currentBalance)}';
+      // currentBalance = bank['balance'] ?? 0; // Ambil saldo dari bank
+      // availableBalance = 'IDR ${NumberFormat.decimalPattern("id").format(currentBalance)}';
       _withdrawalController.clear(); // Bersihkan input saat memilih bank
       showWarning = currentBalance <= 0;
     });
@@ -136,7 +117,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                   const Text('Bank Account:', style: TextStyle(fontSize: 14)),
                   const SizedBox(height: 4),
                   GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       _showBankList(context);
                     },
                     child: Row(
@@ -145,7 +126,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                         Text(
                           selectedBank == null
                               ? 'No Bank Account'
-                              : '${selectedBank!['bank']} - ${selectedBank!['accountNumber']}',
+                              : '${selectedBank!['bank']} - ${selectedBank!['number']}',
                           style: TextStyle(
                             color: selectedBank == null
                                 ? DisColors.grey
@@ -161,7 +142,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                   const Text('Available Balance',
                       style: TextStyle(fontSize: 14)),
                   Text(availableBalance,
-                      style: const TextStyle(color: DisColors.primary)),
+                      style: const TextStyle(color: DisColors.textPrimary)),
                 ],
               ),
             ),
@@ -222,21 +203,37 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
   }
 
   void _showBankList(BuildContext context) {
+    final bankBloc = BlocProvider.of<UserBloc>(context);
+    bankBloc.add(ListBankEvent());
+
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return ListView.builder(
-          itemCount: bankAccounts.length,
-          itemBuilder: (context, index) {
-            final account = bankAccounts[index];
-            return ListTile(
-              title: Text(account['bank']!),
-              subtitle: Text(account['accountNumber']!),
-              onTap: () {
-                selectBank(account);
-                Navigator.pop(context);
-              },
-            );
+        return BlocBuilder<UserBloc, UserState>(
+          builder: (context, state) {
+            if (state is UserLoading) {
+              return Center(child: CircularProgressIndicator());
+            } else if (state is UserSuccess) {
+              final bankAccounts = state.data!['data'] as List;
+              return ListView.builder(
+                itemCount: bankAccounts.length,
+                itemBuilder: (context, index) {
+                  final account = bankAccounts[index];
+                  return ListTile(
+                    title: Text(account['bank']),
+                    subtitle: Text(account['number']),
+                    onTap: () {
+                      selectBank(account);
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+              );
+            } else if (state is UserFailure) {
+              return Center(child: Text('Failed to load bank accounts'));
+            } else {
+              return Center(child: Text('No bank accounts available'));
+            }
           },
         );
       },

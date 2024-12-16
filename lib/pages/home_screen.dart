@@ -231,10 +231,8 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             }
             if (state is PhotoSuccess) {
-              print('PhotoSuccess state triggered');
               final rawData = state.data;
               if (rawData is Map<String, dynamic>) {
-                print('Data is a Map<String, dynamic>');
                 if (rawData.containsKey('data') && rawData['data'] is List) {
                   final posts = rawData['data'] as List;
                   print('Posts is a List, count: ${posts.length}');
@@ -331,18 +329,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: TextStyle(
                                     color: DisColors.white,
                                     fontSize: DisSizes.fontSizeSm)),
-                            const SizedBox(height: 8),
-                            Row(
-                              children: [
-                                Icon(Icons.location_on,
-                                    color: DisColors.white, size: DisSizes.md),
-                                const SizedBox(width: 4),
-                                Text("Malang, Indonesia",
-                                    style: TextStyle(
-                                        color: DisColors.white,
-                                        fontSize: DisSizes.fontSizeXs)),
-                              ],
-                            ),
+                            // const SizedBox(height: 8),
+                            // Row(
+                            //   children: [
+                            //     Icon(Icons.location_on,
+                            //         color: DisColors.white, size: DisSizes.md),
+                            //     const SizedBox(width: 4),
+                            //     Text("Malang, Indonesia",
+                            //         style: TextStyle(
+                            //             color: DisColors.white,
+                            //             fontSize: DisSizes.fontSizeXs)),
+                            //   ],
+                            // ),
                           ],
                         ),
                       ),
@@ -352,7 +350,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           children: [
                             _menuButton(
-                                Icons.favorite_border_rounded,
+                                photo.liked
+                                    ? Icons.favorite
+                                    : Icons.favorite_border_rounded,
                                 photo.likes.toString(),
                                 !photo.liked
                                     ? DisColors.white

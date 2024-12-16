@@ -3,6 +3,11 @@ import 'package:dis_app/utils/constants/colors.dart';
 import 'package:dis_app/utils/constants/row.dart';
 import 'package:dis_app/utils/constants/success.dart';
 import 'package:dis_app/utils/constants/failed.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../blocs/withdraw/withdraw_bloc.dart';
+import '../../blocs/withdraw/withdraw_event.dart';
+import '../../blocs/withdraw/withdraw_state.dart';
 
 class ConfirmTransactionScreen extends StatelessWidget {
   final String amount;
@@ -76,7 +81,7 @@ class ConfirmTransactionScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   DisBuildRow(
                     label: 'Account Number',
-                    value: bankDetails['accountNumber'],
+                    value: bankDetails['number'],
                   ),
                 ],
               ),
@@ -84,62 +89,74 @@ class ConfirmTransactionScreen extends StatelessWidget {
             const Spacer(),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () async {
-                  final int withdrawAmount = int.tryParse(amount) ?? 0;
-                  final int availableBalance = bankDetails['balance'] ?? 0;
-
-                  if (withdrawAmount < 10000) {
+              child: BlocListener<WithdrawBloc, WithdrawState>(
+                listener: (context, state) {
+                  if (state is WithdrawLoading) {
                     showDialog(
                       context: context,
-                      builder: (context) => DisFailed(
-                        message: "Minimum withdrawal amount is IDR 10,000.",
-                        onRetry: () => Navigator.pop(context),
-                      ),
+                      builder: (context) => Center(child: CircularProgressIndicator()),
                     );
-                    return;
-                  }
-
-                  if (withdrawAmount > availableBalance) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => DisFailed(
-                        message:
-                            "Insufficient balance. Please check your account.",
-                        onRetry: () => Navigator.pop(context),
-                      ),
-                    );
-                    return;
-                  }
-
-                  final bool success = await _simulateTransaction();
-
-                  if (success) {
+                  } else if (state is WithdrawSuccess) {
+                    Navigator.pop(context); // Close the loading dialog
                     showDialog(
                       context: context,
                       builder: (context) => DisSuccess(
                         onClose: () => Navigator.pop(context),
                       ),
                     );
-                  } else {
+                  } else if (state is WithdrawFailure) {
+                    Navigator.pop(context); // Close the loading dialog
                     showDialog(
                       context: context,
                       builder: (context) => DisFailed(
-                        message: "Transaction failed. Please try again.",
+                        message: state.message,
                         onRetry: () => Navigator.pop(context),
                       ),
                     );
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: DisColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                ),
-                child: const Text(
-                  'Withdraw Now',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: DisColors.white,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final double withdrawAmount = double.tryParse(amount) ?? 0;
+                    final int availableBalance = bankDetails['balance'] ?? 0;
+
+                    if (withdrawAmount < 10000) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => DisFailed(
+                          message: "Minimum withdrawal amount is IDR 10,000.",
+                          onRetry: () => Navigator.pop(context),
+                        ),
+                      );
+                      return;
+                    }
+
+                    if (withdrawAmount > availableBalance) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => DisFailed(
+                          message: "Insufficient balance. Please check your account.",
+                          onRetry: () => Navigator.pop(context),
+                        ),
+                      );
+                      return;
+                    }
+
+                    context.read<WithdrawBloc>().add(WithdrawCreateEvent(
+                          bankId: bankDetails['id'],
+                          amount: withdrawAmount,
+                    ));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: DisColors.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  ),
+                  child: const Text(
+                    'Withdraw Now',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: DisColors.white,
+                    ),
                   ),
                 ),
               ),

@@ -10,7 +10,6 @@ class ListFaceLoading extends ListFaceState {}
 
 class ListFaceLoaded extends ListFaceState {
   final List<Face> similarFaces;
-
   ListFaceLoaded(this.similarFaces);
 
   @override
@@ -19,7 +18,6 @@ class ListFaceLoaded extends ListFaceState {
 
 class ListFaceError extends ListFaceState {
   final String message;
-
   ListFaceError(this.message);
 
   @override

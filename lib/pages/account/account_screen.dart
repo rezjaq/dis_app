@@ -7,6 +7,7 @@ import 'package:dis_app/blocs/user/user_state.dart';
 import 'package:dis_app/controllers/user_controller.dart';
 import 'package:dis_app/models/photo_model.dart';
 import 'package:dis_app/models/user_model.dart';
+import 'package:dis_app/pages/account/photo_desc.dart';
 import 'package:dis_app/utils/constants/blank_post.dart';
 import 'package:dis_app/utils/constants/blank_sell.dart';
 import 'package:dis_app/pages/account/form_sell.dart';
@@ -56,11 +57,11 @@ class _AccountScreenState extends State<AccountScreen> {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      _showUploadOptions(image.path);
+      _showUploadOptions(image);
     }
   }
 
-  void _showUploadOptions(String imagePath) {
+  void _showUploadOptions(XFile imageFile) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -75,20 +76,37 @@ class _AccountScreenState extends State<AccountScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => UploadContentPage(
-                      imagePath: imagePath,
+                      imagePath: imageFile.path,
                     ),
                   ),
-                );
+                ).then((_) {
+                  if (isSellSelected) {
+                    context.read<PhotoBloc>().add(ListPhotoEvent());
+                  }
+                });
               },
               child: const Text("Sell"),
             ),
             TextButton(
               onPressed: () {
-                setState(() {
-                  postImagePaths.add(imagePath);
-                  isSellSelected = false;
-                });
                 Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => BlocProvider(
+                      create: (context) =>
+                          PhotoBloc(photoController: PhotoController()),
+                      child: PostFormPhotoScreen(
+                        imageFile: imageFile,
+                        isFromCamera: false,
+                      ),
+                    ),
+                  ),
+                ).then((_) {
+                  if (!isSellSelected) {
+                    context.read<PhotoBloc>().add(ListPhotoEvent());
+                  }
+                });
               },
               child: const Text("Post"),
             ),
@@ -132,12 +150,11 @@ class _AccountScreenState extends State<AccountScreen> {
                   if (state is PhotoLoading) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is PhotoByAccountSuccess) {
-                    final postImages = (state.post['data'] as List)
-                        .where((element) => element['type'] == "post")
-                        .toList();
-
                     final sellImages = (state.sell['data'] as List)
                         .where((element) => element['type'] == "sell")
+                        .toList();
+                    final postImages = (state.post['data'] as List)
+                        .where((element) => element['type'] == "post")
                         .toList();
 
                     if (isSellSelected) {

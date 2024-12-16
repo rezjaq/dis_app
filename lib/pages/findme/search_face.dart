@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math'; // Tambahkan ini untuk rotasi transformasi.
 import 'package:camera/camera.dart';
 import 'package:dis_app/blocs/face/face_bloc.dart';
@@ -6,6 +7,7 @@ import 'package:dis_app/blocs/face/face_state.dart';
 import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
 import 'package:dis_app/blocs/searchFace/searchFace_state.dart';
 import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
+import 'package:dis_app/controllers/face_controller.dart';
 import 'package:dis_app/pages/findme/DisplayPhotoScreen.dart';
 import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +32,7 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
   Future<void> _initializeCamera() async {
     final cameras = await availableCameras();
     final frontCamera = cameras.firstWhere(
-          (camera) => camera.lensDirection == CameraLensDirection.front,
+      (camera) => camera.lensDirection == CameraLensDirection.front,
     );
 
     _controller = CameraController(
@@ -63,12 +65,24 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
 
       if (!_controller.value.isInitialized) return;
       final XFile photo = await _controller.takePicture();
-      final faceBloc = BlocProvider.of<FaceBloc>(context);
-      faceBloc.add(FaceDetectionEvent(file: photo));
+      final filePath = photo.path;
+      print('Captured photo path: $filePath');
+
+      final faceController = FaceController();
+      final face = await faceController.addFace(filePath);
+      print('Face added successfully: ${face.id}');
 
       setState(() {
         _isCapturing = false;
       });
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              DisplayPhotoScreen(imagePath: filePath, matchedFaces: []),
+        ),
+      );
     } catch (e) {
       setState(() {
         _isCapturing = false;
@@ -96,79 +110,68 @@ class _SearchFaceScreenState extends State<SearchFaceScreen> {
       body: BlocListener<FaceBloc, FaceState>(
         listener: (context, faceState) {
           if (faceState is FaceSuccess) {
-            print(faceState);
-            final searchFaceBloc = BlocProvider.of<SearchFaceBloc>(context);
-            final userId = faceState.data?['user_id'] ?? '';
-            if (userId.isNotEmpty) {
-              searchFaceBloc.add(SearchMatchedPhotosEvent(userId: userId));
+            final message = faceState.message ?? "Wajah berhasil terdeteksi.";
+            final data = faceState.data;
+
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(message),
+                backgroundColor: Colors.green,
+              ),
+            );
+
+            if (data != null && data.containsKey('detectedFace')) {
+              print("Detil wajah terdeteksi: ${data['detectedFace']}");
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("User ID tidak ditemukan")),
-              );
+              print("Wajah terdeteksi, tetapi tidak ada detil tambahan.");
             }
           } else if (faceState is FaceFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                  content:
-                  Text(faceState.message)),
+                content: Text(faceState.message),
+                backgroundColor: Colors.red,
+              ),
             );
           }
         },
-        child: BlocListener<SearchFaceBloc, SearchFaceState>(
-          listener: (context, searchState) {
-            if (searchState is SearchFaceMatchedPhotosLoaded) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DisplayPhotoScreen(
-                      imagePath: searchState.matchedPhotos[0]),
-                ),
-              );
-            } else if (searchState is SearchFaceNoMatchFound) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Tidak ada kecocokan ditemukan")),
-              );
-            } else if (searchState is SearchFaceError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Error: ${searchState.message}")),
-              );
-            }
-          },
-          child: _isCameraInitialized
-              ? Stack(
-            children: [
-              Positioned.fill(
-                child: Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.rotationY(
-                      _controller.description.lensDirection ==
-                          CameraLensDirection.front
-                          ? pi
-                          : 0),
-                  child: CameraPreview(_controller),
-                ),
-              ),
-              Positioned(
-                bottom: 40,
-                left: (MediaQuery.of(context).size.width - 150) / 2,
-                child: ElevatedButton(
-                  onPressed: () => _captureAndProcessFace(context),
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: DisColors.white,
-                    backgroundColor: DisColors.primary,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+        child: _isCameraInitialized
+            ? Stack(
+                children: [
+                  Positioned.fill(
+                    child: Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationY(
+                          _controller.description.lensDirection ==
+                                  CameraLensDirection.front
+                              ? pi
+                              : 0),
+                      child: CameraPreview(_controller),
                     ),
                   ),
-                  child: Text('Ambil Foto'),
-                ),
-              ),
-            ],
-          )
-              : Center(child: CircularProgressIndicator()),
-        ),
+                  Positioned(
+                    bottom: 40,
+                    left: (MediaQuery.of(context).size.width - 150) / 2,
+                    child: ElevatedButton(
+                      onPressed: () => _captureAndProcessFace(context),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: DisColors.white,
+                        backgroundColor: DisColors.primary,
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: Text('Ambil Foto'),
+                    ),
+                  ),
+                  if (_isCapturing)
+                    Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                ],
+              )
+            : Center(child: CircularProgressIndicator()),
       ),
     );
   }

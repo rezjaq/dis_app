@@ -153,6 +153,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                             builder: (context) => ListFaceScreen(
                                   imagePath: '',
                                   matchedFaces: [],
+                                  userId: '',
                                 )),
                       );
                     },
@@ -218,7 +219,8 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                   if (photos.isNotEmpty) {
                                     return _buildGridContent(photos);
                                   }
-                                  return const Center(child: Text('No match photo found'));
+                                  return const Center(
+                                      child: Text('No match photo found'));
                                 }
                                 return const Center(
                                     child: Text('Cannot load data'));

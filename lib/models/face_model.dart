@@ -48,13 +48,14 @@ class Face {
   });
 
   factory Face.fromJson(Map<String, dynamic> json) {
-    var list = json['detections'] as List;
+    var list = json['detections'] as List?;
     List<BoundBox> detectionsList =
-        list.map((i) => BoundBox.fromJson(i)).toList();
+        list != null ? list.map((i) => BoundBox.fromJson(i)).toList() : [];
+
     return Face(
-      id: json['id'],
+      id: json['_id'],
       url: json['url'],
-      userId: json['userId'],
+      userId: json['user_id'],
       detections: detectionsList,
     );
   }

@@ -4,7 +4,6 @@ import 'package:dis_app/blocs/listFace/listFace_bloc.dart';
 import 'package:dis_app/blocs/listFace/listFace_event.dart';
 import 'package:dis_app/blocs/listFace/listFace_state.dart';
 import 'package:dis_app/blocs/searchFace/searchFace_bloc.dart';
-import 'package:dis_app/blocs/searchFace/serachFace_event.dart';
 import 'package:dis_app/controllers/face_controller.dart';
 import 'package:dis_app/models/face_model.dart';
 import 'package:dis_app/pages/findme/search_face.dart';
@@ -15,11 +14,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ListFaceScreen extends StatefulWidget {
   final String imagePath;
   final List<Face> matchedFaces;
+  final String userId;
 
-  ListFaceScreen({
+  const ListFaceScreen({
     required this.imagePath,
     required this.matchedFaces,
-  });
+    required this.userId,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _ListFaceScreenState createState() => _ListFaceScreenState();
@@ -29,10 +31,12 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ListFaceBloc>().add(LoadSimilarPhotos());
+    // Memuat data wajah mirip berdasarkan userId
+    context.read<ListFaceBloc>().add(LoadSimilarPhotos(widget.userId));
   }
 
   void _navigateToSearchFace() {
+    // Navigasi ke layar "SearchFaceScreen"
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -61,12 +65,12 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: const Text(
             'Tambah Selfie',
             style: TextStyle(color: DisColors.white),
           ),
           leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: DisColors.white),
+            icon: const Icon(Icons.arrow_back, color: DisColors.white),
             onPressed: () {
               context.read<ListFaceBloc>().add(ClearListFace());
               Navigator.pop(context);
@@ -75,14 +79,14 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
           backgroundColor: DisColors.primary,
         ),
         body: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             children: [
               Row(
                 children: [
-                  Icon(Icons.room, color: DisColors.primary, size: 40),
-                  SizedBox(width: 10),
-                  Expanded(
+                  const Icon(Icons.room, color: DisColors.primary, size: 40),
+                  const SizedBox(width: 10),
+                  const Expanded(
                     child: Text(
                       'Halo, RoboYu sedang mencari foto berdasarkan selfie ini',
                       style: TextStyle(fontSize: 16),
@@ -90,7 +94,7 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -98,7 +102,7 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
                   _buildAddSelfieButton(),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Expanded(
                 child: BlocConsumer<ListFaceBloc, ListFaceState>(
                   listener: (context, state) {
@@ -116,10 +120,10 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
                     } else if (state is ListFaceError) {
                       return Center(
                         child: Text(state.message,
-                            style: TextStyle(color: Colors.red)),
+                            style: const TextStyle(color: Colors.red)),
                       );
                     }
-                    return SizedBox.shrink();
+                    return const SizedBox.shrink();
                   },
                 ),
               ),
@@ -144,8 +148,8 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
             ),
           ),
         ),
-        SizedBox(height: 8),
-        Text('Original', style: TextStyle(fontSize: 14)),
+        const SizedBox(height: 8),
+        const Text('Original', style: TextStyle(fontSize: 14)),
       ],
     );
   }
@@ -162,7 +166,7 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
               color: DisColors.darkGrey,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Center(
+            child: const Center(
               child: Icon(
                 Icons.add_a_photo_sharp,
                 size: 40,
@@ -170,8 +174,8 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
               ),
             ),
           ),
-          SizedBox(height: 8),
-          Text('Tambah Selfie', style: TextStyle(fontSize: 14)),
+          const SizedBox(height: 8),
+          const Text('Tambah Selfie', style: TextStyle(fontSize: 14)),
         ],
       ),
     );
@@ -179,8 +183,8 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
 
   Widget _buildSkeletonLoader() {
     return GridView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 1,
         crossAxisSpacing: 10,
@@ -200,8 +204,8 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
 
   Widget _buildSimilarPhotosGrid(List<Face> faces) {
     return GridView.builder(
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 1,
         crossAxisSpacing: 10,

@@ -94,14 +94,14 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildOriginalPhoto(),
-                  _buildAddSelfieButton(),
-                ],
-              ),
+              // const SizedBox(height: 20),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+              //   children: [
+              //     _buildOriginalPhoto(),
+              //     _buildAddSelfieButton(),
+              //   ],
+              // ),
               const SizedBox(height: 20),
               Expanded(
                 child: BlocConsumer<ListFaceBloc, ListFaceState>(
@@ -160,8 +160,8 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
       child: Column(
         children: [
           Container(
-            height: 150,
-            width: 150,
+            height: 136,
+            width: 160,
             decoration: BoxDecoration(
               color: DisColors.darkGrey,
               borderRadius: BorderRadius.circular(10),
@@ -203,26 +203,50 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
   }
 
   Widget _buildSimilarPhotosGrid(List<Face> faces) {
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 1,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
+    return Expanded(
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: NeverScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 1,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
+        itemCount: faces.length + 1, // Add one more item for the button
+        itemBuilder: (context, index) {
+          if (index == faces.length) {
+            return _buildAddSelfieButton();
+          }
+          return Stack(
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                    image: NetworkImage(faces[index].url),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              if (index == 0)
+                Positioned(
+                  bottom: 8,
+                  left: 8,
+                  child: Container(
+                    color: Colors.black54,
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: const Text(
+                      'Original',
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
       ),
-      itemCount: faces.length,
-      itemBuilder: (context, index) {
-        return Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            image: DecorationImage(
-              image: NetworkImage(faces[index].url),
-              fit: BoxFit.cover,
-            ),
-          ),
-        );
-      },
     );
   }
 }

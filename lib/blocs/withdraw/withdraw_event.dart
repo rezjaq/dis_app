@@ -19,3 +19,16 @@ class WithdrawCreateEvent extends WithdrawEvent {
   @override
   List<Object> get props => [bankId, amount];
 }
+
+class ListWithdrawEvent extends WithdrawEvent {
+  final int page;
+  final int size;
+
+  const ListWithdrawEvent({
+    required this.page,
+    required this.size,
+  });
+
+  @override
+  List<Object> get props => [page, size];
+}

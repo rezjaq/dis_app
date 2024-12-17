@@ -178,6 +178,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
                             builder: (context) => ConfirmTransactionScreen(
                               amount: _withdrawalController.text,
                               bankDetails: selectedBank!,
+                              balance: currentBalance,
                             ),
                           ),
                         );

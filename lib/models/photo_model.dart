@@ -40,7 +40,7 @@ class PostPhoto {
 
   factory PostPhoto.fromJson(Map<String, dynamic> json) {
     return PostPhoto(
-      id: json['id'] ?? '',
+      id: json['_id'] ?? '',
       url: json['url'] ?? '',
       name: json['name'] ?? '',
       description: json['description'] ?? '',
@@ -60,7 +60,7 @@ class PostPhoto {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      '_id': id,
       'url': url,
       'name': name,
       'description': description,
@@ -110,7 +110,7 @@ class SellPhoto {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      '_id': id,
       'url': url,
       'name': name,
       'base_price': basePrice,
@@ -128,7 +128,7 @@ class SellPhoto {
 
   factory SellPhoto.fromJson(Map<String, dynamic> json) {
     return SellPhoto(
-      id: json['id'] ?? '',
+      id: json['_id'] ?? '',
       url: json['url'] ?? '',
       name: json['name'] ?? '',
       basePrice: json['base_price'] ?? 0.0,

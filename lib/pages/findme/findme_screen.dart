@@ -1,3 +1,5 @@
+import 'package:dis_app/blocs/chart/chart_bloc.dart';
+import 'package:dis_app/blocs/chart/chart_event.dart';
 import 'package:dis_app/blocs/photo/photo_bloc.dart';
 import 'package:dis_app/controllers/photo_controller.dart';
 import 'package:dis_app/models/photo_model.dart';
@@ -211,17 +213,18 @@ class _FindMeScreenState extends State<FindMeScreen> {
                             BlocBuilder<PhotoBloc, PhotoState>(
                               builder: (context, state) {
                                 if (state is PhotoLoading) {
-                                  return const Center(
-                                      child: CircularProgressIndicator());
+                                  return const Center(child: CircularProgressIndicator());
                                 } else if (state is FindmeSuccess) {
-                                  final photos = (state.all!['data'] as List)
-                                      .map((photo) => SellPhoto.fromJson(photo))
-                                      .toList();
-                                  if (photos.isNotEmpty) {
-                                    return _buildGridContent(photos);
+                                  if (state.all != null) {
+                                    final allPhotos = (state.all!['data'] as List)
+                                        .map((photo) => SellPhoto.fromJson(photo))
+                                        .toList();
+                                    if (allPhotos.isNotEmpty) {
+                                      return _buildGridContent(allPhotos);
+                                    }
+                                    return const Center(child: Text('No match photo found'));
                                   }
-                                  return const Center(
-                                      child: Text('No match photo found'));
+                                  return const Center(child: DisBlankFindMe());
                                 }
                                 return const Center(child: DisBlankFindMe());
                               },
@@ -230,17 +233,18 @@ class _FindMeScreenState extends State<FindMeScreen> {
                             BlocBuilder<PhotoBloc, PhotoState>(
                               builder: (context, state) {
                                 if (state is PhotoLoading) {
-                                  return const Center(
-                                      child: CircularProgressIndicator());
+                                  return const Center(child: CircularProgressIndicator());
                                 } else if (state is FindmeSuccess) {
-                                  final favoritePhotos = state.favorites!
-                                      .map((photo) => SellPhoto.fromJson(photo))
-                                      .toList();
-                                  if (favoritePhotos.isNotEmpty) {
-                                    return _buildGridContent(favoritePhotos);
+                                  if (state.favorites != null && state.favorites!["data"] is List) {
+                                    final favoritePhotos = (state.favorites!["data"] as List)
+                                        .map((photo) => SellPhoto.fromJson(photo))
+                                        .toList();
+                                    if (favoritePhotos.isNotEmpty) {
+                                      return _buildGridContent(favoritePhotos);
+                                    }
+                                    return const Center(child: Text('No favorite photo found'));
                                   }
-                                  return const Center(
-                                      child: Text('No favorite photo found'));
+                                  return const Center(child: DisBlankFindMe());
                                 }
                                 return const Center(child: DisBlankFindMe());
                               },
@@ -249,22 +253,22 @@ class _FindMeScreenState extends State<FindMeScreen> {
                             BlocBuilder<PhotoBloc, PhotoState>(
                               builder: (context, state) {
                                 if (state is PhotoLoading) {
-                                  return const Center(
-                                      child: CircularProgressIndicator());
+                                  return const Center(child: CircularProgressIndicator());
                                 } else if (state is FindmeSuccess) {
-                                  final collectionPhotos = (state
-                                          .collections!['data'] as List)
-                                      .map((photo) => SellPhoto.fromJson(photo))
-                                      .toList();
-                                  if (collectionPhotos.isNotEmpty) {
-                                    return _buildGridContent(collectionPhotos);
+                                  if (state.collections != null) {
+                                    final collectionPhotos = (state.collections!['data'] as List)
+                                        .map((photo) => SellPhoto.fromJson(photo))
+                                        .toList();
+                                    if (collectionPhotos.isNotEmpty) {
+                                      return _buildGridContent(collectionPhotos);
+                                    }
+                                    return const Center(child: Text('No collection found'));
                                   }
-                                  return const Center(
-                                      child: Text('No collection found'));
+                                  return const Center(child: DisBlankFindMe());
                                 }
                                 return const Center(child: DisBlankFindMe());
                               },
-                            ),
+                            )
                           ],
                         ),
                 )
@@ -384,9 +388,8 @@ class _FindMeScreenState extends State<FindMeScreen> {
                       IconButton(
                         icon: Icon(Icons.shopping_cart, color: DisColors.white),
                         onPressed: () {
-                          setState(() {
-                            ShoppingCartScreen();
-                          });
+                          context.read<CartBloc>().add(AddCartItemEvent(photoId: photo.id));
+                          print('Add to cart: ${photo.id}');
                           Navigator.pop(context);
                         },
                       ),

@@ -11,7 +11,7 @@ abstract class CartEvent extends Equatable {
 class AddCartItemEvent extends CartEvent {
   final String photoId;
 
-  const AddCartItemEvent(this.photoId);
+  const AddCartItemEvent({required this.photoId});
 
   @override
   List<Object> get props => [photoId];

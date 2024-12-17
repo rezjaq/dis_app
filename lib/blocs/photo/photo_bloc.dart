@@ -19,6 +19,8 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
             description: event.description,
             file: event.file));
         emit(PhotoSuccess(data: response));
+        add(FindmePhotoEvent());
+        add(ListPhotoEvent(page: 1, size: 10));
       } catch (e) {
         emit(PhotoFailure(message: e.toString()));
       }
@@ -134,7 +136,8 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
       }
 
       try {
-        responseCollections = await photoController.collectionPhoto(CollectionPhotoRequest());
+        responseCollections =
+            await photoController.collectionPhoto(CollectionPhotoRequest());
       } catch (e) {
         messageCollections = e.toString();
       }
@@ -142,7 +145,7 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
       emit(FindmeSuccess(
         all: responseAll,
         collections: responseCollections,
-        favorites: {},
+        favorites: {"data": []},
         messageAll: messageAll,
         messageCollections: messageCollections,
         messageFavorites: null,
@@ -152,16 +155,22 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
     on<AddToFavoritesEvent>((event, emit) {
       if (state is FindmeSuccess) {
         final currentState = state as FindmeSuccess;
+        print('Current favorites: ${currentState.favorites?["data"]}');
+
+        // Menambahkan objek dengan URL ke dalam favorit
         final updatedFavorites =
-            List<dynamic>.from(currentState.favorites!["data"] ?? {})
-              ..add(event.imageUrl);
+            List<dynamic>.from(currentState.favorites?["data"] ?? [])
+              ..add({"url": event.imageUrl}); // Pastikan formatnya sesuai
+
+        print('Updated favorites: $updatedFavorites');
+
         final updatedAll = Map<String, dynamic>.from(currentState.all ?? {})
           ..remove(event.imageUrl);
 
         emit(FindmeSuccess(
           all: updatedAll,
           collections: currentState.collections,
-          favorites: {"data": updatedFavorites},
+          favorites: {"data": updatedFavorites}, // Emit updated favorites
         ));
       }
     });

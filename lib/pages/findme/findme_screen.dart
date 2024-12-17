@@ -213,38 +213,56 @@ class _FindMeScreenState extends State<FindMeScreen> {
                             BlocBuilder<PhotoBloc, PhotoState>(
                               builder: (context, state) {
                                 if (state is PhotoLoading) {
-                                  return const Center(child: CircularProgressIndicator());
+                                  return const Center(
+                                      child: CircularProgressIndicator());
                                 } else if (state is FindmeSuccess) {
                                   if (state.all != null) {
-                                    final allPhotos = (state.all!['data'] as List)
-                                        .map((photo) => SellPhoto.fromJson(photo))
-                                        .toList();
+                                    final allPhotos =
+                                        (state.all!['data'] as List)
+                                            .map((photo) =>
+                                                SellPhoto.fromJson(photo))
+                                            .toList();
+
                                     if (allPhotos.isNotEmpty) {
-                                      return _buildGridContent(allPhotos);
+                                      return RefreshIndicator(
+                                        onRefresh: () async {
+                                          context
+                                              .read<PhotoBloc>()
+                                              .add(FindmePhotoEvent());
+                                        },
+                                        child: _buildGridContent(allPhotos),
+                                      );
                                     }
-                                    return const Center(child: Text('No match photo found'));
+                                    return const Center(
+                                        child: Text('No match photo found'));
                                   }
                                   return const Center(child: DisBlankFindMe());
                                 }
                                 return const Center(child: DisBlankFindMe());
                               },
                             ),
+
                             // Tab "Favorite"
                             BlocBuilder<PhotoBloc, PhotoState>(
                               builder: (context, state) {
                                 if (state is PhotoLoading) {
-                                  return const Center(child: CircularProgressIndicator());
+                                  return const Center(
+                                      child: CircularProgressIndicator());
                                 } else if (state is FindmeSuccess) {
-                                  if (state.favorites != null && state.favorites!["data"] is List) {
-                                    final favoritePhotos = (state.favorites!["data"] as List)
-                                        .map((photo) => SellPhoto.fromJson(photo))
+                                  final favorites = state.favorites?["data"];
+                                  print(
+                                      'Favorites in UI: $favorites'); // Debug print
+                                  if (favorites != null &&
+                                      favorites.isNotEmpty) {
+                                    final favoritePhotos = favorites
+                                        .map((photo) =>
+                                            SellPhoto.fromJson(photo))
                                         .toList();
-                                    if (favoritePhotos.isNotEmpty) {
-                                      return _buildGridContent(favoritePhotos);
-                                    }
-                                    return const Center(child: Text('No favorite photo found'));
+                                    print(favoritePhotos);
+                                    return _buildGridContent(favoritePhotos);
                                   }
-                                  return const Center(child: DisBlankFindMe());
+                                  return const Center(
+                                      child: Text('No favorite photo found'));
                                 }
                                 return const Center(child: DisBlankFindMe());
                               },
@@ -253,16 +271,21 @@ class _FindMeScreenState extends State<FindMeScreen> {
                             BlocBuilder<PhotoBloc, PhotoState>(
                               builder: (context, state) {
                                 if (state is PhotoLoading) {
-                                  return const Center(child: CircularProgressIndicator());
+                                  return const Center(
+                                      child: CircularProgressIndicator());
                                 } else if (state is FindmeSuccess) {
                                   if (state.collections != null) {
-                                    final collectionPhotos = (state.collections!['data'] as List)
-                                        .map((photo) => SellPhoto.fromJson(photo))
-                                        .toList();
+                                    final collectionPhotos =
+                                        (state.collections!['data'] as List)
+                                            .map((photo) =>
+                                                SellPhoto.fromJson(photo))
+                                            .toList();
                                     if (collectionPhotos.isNotEmpty) {
-                                      return _buildGridContent(collectionPhotos);
+                                      return _buildGridContent(
+                                          collectionPhotos);
                                     }
-                                    return const Center(child: Text('No collection found'));
+                                    return const Center(
+                                        child: Text('No collection found'));
                                   }
                                   return const Center(child: DisBlankFindMe());
                                 }
@@ -371,25 +394,26 @@ class _FindMeScreenState extends State<FindMeScreen> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          context
-                              .read<PhotoBloc>()
-                              .add(AddToFavoritesEvent(imageUrl: photo.url));
+                          // Add to favorites
+                          context.read<PhotoBloc>().add(
+                                AddToFavoritesEvent(imageUrl: photo.url),
+                              );
                           Navigator.pop(context);
                         },
                         child: const Text("Iya"),
                       ),
-                      // ElevatedButton(
-                      //   onPressed: () {
-                      //     // Action for "Bukan"
-                      //     Navigator.pop(context);
-                      //   },
-                      //   child: const Text("Bukan"),
-                      // ),
                       IconButton(
                         icon: Icon(Icons.shopping_cart, color: DisColors.white),
                         onPressed: () {
-                          context.read<CartBloc>().add(AddCartItemEvent(photoId: photo.id));
+                          // Add to cart
+                          context.read<CartBloc>().add(
+                                AddCartItemEvent(photoId: photo.id),
+                              );
                           print('Add to cart: ${photo.id}');
+                          context
+                              .read<PhotoBloc>()
+                              .add(AddToFavoritesEvent(imageUrl: photo.url));
+                          print('Adding to favorites: ${photo.url}');
                           Navigator.pop(context);
                         },
                       ),

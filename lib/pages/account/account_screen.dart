@@ -120,31 +120,31 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: DisColors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            BlocProvider(
-              create: (context) => UserBloc(userController: UserController())
-                ..add(UserGetEvent()),
-              child: BlocBuilder<UserBloc, UserState>(
-                builder: (context, state) {
-                  if (state is UserSuccess) {
-                    return ProfileHeader(
-                      user: User.fromJson(state.data!),
-                      onPickImage: _pickImage,
-                    );
-                  }
-                  return const SizedBox();
-                },
-              ),
+      body: Column(
+        children: [
+          BlocProvider(
+            create: (context) =>
+                UserBloc(userController: UserController())..add(UserGetEvent()),
+            child: BlocBuilder<UserBloc, UserState>(
+              builder: (context, state) {
+                if (state is UserSuccess) {
+                  return ProfileHeader(
+                    user: User.fromJson(state.data!),
+                    onPickImage: _pickImage,
+                  );
+                }
+                return const SizedBox();
+              },
             ),
-            SectionToggle(
-              isSellSelected: isSellSelected,
-              onToggle: _toggleSection,
-            ),
-            BlocProvider(
+          ),
+          SectionToggle(
+            isSellSelected: isSellSelected,
+            onToggle: _toggleSection,
+          ),
+          Expanded(
+            child: BlocProvider(
               create: (context) => PhotoBloc(photoController: PhotoController())
-                ..add(ListPhotoEvent()),
+                ..add(ListPhotoEvent(page: 1, size: 10)),
               child: BlocBuilder<PhotoBloc, PhotoState>(
                 builder: (context, state) {
                   if (state is PhotoLoading) {
@@ -157,36 +157,46 @@ class _AccountScreenState extends State<AccountScreen> {
                         .where((element) => element['type'] == "post")
                         .toList();
 
-                    if (isSellSelected) {
-                      return sellImages.isEmpty
-                          ? DisBlankSell(
-                              onUpload: _pickImage,
-                            )
-                          : SellSection(
-                              sellPhotos: sellImages
-                                  .map((image) => SellPhoto.fromJson(image))
-                                  .toList(),
-                              selectedFilter: selectedFilter,
-                              onFilterSelect: _selectFilter,
-                            );
-                    } else {
-                      return postImages.isEmpty
-                          ? DisBlankPost(
-                              onUpload: _pickImage,
-                            )
-                          : PostSection(
-                              postPhotos: postImages
-                                  .map((image) => PostPhoto.fromJson(image))
-                                  .toList(),
-                            );
-                    }
+                    return RefreshIndicator(
+                      onRefresh: () async {
+                        context
+                            .read<PhotoBloc>()
+                            .add(ListPhotoEvent(page: 1, size: 10));
+                      },
+                      child: ListView(
+                        physics:
+                            const AlwaysScrollableScrollPhysics(), // Wajib ditambahkan
+                        children: [
+                          if (isSellSelected)
+                            sellImages.isEmpty
+                                ? DisBlankSell(onUpload: _pickImage)
+                                : SellSection(
+                                    sellPhotos: sellImages
+                                        .map((image) =>
+                                            SellPhoto.fromJson(image))
+                                        .toList(),
+                                    selectedFilter: selectedFilter,
+                                    onFilterSelect: _selectFilter,
+                                  )
+                          else
+                            postImages.isEmpty
+                                ? DisBlankPost(onUpload: _pickImage)
+                                : PostSection(
+                                    postPhotos: postImages
+                                        .map((image) =>
+                                            PostPhoto.fromJson(image))
+                                        .toList(),
+                                  ),
+                        ],
+                      ),
+                    );
                   }
                   return const Center(child: Text("Photos not available"));
                 },
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

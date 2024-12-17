@@ -158,9 +158,10 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
     return GestureDetector(
       onTap: _navigateToSearchFace,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            height: 136,
+            height: 156,
             width: 160,
             decoration: BoxDecoration(
               color: DisColors.darkGrey,
@@ -206,44 +207,45 @@ class _ListFaceScreenState extends State<ListFaceScreen> {
     return Expanded(
       child: GridView.builder(
         shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        physics: const ClampingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 1,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
+          childAspectRatio: 0.9,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
         ),
-        itemCount: faces.length + 1, // Add one more item for the button
+        itemCount: faces.length + 1,
         itemBuilder: (context, index) {
           if (index == faces.length) {
             return _buildAddSelfieButton();
           }
-          return Stack(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  image: DecorationImage(
-                    image: NetworkImage(faces[index].url),
-                    fit: BoxFit.cover,
-                  ),
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Stack(
+              children: [
+                Image.network(
+                  faces[index].url,
+                  width: double.infinity,
+                  height: double.infinity,
+                  fit: BoxFit.cover,
                 ),
-              ),
-              if (index == 0)
-                Positioned(
-                  bottom: 8,
-                  left: 8,
-                  child: Container(
-                    color: Colors.black54,
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    child: const Text(
-                      'Original',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
+                if (index == 0)
+                  Positioned(
+                    bottom: 8,
+                    left: 8,
+                    child: Container(
+                      color: Colors.black54,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      child: const Text(
+                        'Original',
+                        style: TextStyle(color: Colors.white, fontSize: 12),
+                      ),
                     ),
                   ),
-                ),
-            ],
+              ],
+            ),
           );
         },
       ),

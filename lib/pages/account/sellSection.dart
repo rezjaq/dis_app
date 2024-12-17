@@ -22,6 +22,7 @@ class SellSection extends StatelessWidget {
     return Column(
       children: [
         _buildFilterRow(),
+        SizedBox(height: 16), // Add this line to create space
         _buildImageGrid(context, _filterPhotos(sellPhotos, selectedFilter)),
       ],
     );
@@ -100,8 +101,7 @@ class SellSection extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
                 child: Image.network(
-                  photos[index]
-                      .url, // Use Image.network to load the image from URL
+                  photos[index].url,
                   loadingBuilder: (BuildContext context, Widget child,
                       ImageChunkEvent? loadingProgress) {
                     if (loadingProgress == null) {
@@ -119,8 +119,7 @@ class SellSection extends StatelessWidget {
                   },
                   errorBuilder: (BuildContext context, Object error,
                       StackTrace? stackTrace) {
-                    return const Icon(Icons
-                        .error); // Display an error icon if the image fails to load
+                    return const Icon(Icons.error);
                   },
                   fit: BoxFit.cover,
                 ),
@@ -140,7 +139,7 @@ class SellSection extends StatelessWidget {
           child: Container(
             width: double.infinity,
             child: Image.network(
-              imagePath, // Use Image.network to display the image in the dialog
+              imagePath,
               fit: BoxFit.cover,
             ),
           ),

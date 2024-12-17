@@ -5,7 +5,7 @@ import 'package:dis_app/models/cart_model.dart';
 class CartController {
   Future<Map<String, dynamic>> addToCart(AddItemRequest request) async {
     try {
-      final response = await DisHttpClient.post('cart', request.toJson());
+      final response = await DisHttpClient.post('cart/', request.toJson());
       if (response['data'] == null) {
         throw Exception(response['errors'] ?? 'Unknown error occurred');
       }

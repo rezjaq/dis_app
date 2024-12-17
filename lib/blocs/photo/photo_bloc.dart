@@ -121,28 +121,39 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
 
     on<FindmePhotoEvent>((event, emit) async {
       emit(PhotoLoading());
-      try {
-        final responseAll = await photoController.findmePhoto();
-        final responseCollections =
-            await photoController.collectionPhoto(CollectionPhotoRequest());
-        final favorites = <dynamic>[];
+      Map<String, dynamic>? responseAll;
+      Map<String, dynamic>? responseCollections;
+      Map<String, dynamic>? responseFavorites;
+      String? messageAll;
+      String? messageCollections;
 
-        emit(FindmeSuccess(
-          all: responseAll,
-          collections: responseCollections,
-          favorites: favorites,
-        ));
+      try {
+        responseAll = await photoController.findmePhoto();
       } catch (e) {
-        emit(FindmeFailure(
-            messageAll: e.toString(), messageCollections: e.toString()));
+        messageAll = e.toString();
       }
+
+      try {
+        responseCollections = await photoController.collectionPhoto(CollectionPhotoRequest());
+      } catch (e) {
+        messageCollections = e.toString();
+      }
+
+      emit(FindmeSuccess(
+        all: responseAll,
+        collections: responseCollections,
+        favorites: {},
+        messageAll: messageAll,
+        messageCollections: messageCollections,
+        messageFavorites: null,
+      ));
     });
 
     on<AddToFavoritesEvent>((event, emit) {
       if (state is FindmeSuccess) {
         final currentState = state as FindmeSuccess;
         final updatedFavorites =
-            List<dynamic>.from(currentState.favorites ?? [])
+            List<dynamic>.from(currentState.favorites!["data"] ?? {})
               ..add(event.imageUrl);
         final updatedAll = Map<String, dynamic>.from(currentState.all ?? {})
           ..remove(event.imageUrl);
@@ -150,7 +161,7 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
         emit(FindmeSuccess(
           all: updatedAll,
           collections: currentState.collections,
-          favorites: updatedFavorites,
+          favorites: {"data": updatedFavorites},
         ));
       }
     });

@@ -234,9 +234,8 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                       );
                                     }
                                     return const Center(
-                                        child: Text('No match photo found'));
+                                        child: DisBlankFindMe());
                                   }
-                                  return const Center(child: DisBlankFindMe());
                                 }
                                 return const Center(child: DisBlankFindMe());
                               },
@@ -261,8 +260,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                     print(favoritePhotos);
                                     return _buildGridContent(favoritePhotos);
                                   }
-                                  return const Center(
-                                      child: Text('No favorite photo found'));
+                                  return const Center(child: DisBlankFindMe());
                                 }
                                 return const Center(child: DisBlankFindMe());
                               },
@@ -285,7 +283,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                           collectionPhotos);
                                     }
                                     return const Center(
-                                        child: Text('No collection found'));
+                                        child: DisBlankFindMe());
                                   }
                                   return const Center(child: DisBlankFindMe());
                                 }

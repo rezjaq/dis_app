@@ -4,18 +4,56 @@ import 'package:dis_app/utils/constants/sizes.dart';
 import 'package:dis_app/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_countdown_timer/current_remaining_time.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
-class PaymentPage extends StatelessWidget {
+import '../../blocs/transaction/transaction_bloc.dart';
+import '../../blocs/transaction/transaction_event.dart';
+import '../../blocs/transaction/transaction_state.dart';
+
+class PaymentPage extends StatefulWidget {
+  PaymentPage({Key? key}) : super(key: key);
+
+  @override
+  _PaymentPageState createState() => _PaymentPageState();
+}
+
+class _PaymentPageState extends State<PaymentPage> {
+  late Map<String, dynamic> transaction;
+  late DateTime expired;
+  late NumberFormat currencyFormat;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    transaction = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+    currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'IDR ', decimalDigits: 0);
+    expired = DateTime.parse(transaction['payment']['expired_at']);
+  }
+
+  Future<void> _refreshPaymentData() async {
+    final transactionBloc = BlocProvider.of<TransactionBloc>(context);
+    transactionBloc.add(TransactionGetEvent(id: transaction['_id']));
+
+    await for (final state in transactionBloc.stream) {
+      if (state is TransactionGetSuccess) {
+        setState(() {
+          transaction = state.data!;
+          expired = DateTime.parse(transaction['payment']['expired_at']);
+        });
+        break;
+      } else if (state is TransactionFailure) {
+        print("Error fetching transaction");
+        break;
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final transaction = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final NumberFormat currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'IDR ', decimalDigits: 0);
-    final expired = DateTime.parse(transaction['payment']['expired_at']);
-
     return Scaffold(
       backgroundColor: DisColors.white,
       appBar: AppBar(
@@ -43,37 +81,64 @@ class PaymentPage extends StatelessWidget {
                   _itemDetailPayment("Total Payment", Text(currencyFormat.format(transaction["total"]), style: TextStyle(fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.w700, color: DisColors.textPrimary))),
                   _itemDetailPayment("Complete Payment Before", Text(DisHelperFunctions.getFormattedDate(expired), style: TextStyle(fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.bold, color: DisColors.black))),
                   _itemDetailPayment(
-                      "Reference Number Expires In",
-                      CountdownTimer(
-                        endTime: expired.millisecondsSinceEpoch,
-                        widgetBuilder: (_, CurrentRemainingTime? time) {
-                          if (time == null && transaction['status'] == 'paid') {
-                            return Text('Paid', style: TextStyle(fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.bold, color: DisColors.success));
-                          }
-                          if (time == null) {
-                            return Text('Expired', style: TextStyle(fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.bold, color: DisColors.error));
-                          }
-                          return Row(
-                            children: [
-                              _itemCounter(time.hours == null ? 0 : time.hours!),
-                              SizedBox(width: DisSizes.xs),
-                              Text(':', style: TextStyle(
-                                  fontSize: DisSizes.fontSizeSm,
-                                  fontWeight: FontWeight.bold,
-                                  color: DisColors.black)),
-                              SizedBox(width: DisSizes.xs),
-                              _itemCounter(time.min == null ? 0 : time.min!),
-                              SizedBox(width: DisSizes.xs),
-                              Text(':', style: TextStyle(
-                                  fontSize: DisSizes.fontSizeSm,
-                                  fontWeight: FontWeight.bold,
-                                  color: DisColors.black)),
-                              SizedBox(width: DisSizes.xs),
-                              _itemCounter(time.sec == null ? 0 : time.sec!),
-                            ],
-                          );
-                        },
-                      )
+                    transaction['status'] == 'pending' ? "Reference Number Expires In" : "Status Payment",
+                    transaction['status'] == 'paid'
+                        ? Text(
+                      'Completed',
+                      style: TextStyle(
+                        fontSize: DisSizes.fontSizeSm,
+                        fontWeight: FontWeight.bold,
+                        color: DisColors.success,
+                      ),
+                    )
+                        : transaction['status'] == 'cancelled'
+                        ? Text(
+                      'Cancelled',
+                      style: TextStyle(
+                        fontSize: DisSizes.fontSizeSm,
+                        fontWeight: FontWeight.bold,
+                        color: DisColors.error,
+                      ),
+                    )
+                        : transaction['status'] == 'expired'
+                        ? Text('Cancelled',
+                      style: TextStyle(
+                        fontSize: DisSizes.fontSizeSm,
+                        fontWeight: FontWeight.bold,
+                        color: DisColors.error,
+                      ),)
+                        : CountdownTimer(
+                      endTime: expired.millisecondsSinceEpoch,
+                      widgetBuilder: (_, CurrentRemainingTime? time) {
+                        return Row(
+                          children: [
+                            _itemCounter(time?.hours ?? 0),
+                            SizedBox(width: DisSizes.xs),
+                            Text(
+                              ':',
+                              style: TextStyle(
+                                fontSize: DisSizes.fontSizeSm,
+                                fontWeight: FontWeight.bold,
+                                color: DisColors.black,
+                              ),
+                            ),
+                            SizedBox(width: DisSizes.xs),
+                            _itemCounter(time?.min ?? 0),
+                            SizedBox(width: DisSizes.xs),
+                            Text(
+                              ':',
+                              style: TextStyle(
+                                fontSize: DisSizes.fontSizeSm,
+                                fontWeight: FontWeight.bold,
+                                color: DisColors.black,
+                              ),
+                            ),
+                            SizedBox(width: DisSizes.xs),
+                            _itemCounter(time?.sec ?? 0),
+                          ],
+                        );
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -133,7 +198,10 @@ class PaymentPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text('Payment Completed?', style: TextStyle(fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.w500)),
-                TextButton(onPressed: () {}, child: Text('Check Status', style: TextStyle(fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.bold, color: DisColors.textPrimary))),
+                TextButton(onPressed: () async {
+                  print(transaction['_id']);
+                  _refreshPaymentData();
+                }, child: Text('Check Status', style: TextStyle(fontSize: DisSizes.fontSizeSm, fontWeight: FontWeight.bold, color: DisColors.textPrimary))),
               ],
             ),
             SizedBox(height: DisSizes.md),

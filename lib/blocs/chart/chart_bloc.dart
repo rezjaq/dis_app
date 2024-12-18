@@ -11,8 +11,12 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<AddCartItemEvent>((event, emit) async {
       emit(CartLoading());
       try {
-        final response = await cartController.addToCart(AddItemRequest(photoId: event.photoId));
-        emit(CartSuccess(data: response));
+        final response = await cartController
+            .addToCart(AddItemRequest(photoId: event.photoId));
+        // After adding, fetch the updated cart items
+        final updatedResponse = await cartController
+            .listCartItems(ListItemsRequest(size: 10, page: 1));
+        emit(CartSuccess(data: updatedResponse));
       } catch (e) {
         emit(CartFailure(message: e.toString()));
       }
@@ -21,9 +25,11 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     on<RemoveCartItem>((event, emit) async {
       emit(CartLoading());
       try {
-        final response = await cartController.removeFromCart(RemoveItemRequest(photoId: event.photoId));
+        final response = await cartController
+            .removeFromCart(RemoveItemRequest(photoId: event.photoId));
         if (response == true) {
-          final updatedResponse = await cartController.listCartItems(ListItemsRequest(size: 10, page: 1));
+          final updatedResponse = await cartController
+              .listCartItems(ListItemsRequest(size: 10, page: 1));
           emit(CartSuccess(data: updatedResponse));
         } else {
           emit(CartFailure(message: "Failed to remove item"));
@@ -50,7 +56,9 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       if (state is CartSuccess) {
         final currentState = state as CartSuccess;
         final selectedItems = event.isSelected
-            ? (currentState.data!["data"] as List).map((e) => Cart.fromJson(e)).toSet()
+            ? (currentState.data!["data"] as List)
+                .map((e) => Cart.fromJson(e))
+                .toSet()
             : <Cart>{};
         emit(CartSuccess(
           data: currentState.data,

@@ -18,15 +18,19 @@ class CartSuccess extends CartState {
   final Set<Cart> selectedItems;
   final List<bool> isSelected;
 
-  const CartSuccess({this.message, this.data, this.selectedItems = const <Cart>{}, this.isSelected = const <bool>[]});
+  const CartSuccess(
+      {this.message,
+      this.data,
+      this.selectedItems = const <Cart>{},
+      this.isSelected = const <bool>[]});
 
   @override
   List<Object> get props => [
-    message ?? '',
-    data ?? {},
-    selectedItems,
-    isSelected,
-  ];
+        message ?? '',
+        data ?? {},
+        selectedItems,
+        isSelected,
+      ];
 }
 
 class CartFailure extends CartState {

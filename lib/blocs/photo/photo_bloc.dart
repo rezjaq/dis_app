@@ -155,22 +155,20 @@ class PhotoBloc extends Bloc<PhotoEvent, PhotoState> {
     on<AddToFavoritesEvent>((event, emit) {
       if (state is FindmeSuccess) {
         final currentState = state as FindmeSuccess;
-        print('Current favorites: ${currentState.favorites?["data"]}');
 
-        // Menambahkan objek dengan URL ke dalam favorit
-        final updatedFavorites =
-            List<dynamic>.from(currentState.favorites?["data"] ?? [])
-              ..add({"url": event.imageUrl}); // Pastikan formatnya sesuai
+        // Ambil data favorites saat ini dan tambahkan data baru
+        final updatedFavorites = List<Map<String, dynamic>>.from(
+          currentState.favorites?["data"] ?? [],
+        )..add({"url": event.imageUrl});
 
-        print('Updated favorites: $updatedFavorites');
-
-        final updatedAll = Map<String, dynamic>.from(currentState.all ?? {})
-          ..remove(event.imageUrl);
-
+        // Emit state baru dengan data favorites yang diperbarui
         emit(FindmeSuccess(
-          all: updatedAll,
+          all: currentState.all,
           collections: currentState.collections,
-          favorites: {"data": updatedFavorites}, // Emit updated favorites
+          favorites: {"data": updatedFavorites},
+          messageAll: currentState.messageAll,
+          messageCollections: currentState.messageCollections,
+          messageFavorites: currentState.messageFavorites,
         ));
       }
     });

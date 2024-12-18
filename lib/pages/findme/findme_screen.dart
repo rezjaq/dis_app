@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
+import 'package:dio/dio.dart';
 import 'package:dis_app/blocs/chart/chart_bloc.dart';
 import 'package:dis_app/blocs/chart/chart_event.dart';
 import 'package:dis_app/blocs/photo/photo_bloc.dart';
@@ -9,6 +13,8 @@ import 'package:dis_app/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../blocs/photo/photo_event.dart';
 import '../../blocs/photo/photo_state.dart';
@@ -214,7 +220,8 @@ class _FindMeScreenState extends State<FindMeScreen> {
                               builder: (context, state) {
                                 if (state is PhotoLoading) {
                                   return const Center(
-                                      child: CircularProgressIndicator());
+                                    child: CircularProgressIndicator(),
+                                  );
                                 } else if (state is FindmeSuccess) {
                                   if (state.all != null) {
                                     final allPhotos =
@@ -223,21 +230,55 @@ class _FindMeScreenState extends State<FindMeScreen> {
                                                 SellPhoto.fromJson(photo))
                                             .toList();
 
-                                    if (allPhotos.isNotEmpty) {
-                                      return RefreshIndicator(
-                                        onRefresh: () async {
-                                          context
-                                              .read<PhotoBloc>()
-                                              .add(FindmePhotoEvent());
-                                        },
-                                        child: _buildGridContent(allPhotos),
-                                      );
-                                    }
-                                    return const Center(
-                                        child: DisBlankFindMe());
+                                    return RefreshIndicator(
+                                      onRefresh: () async {
+                                        context
+                                            .read<PhotoBloc>()
+                                            .add(FindmePhotoEvent());
+                                      },
+                                      child: allPhotos.isNotEmpty
+                                          ? _buildGridContent(allPhotos,
+                                              activeTab: "All")
+                                          : ListView(
+                                              physics:
+                                                  const AlwaysScrollableScrollPhysics(),
+                                              children: [
+                                                SizedBox(
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.8,
+                                                  child: const Center(
+                                                    child: DisBlankFindMe(),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                    );
                                   }
                                 }
-                                return const Center(child: DisBlankFindMe());
+
+                                return RefreshIndicator(
+                                  onRefresh: () async {
+                                    context
+                                        .read<PhotoBloc>()
+                                        .add(FindmePhotoEvent());
+                                  },
+                                  child: ListView(
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    children: [
+                                      SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.8,
+                                        child: const Center(
+                                          child: DisBlankFindMe(),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
                               },
                             ),
 
@@ -246,50 +287,136 @@ class _FindMeScreenState extends State<FindMeScreen> {
                               builder: (context, state) {
                                 if (state is PhotoLoading) {
                                   return const Center(
-                                      child: CircularProgressIndicator());
+                                    child: CircularProgressIndicator(),
+                                  );
                                 } else if (state is FindmeSuccess) {
-                                  final favorites = state.favorites?["data"];
+                                  final favorites =
+                                      state.favorites?["data"] ?? [];
                                   print(
-                                      'Favorites in UI: $favorites'); // Debug print
-                                  if (favorites != null &&
-                                      favorites.isNotEmpty) {
-                                    final favoritePhotos = favorites
-                                        .map((photo) =>
-                                            SellPhoto.fromJson(photo))
-                                        .toList();
-                                    print(favoritePhotos);
-                                    return _buildGridContent(favoritePhotos);
-                                  }
-                                  return const Center(child: DisBlankFindMe());
+                                      'Favorites in UI: $favorites'); // Debugging
+
+                                  return RefreshIndicator(
+                                    onRefresh: () async {
+                                      context
+                                          .read<PhotoBloc>()
+                                          .add(FindmePhotoEvent());
+                                    },
+                                    child: favorites.isNotEmpty
+                                        ? _buildGridContent(
+                                            favorites
+                                                .map((photo) =>
+                                                    SellPhoto.fromJson(photo))
+                                                .toList(),
+                                            activeTab: "Favorite",
+                                          )
+                                        : ListView(
+                                            physics:
+                                                const AlwaysScrollableScrollPhysics(),
+                                            children: [
+                                              SizedBox(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.8,
+                                                child: const Center(
+                                                  child: DisBlankFindMe(),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                  );
                                 }
-                                return const Center(child: DisBlankFindMe());
+                                // Default UI jika state bukan FindmeSuccess
+                                return RefreshIndicator(
+                                  onRefresh: () async {
+                                    context
+                                        .read<PhotoBloc>()
+                                        .add(FindmePhotoEvent());
+                                  },
+                                  child: ListView(
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    children: [
+                                      SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.8,
+                                        child: const Center(
+                                          child: DisBlankFindMe(),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
                               },
                             ),
+
                             // Tab "Collection"
                             BlocBuilder<PhotoBloc, PhotoState>(
                               builder: (context, state) {
                                 if (state is PhotoLoading) {
                                   return const Center(
-                                      child: CircularProgressIndicator());
+                                    child: CircularProgressIndicator(),
+                                  );
                                 } else if (state is FindmeSuccess) {
                                   if (state.collections != null) {
                                     final collectionPhotos =
                                         (state.collections!['data'] as List)
-                                            .map((photo) =>
-                                                SellPhoto.fromJson(photo))
-                                            .toList();
-                                    if (collectionPhotos.isNotEmpty) {
-                                      return _buildGridContent(
-                                          collectionPhotos);
-                                    }
-                                    return const Center(
-                                        child: DisBlankFindMe());
+                                            .map((photo) {
+                                      return SellPhoto.fromJson(photo);
+                                    }).toList();
+
+                                    return RefreshIndicator(
+                                      onRefresh: () async {
+                                        context
+                                            .read<PhotoBloc>()
+                                            .add(FindmePhotoEvent());
+                                      },
+                                      child: collectionPhotos.isNotEmpty
+                                          ? _buildGridContent(collectionPhotos,
+                                              activeTab: "Collection")
+                                          : ListView(
+                                              physics:
+                                                  const AlwaysScrollableScrollPhysics(),
+                                              children: [
+                                                SizedBox(
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.8,
+                                                  child: const Center(
+                                                    child: DisBlankFindMe(),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                    );
                                   }
-                                  return const Center(child: DisBlankFindMe());
                                 }
-                                return const Center(child: DisBlankFindMe());
+
+                                return RefreshIndicator(
+                                  onRefresh: () async {
+                                    context
+                                        .read<PhotoBloc>()
+                                        .add(FindmePhotoEvent());
+                                  },
+                                  child: ListView(
+                                    physics:
+                                        const AlwaysScrollableScrollPhysics(),
+                                    children: [
+                                      SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.8,
+                                        child: const Center(
+                                          child: DisBlankFindMe(),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
                               },
-                            )
+                            ),
                           ],
                         ),
                 )
@@ -339,7 +466,8 @@ class _FindMeScreenState extends State<FindMeScreen> {
     );
   }
 
-  Widget _buildGridContent(List<SellPhoto> contents) {
+  Widget _buildGridContent(List<SellPhoto> contents,
+      {bool isCollection = false, required String activeTab}) {
     return GridView.builder(
       padding: const EdgeInsets.all(8.0),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -352,7 +480,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
       itemBuilder: (context, index) {
         return GestureDetector(
           onTap: () {
-            _showFullImage(context, contents[index]);
+            _showFullImage(context, contents[index], activeTab);
           },
           child: ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
@@ -366,7 +494,7 @@ class _FindMeScreenState extends State<FindMeScreen> {
     );
   }
 
-  void _showFullImage(BuildContext context, SellPhoto photo) {
+  void _showFullImage(BuildContext context, SellPhoto photo, String activeTab) {
     showDialog(
       context: context,
       builder: (context) {
@@ -390,31 +518,47 @@ class _FindMeScreenState extends State<FindMeScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          // Add to favorites
-                          context.read<PhotoBloc>().add(
-                                AddToFavoritesEvent(imageUrl: photo.url),
-                              );
-                          Navigator.pop(context);
-                        },
-                        child: const Text("Iya"),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.shopping_cart, color: DisColors.white),
-                        onPressed: () {
-                          // Add to cart
-                          context.read<CartBloc>().add(
-                                AddCartItemEvent(photoId: photo.id),
-                              );
-                          print('Add to cart: ${photo.id}');
-                          context
-                              .read<PhotoBloc>()
-                              .add(AddToFavoritesEvent(imageUrl: photo.url));
-                          print('Adding to favorites: ${photo.url}');
-                          Navigator.pop(context);
-                        },
-                      ),
+                      if (activeTab == "All") ...[
+                        ElevatedButton(
+                          onPressed: () {
+                            // Add to favorites
+                            context.read<PhotoBloc>().add(
+                                  AddToFavoritesEvent(imageUrl: photo.url),
+                                );
+                            Navigator.pop(context);
+                          },
+                          child: const Text("Iya"),
+                        ),
+                        IconButton(
+                          icon:
+                              Icon(Icons.shopping_cart, color: DisColors.white),
+                          onPressed: () {
+                            // Add to cart
+                            context.read<CartBloc>().add(
+                                  AddCartItemEvent(photoId: photo.id),
+                                );
+
+                            // Add to favorites
+                            context.read<PhotoBloc>().add(
+                                  AddToFavoritesEvent(imageUrl: photo.url),
+                                );
+
+                            // Optionally refresh the state if needed
+                            context.read<PhotoBloc>().add(FindmePhotoEvent());
+
+                            // Close the dialog or navigate back
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ] else if (activeTab == "Collection") ...[
+                        IconButton(
+                          icon: Icon(Icons.download, color: DisColors.white),
+                          onPressed: () async {
+                            await _downloadImage(photo.url);
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -424,5 +568,50 @@ class _FindMeScreenState extends State<FindMeScreen> {
         );
       },
     );
+  }
+
+  //downloadnya disini
+  Future<void> _downloadImage(String imageUrl) async {
+    try {
+      final directory = await getExternalStorageDirectory();
+      final uri = Uri.parse(imageUrl);
+      final fileName = generateFileName(uri.path);
+      final path = '${directory!.path}/$fileName';
+
+      final dio = Dio();
+      await dio.download(imageUrl, path);
+
+      print("Gambar berhasil diunduh ke: $path");
+
+      // Show a toast notification
+      Fluttertoast.showToast(
+        msg: "Gambar berhasil diunduh!",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.black,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    } catch (e) {
+      print("Gagal mengunduh gambar: $e");
+
+      // Show a toast notification for failure
+      Fluttertoast.showToast(
+        msg: "Gagal mengunduh gambar: $e",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
+  String generateFileName(String url) {
+    final bytes = utf8.encode(url);
+    final hash = md5.convert(bytes);
+    return '$hash.jpg';
   }
 }
